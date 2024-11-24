@@ -3,8 +3,8 @@
 	--s: 25vmin;
 	--p: calc(var(--s) / 2);
 	--c1: #FF5722;
-	--c2: #8e543fbd;
-	--c3: #FFC107;
+	--c2: #FFC107;
+	--c3: #8e543fbd;
 	--bg: var(--c3);
 	--d: 4000ms;
 	--e: cubic-bezier(0.76, 0, 0.24, 1);
