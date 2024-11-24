@@ -10,6 +10,8 @@ import { useFetchAllBatches } from '@hooks/inventory/batch/useFetchAllBatches';
 import { useCreateBatch } from '@hooks/inventory/batch/useCreateBatch';
 import { useUpdateBatch } from '@hooks/inventory/batch/useUpdateBatch';
 import { useDeleteBatch } from '@hooks/inventory/batch/useDeleteBatch';
+import { useFetchBatchItems } from '@hooks/inventory/items/useFetchBatchItems'; // IMPORTADO
+import { useDeleteItem } from '@hooks/inventory/items/useDeleteItem'; // IMPORTADO
 // assets
 import DeleteIcon from '@assets/deleteIcon.svg';
 import UpdateIcon from '@assets/updateIcon.svg';
@@ -27,9 +29,11 @@ const BatchesPage = () => {
   const [batchToEdit, setBatchToEdit] = useState(null);
 
   const { batches, loading, fetchBatches } = useFetchAllBatches();
+  const { items, fetchBatchItems } = useFetchBatchItems(batchToEdit?.id); // Obtener ítems del lote
   const { handleCreate } = useCreateBatch(fetchBatches);
   const { handleUpdate } = useUpdateBatch(fetchBatches, setShowPopup, setBatchToEdit);
   const { handleDelete } = useDeleteBatch(fetchBatches);
+  const { handleDelete: deleteItem } = useDeleteItem(fetchBatchItems); // Hook para eliminar ítems
 
   const handleIdFilterChange = (e) => {
     setFilterId(e.target.value);
@@ -40,9 +44,39 @@ const BatchesPage = () => {
     setShowPopup(false);
   };
 
-  const handleUpdateBatch = (id, batch) => {
-    handleUpdate(id, batch);
-    setShowPopup(false);
+  const handleUpdateBatch = async (id, updatedBatch) => {
+    try {
+      const previousTotalItems = items.length; // Contar los ítems actuales
+      const newTotalItems = updatedBatch.totalItems;
+  
+      // Validar si es necesario eliminar ítems
+      if (newTotalItems < previousTotalItems) {
+        const itemsToRemoveCount = previousTotalItems - newTotalItems; // Cantidad a eliminar
+        let removedCount = 0; // Contador de ítems eliminados
+  
+        // Ordenar los ítems por ID en orden descendente (de más reciente a más antiguo)
+        const sortedItems = [...items].sort((a, b) => b.id - a.id);
+  
+        // Recorrer los ítems ordenados (de los más recientes a los más antiguos)
+        for (const item of sortedItems) {
+          if (removedCount >= itemsToRemoveCount) break; // Salir si ya se eliminaron los ítems necesarios
+  
+          await deleteItem(batchToEdit.id, item.id); // Eliminar ítem
+          removedCount++; // Incrementar contador
+        }
+      }
+  
+      // Actualizar el lote
+      await handleUpdate(id, updatedBatch);
+  
+      // Cerrar el popup tras la actualización
+      setShowPopup(false);
+  
+      // Actualizar datos locales del lote
+      setBatchToEdit({ ...batchToEdit, totalItems: newTotalItems });
+    } catch (error) {
+      console.error('Error al actualizar el lote:', error);
+    }
   };
 
   const handleDeleteBatch = () => {
@@ -56,7 +90,6 @@ const BatchesPage = () => {
     navigate(`/batchesItems/${batchId}/items`);
   };
 
-
   const columns = [
     { title: 'ID del Lote', field: 'id', width: 200, responsive: 2 },
     { title: 'Fecha de Adquisición', field: 'acquisitionDate', width: 500, responsive: 2 },
@@ -66,10 +99,11 @@ const BatchesPage = () => {
   const handleSelectionChange = useCallback((selectedRows) => {
     if (selectedRows.length > 0) {
       setBatchToEdit(selectedRows[0]);
+      fetchBatchItems(); // Actualizar ítems del lote seleccionado
     } else {
       setBatchToEdit(null);
     }
-  }, []);
+  }, [fetchBatchItems]);
 
   return (
     <div className="main-container">
@@ -109,11 +143,11 @@ const BatchesPage = () => {
             >
               <img src={batchToEdit ? DeleteIcon : DeleteIconDisable} alt="delete" />
             </button>
-              <button
-                onClick={() => handleEditItems(batchToEdit.id)}
-                className="btn btn-secondary"
-                style={{marginRight:'70px'}}
-              >
+            <button
+              onClick={() => handleEditItems(batchToEdit.id)}
+              className="btn btn-secondary"
+              style={{ marginRight: '70px' }}
+            >
               Editar Ítems
             </button>
           </div>

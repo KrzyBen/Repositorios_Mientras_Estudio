@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 // Componentes
 import Table from '@components/Table';
 import ItemForm from '@components/Inventory/ItemForm'; // Formulario para crear
@@ -11,6 +11,7 @@ import { useCreateItem } from '@hooks/inventory/items/useCreateItems';
 import { useUpdateItem } from '@hooks/inventory/items/useUpdateItem';
 import { useFetchBatchItems } from '@hooks/inventory/items/useFetchBatchItems';
 import { useDeleteItem } from '@hooks/inventory/items/useDeleteItem';
+import { useFetchBatch } from '@hooks/inventory/batch/useFetchBatch';
 // Assets
 import DeleteIcon from '@assets/deleteIcon.svg';
 import UpdateIcon from '@assets/updateIcon.svg';
@@ -21,23 +22,35 @@ import '@styles/ItemsPage.css';
 
 const ItemsPage = () => {
   const { batchId } = useParams();
-  const navigate = useNavigate(); // Para redirecciones, si es necesario
 
   const [filterId, setFilterId] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [popupMode, setPopupMode] = useState('create'); // 'create' o 'update'
   const [itemToEdit, setItemToEdit] = useState(null);
+  const [maxItems, setMaxItems] = useState(0);
 
   const { items, loading, fetchBatchItems } = useFetchBatchItems(batchId);
   const { handleDelete } = useDeleteItem(fetchBatchItems);
   const { handleCreate } = useCreateItem(fetchBatchItems); // Hook para crear ítems
   const { handleUpdate } = useUpdateItem(fetchBatchItems); // Hook para actualizar ítems
+  const { batch } = useFetchBatch(batchId);
+
+  useEffect(() => {
+    if (batch) {
+      setMaxItems(batch.totalItems); // Aquí usamos el setter de estado
+    }
+  }, [batch]);
 
   const handleIdFilterChange = (e) => {
     setFilterId(e.target.value);
   };
 
   const handleCreateItem = async (item) => {
+    if (items.length >= maxItems) {
+      alert(`No se pueden agregar más de ${maxItems} ítems al lote.`);
+      return;
+    }
+
     try {
       await handleCreate(batchId, item);
       setShowPopup(false);
@@ -87,7 +100,7 @@ const ItemsPage = () => {
             <Search
               value={filterId}
               onChange={handleIdFilterChange}
-              placeholder="Filtrar por ID de ítem"
+              placeholder="Filtrar por ID"
               style={{ width: '150px' }}
             />
             <button
