@@ -1,0 +1,79 @@
+/* Contenedor principal */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Asegura que los elementos estén alineados desde la parte superior */
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    margin-top: 60px; /* Ajustar según la altura del navbar */
+}
+
+/* Contenedor de la tabla */
+.table-container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 20px auto 0 auto; /* Agrega un margen superior para separar del navbar */
+    background-color: #212121;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+}
+
+/* Encabezado de la tabla */
+.top-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Título de la tabla */
+.title-table {
+    color: #FF5722;
+    margin-left: 70px;
+    font-size: 24px;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Filtros y botones de acción */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+.filter-actions button {
+    background: rgba(255, 235, 238, 0.87);
+    border: #FFEBEE;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.filter-actions button:disabled {
+    background: #f1f1f1;
+    cursor: not-allowed;
+}
+
+/* Responsividad */
+@media (max-width: 767px) {
+    .main-container {
+        margin-top: 50px; /* Ajustar según la altura del navbar en pantallas pequeñas */
+    }
+
+    .title-table {
+        margin: 0;
+    }
+
+    .top-table {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .table-container {
+        width: 352px;
+        height: 500px;
+    }
+}

@@ -5,7 +5,6 @@ import {
     getAllItemsInBatchService,
     updateItemInBatchService,
     deleteItemFromBatchService,
-    checkDuplicateItemInBatchService
 } from '../services/itemBatch.service.js';
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { ItemBodyValidation } from '../validations/itemBatch.validation.js';
@@ -23,16 +22,6 @@ export async function addItemToBatch(req, res) {
         if (error) {
             const errorMessages = error.details.map(err => err.message);
             return handleErrorClient(res, 400, errorMessages);
-        }
-
-        const [isDuplicate, duplicateError] = await checkDuplicateItemInBatchService(batchId, data);
-        
-        if (duplicateError) {
-            return handleErrorServer(res, 500, "Error al verificar duplicados en el lote");
-        }
-
-        if (isDuplicate) {
-            return handleErrorClient(res, 400, "Este ítem ya existe en el lote y no se puede duplicar.");
         }
 
         const [item, serviceError] = await addItemToBatchService(batchId, data);
