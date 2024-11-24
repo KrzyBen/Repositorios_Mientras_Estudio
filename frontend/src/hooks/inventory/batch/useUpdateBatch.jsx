@@ -5,10 +5,10 @@ const useUpdateBatch = (fetchBatches, setShowPopup, setBatchToEdit) => {
   const handleUpdate = async (id, batchData) => {
     try {
       await updateBatch(id, batchData);
-      fetchBatches(); // Actualizar la lista de lotes
+      fetchBatches();
       showSuccessAlert('Lote actualizado con éxito');
-      setShowPopup(false); // Cerrar el popup
-      setBatchToEdit(null); // Limpiar la selección del lote
+      setShowPopup(false);
+      setBatchToEdit(null);
     } catch (error) {
       console.error('Error al actualizar el lote:', error);
       showErrorAlert('Error', 'No se pudo actualizar el lote');

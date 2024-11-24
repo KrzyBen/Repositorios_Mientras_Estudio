@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 // Componentes
 import Table from '@components/Table';
-import BatchForm from '@components/Inventory/BatchForm'; // Formulario para crear
-import BatchFormUpt from '@components/Inventory/BatchFormUpt'; // Formulario para actualizar
+import BatchForm from '@components/Inventory/BatchForm';
+import BatchFormUpt from '@components/Inventory/BatchFormUpt';
 import BatchPopup from '@components/Inventory/BatchPopup';
 import Search from '@components/Search';
 // Hooks
@@ -10,8 +10,8 @@ import { useFetchAllBatches } from '@hooks/inventory/batch/useFetchAllBatches';
 import { useCreateBatch } from '@hooks/inventory/batch/useCreateBatch';
 import { useUpdateBatch } from '@hooks/inventory/batch/useUpdateBatch';
 import { useDeleteBatch } from '@hooks/inventory/batch/useDeleteBatch';
-import { useFetchBatchItems } from '@hooks/inventory/items/useFetchBatchItems'; // IMPORTADO
-import { useDeleteItem } from '@hooks/inventory/items/useDeleteItem'; // IMPORTADO
+import { useFetchBatchItems } from '@hooks/inventory/items/useFetchBatchItems';
+import { useDeleteItem } from '@hooks/inventory/items/useDeleteItem';
 // assets
 import DeleteIcon from '@assets/deleteIcon.svg';
 import UpdateIcon from '@assets/updateIcon.svg';
@@ -22,18 +22,18 @@ import '@styles/BatchesPage.css';
 import { useNavigate } from 'react-router-dom';
 
 const BatchesPage = () => {
-  const navigate = useNavigate(); // Hook para redirigir
+  const navigate = useNavigate();
   const [filterId, setFilterId] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [popupMode, setPopupMode] = useState('create'); // 'create' o 'update'
+  const [popupMode, setPopupMode] = useState('create');
   const [batchToEdit, setBatchToEdit] = useState(null);
 
   const { batches, loading, fetchBatches } = useFetchAllBatches();
-  const { items, fetchBatchItems } = useFetchBatchItems(batchToEdit?.id); // Obtener ítems del lote
+  const { items, fetchBatchItems } = useFetchBatchItems(batchToEdit?.id);
   const { handleCreate } = useCreateBatch(fetchBatches);
   const { handleUpdate } = useUpdateBatch(fetchBatches, setShowPopup, setBatchToEdit);
   const { handleDelete } = useDeleteBatch(fetchBatches);
-  const { handleDelete: deleteItem } = useDeleteItem(fetchBatchItems); // Hook para eliminar ítems
+  const { handleDelete: deleteItem } = useDeleteItem(fetchBatchItems);
 
   const handleIdFilterChange = (e) => {
     setFilterId(e.target.value);
@@ -46,33 +46,22 @@ const BatchesPage = () => {
 
   const handleUpdateBatch = async (id, updatedBatch) => {
     try {
-      const previousTotalItems = items.length; // Contar los ítems actuales
+      const previousTotalItems = items.length;
       const newTotalItems = updatedBatch.totalItems;
-  
-      // Validar si es necesario eliminar ítems
+      
       if (newTotalItems < previousTotalItems) {
-        const itemsToRemoveCount = previousTotalItems - newTotalItems; // Cantidad a eliminar
-        let removedCount = 0; // Contador de ítems eliminados
-  
-        // Ordenar los ítems por ID en orden descendente (de más reciente a más antiguo)
+        const itemsToRemoveCount = previousTotalItems - newTotalItems;
+        let removedCount = 0;
         const sortedItems = [...items].sort((a, b) => b.id - a.id);
-  
-        // Recorrer los ítems ordenados (de los más recientes a los más antiguos)
         for (const item of sortedItems) {
-          if (removedCount >= itemsToRemoveCount) break; // Salir si ya se eliminaron los ítems necesarios
-  
-          await deleteItem(batchToEdit.id, item.id); // Eliminar ítem
-          removedCount++; // Incrementar contador
+          if (removedCount >= itemsToRemoveCount) break;
+          await deleteItem(batchToEdit.id, item.id);
+          removedCount++;
         }
       }
-  
-      // Actualizar el lote
+
       await handleUpdate(id, updatedBatch);
-  
-      // Cerrar el popup tras la actualización
       setShowPopup(false);
-  
-      // Actualizar datos locales del lote
       setBatchToEdit({ ...batchToEdit, totalItems: newTotalItems });
     } catch (error) {
       console.error('Error al actualizar el lote:', error);
@@ -99,7 +88,7 @@ const BatchesPage = () => {
   const handleSelectionChange = useCallback((selectedRows) => {
     if (selectedRows.length > 0) {
       setBatchToEdit(selectedRows[0]);
-      fetchBatchItems(); // Actualizar ítems del lote seleccionado
+      fetchBatchItems();
     } else {
       setBatchToEdit(null);
     }

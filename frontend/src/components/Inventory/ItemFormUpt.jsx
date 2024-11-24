@@ -21,7 +21,7 @@ const ItemFormUpt = ({ itemToEdit, onSubmit }) => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    onSubmit(itemToEdit.id, itemData); // Llamar la función con los datos actualizados
+    onSubmit(itemToEdit.id, itemData);
   };
 
   return (

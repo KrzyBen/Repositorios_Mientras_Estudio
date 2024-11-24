@@ -9,7 +9,7 @@ const BatchFormUpt = ({ batchToEdit, onSubmit }) => {
   useEffect(() => {
     if (batchToEdit) {
       setBatch({
-        acquisitionDate: batchToEdit.acquisitionDate, // Fecha cruda
+        acquisitionDate: batchToEdit.acquisitionDate,
         totalItems: batchToEdit.totalItems,
       });
     }
@@ -17,17 +17,9 @@ const BatchFormUpt = ({ batchToEdit, onSubmit }) => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    
-    // Convertir la fecha seleccionada a un objeto Date
     const date = new Date(batch.acquisitionDate);
-
-    // Sumar un día a la fecha
     date.setDate(date.getDate() + 1);
-
-    // Convertir la nueva fecha a formato YYYY-MM-DD
     const updatedDate = date.toISOString().split("T")[0];
-
-    // Enviar el lote actualizado con la fecha ajustada
     onSubmit(batchToEdit.id, { ...batch, acquisitionDate: updatedDate });
   };
 

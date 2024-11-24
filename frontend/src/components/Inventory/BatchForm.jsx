@@ -2,23 +2,15 @@ import React, { useState } from 'react';
 
 const BatchForm = ({ onSubmit }) => {
   const [newBatch, setNewBatch] = useState({
-    acquisitionDate: '', // Fecha en formato crudo (YYYY-MM-DD)
+    acquisitionDate: '',
     totalItems: 1,
   });
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    
-    // Convertir la fecha seleccionada a un objeto Date
     const date = new Date(newBatch.acquisitionDate);
-    
-    // Sumar un día a la fecha
     date.setDate(date.getDate() + 1);
-
-    // Convertir la nueva fecha a formato YYYY-MM-DD
     const updatedDate = date.toISOString().split("T")[0];
-
-    // Enviar la fecha ajustada al backend
     onSubmit({ ...newBatch, acquisitionDate: updatedDate });
   };
 

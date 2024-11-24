@@ -2,8 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 // Componentes
 import Table from '@components/Table';
-import ItemForm from '@components/Inventory/ItemForm'; // Formulario para crear
-import ItemFormUpt from '@components/Inventory/ItemFormUpt'; // Formulario para actualizar
+import ItemForm from '@components/Inventory/ItemForm';
+import ItemFormUpt from '@components/Inventory/ItemFormUpt';
 import ItemPopup from '@components/Inventory/ItemPopup';
 import Search from '@components/Search';
 // Hooks
@@ -25,19 +25,19 @@ const ItemsPage = () => {
 
   const [filterId, setFilterId] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [popupMode, setPopupMode] = useState('create'); // 'create' o 'update'
+  const [popupMode, setPopupMode] = useState('create');
   const [itemToEdit, setItemToEdit] = useState(null);
   const [maxItems, setMaxItems] = useState(0);
 
   const { items, loading, fetchBatchItems } = useFetchBatchItems(batchId);
   const { handleDelete } = useDeleteItem(fetchBatchItems);
-  const { handleCreate } = useCreateItem(fetchBatchItems); // Hook para crear ítems
-  const { handleUpdate } = useUpdateItem(fetchBatchItems); // Hook para actualizar ítems
+  const { handleCreate } = useCreateItem(fetchBatchItems);
+  const { handleUpdate } = useUpdateItem(fetchBatchItems);
   const { batch } = useFetchBatch(batchId);
 
   useEffect(() => {
     if (batch) {
-      setMaxItems(batch.totalItems); // Aquí usamos el setter de estado
+      setMaxItems(batch.totalItems);
     }
   }, [batch]);
 
