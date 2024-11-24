@@ -1,39 +1,35 @@
 import batchItemSchema from "../entity/batchItem.entity.js";
+import purchaseBatchSchema from "../entity/batchPurchase.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 // Añadir item a lote
 export async function addItemToBatchService(batchId, data) {
-    try {
-      const itemRepository = AppDataSource.getRepository(batchItemSchema);
-  
-      // Verifica el número total de ítems en el sistema
-      const totalItemsCount = await itemRepository.count();
-      if (totalItemsCount >= 20) {
-        throw new Error("No se pueden tener más de 20 ítems en el inventario.");
-      }
-  
-      const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
-      const batch = await batchRepository.findOne({ where: { id: batchId }, relations: ["items"] });
-      if (!batch) return [null, "Lote no encontrado"];
-  
-      // Verifica cuántos ítems hay en el lote
-      const itemCountInBatch = batch.items.length;
-      if (itemCountInBatch >= 20) {
-        throw new Error("No se pueden añadir más de 20 ítems a un lote.");
-      }
-  
-      const newItem = itemRepository.create({
-        ...data,
-        batch
-      });
-  
-      const savedItem = await itemRepository.save(newItem);
-      
-      return [savedItem, null];
-    } catch (error) {
-      return [null, error.message];
+  try {
+    const itemRepository = AppDataSource.getRepository(batchItemSchema);
+    // Verifica el número total de ítems en el sistema
+    const totalItemsCount = await itemRepository.count();
+    if (totalItemsCount >= 20) {
+      throw new Error("No se pueden tener más de 20 ítems en el inventario.");
     }
+    const batchRepository = AppDataSource.getRepository(purchaseBatchSchema);
+    const batch = await batchRepository.findOne({ where: { id: batchId }, relations: ["items"] });
+    if (!batch) return [null, "Lote no encontrado"];
+    // Verifica cuántos ítems hay en el lote
+    const itemCountInBatch = batch.items.length;
+    if (itemCountInBatch >= 20) {
+      throw new Error("No se pueden añadir más de 20 ítems a un lote.");
+    }
+    const newItem = itemRepository.create({
+      ...data,
+      batch
+    });
+    const savedItem = await itemRepository.save(newItem);
+    
+    return [savedItem, null];
+  } catch (error) {
+    return [null, error.message];
   }
+}
   
   // Obtener todos los items de los lotes
   export async function getAllItemsInBatchesService() {
@@ -61,7 +57,7 @@ export async function addItemToBatchService(batchId, data) {
   export async function updateItemInBatchService(itemId, data) {
     try {
       const itemRepository = AppDataSource.getRepository(batchItemSchema);
-      const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
+      const batchRepository = AppDataSource.getRepository(purchaseBatchSchema);
   
       // Buscar el ítem por su ID
       const item = await itemRepository.findOne({ where: { id: itemId }, relations: ["batch"] });
@@ -105,18 +101,3 @@ export async function addItemToBatchService(batchId, data) {
       return [null, error.message];
     }
   }
-
-  //Revisa si hay duplicados
-  export async function checkDuplicateItemInBatchService(batchId, itemData) {
-    try {
-        const duplicateItem = await batchItemSchema.findOne({
-            where: { 
-                batch: batchId,
-                name: itemData.name // Ajusta los campos según las propiedades únicas del ítem
-            }
-        });
-        return [!!duplicateItem, null];
-    } catch (error) {
-        return [null, error.message];
-    }
-}

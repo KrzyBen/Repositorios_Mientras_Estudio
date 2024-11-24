@@ -1,0 +1,162 @@
+/* Contenedor principal */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Contenedor de la tabla */
+.table-container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: #212121;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+}
+
+/* Encabezado de la tabla */
+.top-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Título de la tabla */
+.title-table {
+    color: #FF5722;
+    margin-left: 70px;
+    font-size: 24px;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Filtros y botones de acción */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start; /* Alinea los elementos hacia la izquierda */
+}
+
+.filter-actions button {
+    background: rgba(255, 235, 238, 0.87);
+    border: #FFEBEE;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.filter-actions button:disabled {
+    background: #f1f1f1;
+    cursor: not-allowed;
+}
+
+/* Color de fondo y gradientes */
+body {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.3), transparent 70%), 
+                linear-gradient(to right, #795548, #A37666);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Estilo general del contenedor del popup */
+.popup {
+    background-color: #212121;
+    color: #FFEBEE;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Estilo del formulario dentro del popup */
+.popup .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Ajustes de los campos del formulario */
+.popup .form-container input,
+.popup .form-container select,
+.popup .form-container textarea {
+    padding: 10px;
+    background-color: #333333;
+    color: #FFEBEE;
+    border: 1px solid #FF5722;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* Estilos para los botones del formulario dentro del popup */
+.popup .form-container button {
+    background-color: #FF5722;
+    border: none;
+    color: #FFEBEE;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    transition: all 0.3s;
+}
+
+.popup .form-container button:hover {
+    background-color: #E64A19;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 16px;
+}
+
+.popup .form-container button:disabled {
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+}
+
+.popup.show {
+    opacity: 1;
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 767px) {
+    .title-table {
+        margin: 0;
+    }
+
+    .top-table {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .table-container {
+        margin: 0;
+        width: 352px;
+        height: 500px;
+    }
+
+    .popup {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .popup .form-container button {
+        font-size: 14px;
+    }
+}
+
+/* Responsividad para dispositivos medianos */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .title-table {
+        margin-left: 35px;
+    }
+
+    .search-container input {
+        width: 150px;
+    }
+}
