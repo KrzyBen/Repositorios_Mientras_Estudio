@@ -1,5 +1,5 @@
 import { createItem } from '@services/itemBatch.service.js';
-import { showErrorAlert, showSuccessAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useCreateItem = (fetchItems) => {
     const handleCreate = async (id, itemData) => {
