@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { showSuccessAlert, showErrorAlert } from '@helpers/sweetalert';  // Importa las alertas
+import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';  // Importa las alertas
 
 const OrderForm = ({ orderData, onSubmit }) => {
   const [formData, setFormData] = useState({
