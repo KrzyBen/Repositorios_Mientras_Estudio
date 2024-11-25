@@ -18,7 +18,7 @@ import UpdateIcon from '@assets/updateIcon.svg';
 import UpdateIconDisable from '@assets/updateIconDisabled.svg';
 import DeleteIconDisable from '@assets/deleteIconDisabled.svg';
 // Otros
-import '@styles/ItemsPage.css';
+
 
 const ItemsPage = () => {
   const { batchId } = useParams();
