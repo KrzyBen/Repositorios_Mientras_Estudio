@@ -1,6 +1,6 @@
 // hooks/useCreateBatch.js
 import { createBatch } from '@services/batch.service.js';
-import { showErrorAlert, showSuccessAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useCreateBatch = (fetchBatches) => {
     const handleCreate = async (batchData) => {
