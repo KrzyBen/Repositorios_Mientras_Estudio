@@ -198,12 +198,12 @@ background-image: url('../assets/PersonIcon.svg');
 input[name='rol'] {
 background-image: url('../assets/PasskeyIcon.svg');
 }
-*/
+
 .container_inputs {
   position: relative;
   margin-bottom: 5px;
 }
-
+*/
 input {
   padding-right: 40px;
   width: 100%;
