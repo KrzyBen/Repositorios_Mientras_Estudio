@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { createEmployee, updateEmployee } from '@services/employee.service';
-import { showSuccessAlert, showErrorAlert } from '@helpers/sweetalert';
+import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';
 import '@styles/employeeForm.css';
 
 const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
