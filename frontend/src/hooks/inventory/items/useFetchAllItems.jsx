@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getItems } from '@services/itemBatch.service.js';
-import { showErrorAlert } from '@helpers/sweetalert';
+import { showErrorAlert } from '@helpers/sweetAlert';
 
 const useFetchItems = () => {
     const [items, setItems] = useState([]);
