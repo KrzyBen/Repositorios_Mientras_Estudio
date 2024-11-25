@@ -198,12 +198,14 @@ background-image: url('../assets/PersonIcon.svg');
 input[name='rol'] {
 background-image: url('../assets/PasskeyIcon.svg');
 }
+*/
+
 
 .container_inputs {
   position: relative;
   margin-bottom: 5px;
 }
-*/
+
 input {
   padding-right: 40px;
   width: 100%;
@@ -214,10 +216,13 @@ input {
   right: 15px;
   top: 44%;
   transform: translateY(-50%);
-  width: 25px;
-  height: 25px;
+  width: 20px; /* Ajusté el tamaño a 20px como en el diseño móvil */
+  height: 20px;
   cursor: pointer;
 }
+
+/* Eliminé el duplicado del bloque relacionado con .toggle-password-icon img */
+
 
 .newPassword span {
 top: 10px;
