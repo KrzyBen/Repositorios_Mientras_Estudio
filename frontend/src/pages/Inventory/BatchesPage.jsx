@@ -18,7 +18,7 @@ import UpdateIcon from '@assets/updateIcon.svg';
 import UpdateIconDisable from '@assets/updateIconDisabled.svg';
 import DeleteIconDisable from '@assets/deleteIconDisabled.svg';
 // otros
-import '@styles/BatchesPage.css';
+
 import { useNavigate } from 'react-router-dom';
 
 const BatchesPage = () => {
