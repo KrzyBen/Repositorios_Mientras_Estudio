@@ -1,5 +1,5 @@
 import { updateItem } from '@services/itemBatch.service.js';
-import { showErrorAlert, showSuccessAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useUpdateItem = (fetchItems) => {
     const handleUpdate = async (batchId, itemId, itemData) => {
