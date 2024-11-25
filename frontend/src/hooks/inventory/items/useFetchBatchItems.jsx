@@ -1,7 +1,7 @@
 // src/hooks/inventory/items/useFetchBatchItems.jsx
 import { useEffect, useState } from 'react';
 import { getBatchItems } from '@services/itemBatch.service.js';
-import { showErrorAlert } from '@helpers/sweetalert';
+import { showErrorAlert } from '@helpers/sweetAlert';
 
 const useFetchBatchItems = (batchId) => {
     const [items, setItems] = useState([]);
