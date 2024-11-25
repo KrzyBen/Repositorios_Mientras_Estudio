@@ -1,5 +1,5 @@
 import { updateBatch } from '@services/batch.service.js';
-import { showErrorAlert, showSuccessAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useUpdateBatch = (fetchBatches, setShowPopup, setBatchToEdit) => {
   const handleUpdate = async (id, batchData) => {
