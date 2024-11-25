@@ -1,5 +1,5 @@
 import { deleteBatch } from '@services/batch.service.js';
-import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert';
 
 const useDeleteBatch = (fetchBatches) => {
     const handleDelete = async (id) => {
