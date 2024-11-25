@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAllBatches } from '@services/batch.service.js';
-import { showErrorAlert } from '@helpers/sweetalert';
+import { showErrorAlert } from '@helpers/sweetAlert';
 
 const useFetchAllBatches = () => {
     const [batches, setBatches] = useState([]);
