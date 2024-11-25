@@ -1,6 +1,6 @@
 // src/hooks/useDeleteEmployee.jsx
 import { deleteEmployee } from '@services/employee.service';
-import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetalert';
+import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert';
 
 const useDeleteEmployee = (fetchEmployees) => {
     const handleDelete = async (id) => {
