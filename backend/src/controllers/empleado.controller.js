@@ -5,7 +5,7 @@ import {
   getEmployeesService,
   updateEmployeeService,
   deleteEmployeeService,
-  getAttendanceService,
+
 } from "../services/empleado.service.js";
 import {
   EmployeeBodyValidation,
@@ -119,16 +119,5 @@ export async function deleteEmployee(req, res) {
   }
 }
 
-// Obtener asistencia diaria (nuevo)
-export async function getAttendance(req, res) {
-  try {
-    const { date } = req.query;
 
-    const [attendanceList, errorAttendance] = await getAttendanceService(date);
-    if (errorAttendance) return handleErrorClient(res, 400, errorAttendance);
 
-    handleSuccess(res, 200, "Asistencia encontrada", attendanceList);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
