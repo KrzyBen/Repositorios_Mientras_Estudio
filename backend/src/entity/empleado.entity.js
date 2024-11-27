@@ -27,11 +27,6 @@ const EmpleadoSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
-    rol: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
     cargo: {
       type: "varchar",
       length: 50,
@@ -91,3 +86,4 @@ const EmpleadoSchema = new EntitySchema({
 });
 
 export default EmpleadoSchema;
+
