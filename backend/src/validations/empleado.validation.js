@@ -18,11 +18,7 @@ export const EmployeeBodyValidation = Joi.object({
     "string.max": "El correo electrónico no debe exceder los 255 caracteres.",
     "any.required": "El correo electrónico es obligatorio.",
   }),
-  rol: Joi.string().max(50).required().messages({
-    "string.base": "El rol debe ser un texto.",
-    "string.max": "El rol no debe exceder los 50 caracteres.",
-    "any.required": "El rol es obligatorio.",
-  }),
+  
   cargo: Joi.string().max(50).optional().default("desconocido").messages({
     "string.base": "El cargo debe ser un texto.",
     "string.max": "El cargo no debe exceder los 50 caracteres.",
