@@ -2,7 +2,7 @@
 import React from 'react';
 import EmployeeForm from './EmployeeForm';
 import CloseIcon from '@assets/XIcon.svg';
-import '@styles/popup.css';
+import '@styles/popupemployee.css';
 
 const PopupEmployee = ({ show, setShow, employee, onFormSubmit }) => {
     if (!show) return null;
