@@ -60,15 +60,4 @@ export async function deleteEmployeeService(id) {
   }
 }
 
-// Obtener asistencia diaria
-export async function getAttendanceService(date) {
-  try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const attendanceList = await employeeRepository.find({
-      where: { horarioTrabajo: date }, // Ajustar la lógica de la fecha
-    });
-    return [attendanceList, null];
-  } catch (error) {
-    return [null, error.message];
-  }
-}
+
