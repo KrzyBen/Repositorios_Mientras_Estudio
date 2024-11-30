@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useEmployees from '@hooks/useEmployees';
 import PopupEmployee from '@components/PopupEmployee';
 import useDeleteEmployee from '@hooks/useDeleteEmployee';
-import Swal from 'sweetalert2'; // Asegúrate de tener SweetAlert2 instalado o si no npm install sweetalert2
+import Swal from 'sweetalert2';
 import '@styles/employees.css';
 
 const Employees = () => {
@@ -10,11 +10,42 @@ const Employees = () => {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [rutFilter, setRutFilter] = useState('');
+    const [attendancePercentage, setAttendancePercentage] = useState({}); // Estado para porcentaje de asistencia
     const { handleDelete } = useDeleteEmployee(fetchEmployees);
+
+    useEffect(() => {
+        // Inicializa el porcentaje de asistencia con 0%
+        const initialAttendance = employees.reduce((acc, employee) => {
+            acc[employee.id] = 0; // Inicializa con 0%
+            return acc;
+        }, {});
+        setAttendancePercentage(initialAttendance);
+    }, [employees]);
 
     // Función para manejar la asistencia (presente/ausente)
     const handleAttendance = (employee, isPresent) => {
-        // Usamos SweetAlert para mostrar la notificación
+        setAttendancePercentage((prev) => {
+            const newAttendance = { ...prev };
+            const currentPercentage = newAttendance[employee.id] || 0;
+
+            // Actualizamos el porcentaje de asistencia
+            newAttendance[employee.id] = isPresent
+                ? Math.min(currentPercentage + 5, 100)  // Incrementa en 5%
+                : Math.max(currentPercentage - 10, 0); // Decrece en 10%
+
+            // Verificamos si el empleado debe ser inactivo
+            if (newAttendance[employee.id] <= 10) {
+                Swal.fire({
+                    title: '¡Empleado inactivo!',
+                    icon: 'warning',
+                    text: `${employee.nombreCompleto} Ha alcanzado un porcentaje de asistencia del ${newAttendance[employee.id]}%. Se recomienda actualizar el Estado del empleado a inactivo.`,
+                });
+            }
+
+            return newAttendance;
+        });
+
+        // Mostrar la notificación de asistencia
         Swal.fire({
             title: isPresent ? '¡Empleado presente!' : '¡Empleado ausente!',
             icon: isPresent ? 'success' : 'error',
@@ -39,13 +70,15 @@ const Employees = () => {
     return (
         <div className="main-container">
             <h1>Gestión de Empleados</h1>
-            <input
-                type="text"
-                value={rutFilter}
-                onChange={(e) => setRutFilter(e.target.value)}
-                placeholder="Filtrar por RUT"
-                className="rut-filter-input"
-            />
+            <div className="filter-container">
+                <input
+                    type="text"
+                    value={rutFilter}
+                    onChange={(e) => setRutFilter(e.target.value)}
+                    placeholder="Filtrar por RUT"
+                    className="rut-filter-input"
+                />
+            </div>
             <button onClick={handleAddEmployee}>Agregar Empleado</button>
 
             <table className="employee-table">
@@ -56,51 +89,56 @@ const Employees = () => {
                         <th>Email</th>
                         <th>Cargo</th>
                         <th>Acciones</th>
-                        <th>Asistencia</th> {/* Nueva columna para asistencia */}
+                        <th>Asistencia</th>
+                        <th>Asistencia Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredEmployees.map((employee) => (
-                        <tr key={employee.id}>
-                            <td>{employee.nombreCompleto}</td>
-                            <td>{employee.rut}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.cargo}</td>
-                            <td>
-                                <button
-                                    onClick={() => handleEditEmployee(employee)}
-                                    className="edit-button"
-                                >
-                                    ✏️
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(employee.id)}
-                                    className="delete-button"
-                                >
-                                    🗑️
-                                </button>
-                            </td>
-                            <td>
-                                {/* Botones de asistencia alineados horizontalmente */}
-                                <div className="attendance-buttons">
+                    {filteredEmployees.map((employee) => {
+                        const currentAttendance = attendancePercentage[employee.id] || 0;
+
+                        return (
+                            <tr key={employee.id}>
+                                <td>{employee.nombreCompleto}</td>
+                                <td>{employee.rut}</td>
+                                <td>{employee.email}</td>
+                                <td>{employee.cargo}</td>
+                                <td>
                                     <button
-                                        onClick={() => handleAttendance(employee, true)}
-                                        className="attendance-button present"
-                                        title="Marcar presente"
+                                        onClick={() => handleEditEmployee(employee)}
+                                        className="edit-button"
                                     >
-                                        ✅
+                                        ✏️
                                     </button>
                                     <button
-                                        onClick={() => handleAttendance(employee, false)}
-                                        className="attendance-button absent"
-                                        title="Marcar ausente"
+                                        onClick={() => handleDelete(employee.id)}
+                                        className="delete-button"
                                     >
-                                        ❌
+                                        🗑️
                                     </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                                </td>
+                                <td>
+                                    <div className="attendance-buttons">
+                                        <button
+                                            onClick={() => handleAttendance(employee, true)}
+                                            className="attendance-button present"
+                                            title="Marcar presente"
+                                        >
+                                            ✅
+                                        </button>
+                                        <button
+                                            onClick={() => handleAttendance(employee, false)}
+                                            className="attendance-button absent"
+                                            title="Marcar ausente"
+                                        >
+                                            ❌
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>{currentAttendance}%</td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
 
