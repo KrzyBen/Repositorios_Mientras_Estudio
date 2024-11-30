@@ -27,6 +27,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                 <ul>
+                    {/* Inicio visible para todos los usuarios */}
                     <li>
                         <NavLink
                             to="/home"
@@ -37,6 +38,7 @@ const Navbar = () => {
                         </NavLink>
                     </li>
 
+                    {/* Bloques exclusivos para el rol de administrador */}
                     {userRole === 'administrador' && (
                         <>
                             <li>
@@ -57,39 +59,45 @@ const Navbar = () => {
                                     Empleados
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink
-                                    to="/orders"
-                                    className={({ isActive }) => isActive ? 'active' : ''}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Órdenes
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/menu"
-                                    className={({ isActive }) => isActive ? 'active' : ''}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Menú
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink 
-                                    to="/batches" 
-                                    onClick={() => { 
-                                        setMenuOpen(false); 
-                                        addActiveClass();
-                                    }} 
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                >
-                                    Inventario
-                                </NavLink>
-                            </li>
                         </>
                     )}
 
+                    {/* Menú visible para todos los usuarios y administradores */}
+                    <li>
+                        <NavLink
+                            to="/menu"
+                            className={({ isActive }) => isActive ? 'active' : ''}
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            Menú
+                        </NavLink>
+                    </li>
+
+                    {/* Órdenes visible para todos los usuarios y administradores */}
+                    <li>
+                        <NavLink
+                            to="/orders"
+                            className={({ isActive }) => isActive ? 'active' : ''}
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            Órdenes
+                        </NavLink>
+                    </li>
+
+                    {/* Inventario exclusivo para administradores */}
+                    {userRole === 'administrador' && (
+                        <li>
+                            <NavLink 
+                                to="/batches" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Inventario
+                            </NavLink>
+                        </li>
+                    )}
+
+                    {/* Cerrar sesión visible para todos los usuarios */}
                     <li>
                         <NavLink
                             to="/auth"
