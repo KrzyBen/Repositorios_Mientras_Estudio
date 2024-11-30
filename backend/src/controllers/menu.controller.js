@@ -11,6 +11,11 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { menuValidation } from "../validations/menu.validation.js";
+import { AppDataSource } from "../config/configDb.js";
+import Menu from "../entity/menu.entity.js";
+
+// Función para formatear precios
+const formatPrecio = (precio) => `$${Number(precio).toLocaleString("es-CL")}`;
 
 export async function createMenuItem(req, res) {
   try {
@@ -21,11 +26,29 @@ export async function createMenuItem(req, res) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
     }
 
+    // Verificar si ya existe un menú con el mismo nombre
+    const menuRepository = AppDataSource.getRepository(Menu);
+    const existingMenu = await menuRepository.findOne({
+      where: { nombre: body.nombre },
+    });
+
+    if (existingMenu) {
+      return handleErrorClient(
+        res,
+        400,
+        "Error de validación",
+        "Ya existe un menú con este nombre."
+      );
+    }
+
     const [newMenuItem, errorNewItem] = await addMenuItem(body);
 
     if (errorNewItem) {
       return handleErrorClient(res, 400, "Error añadiendo el plato", errorNewItem);
     }
+
+    // Formatear el precio antes de enviar la respuesta
+    newMenuItem.precio = formatPrecio(newMenuItem.precio);
 
     handleSuccess(res, 201, "Plato añadido con éxito", newMenuItem);
   } catch (error) {
@@ -41,7 +64,13 @@ export async function getAllMenuItems(req, res) {
       return handleErrorClient(res, 404, "No se encontró el menú");
     }
 
-    handleSuccess(res, 200, "Menú encontrado", menu);
+    // Formatear los precios en el menú
+    const formattedMenu = menu.map((item) => ({
+      ...item,
+      precio: formatPrecio(item.precio),
+    }));
+
+    handleSuccess(res, 200, "Menú encontrado", formattedMenu);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -57,11 +86,29 @@ export async function editMenuItem(req, res) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
     }
 
+    // Verificar si el nuevo nombre ya existe en otro plato
+    const menuRepository = AppDataSource.getRepository(Menu);
+    const existingMenu = await menuRepository.findOne({
+      where: { nombre: body.nombre },
+    });
+
+    if (existingMenu && existingMenu.id !== parseInt(id, 10)) {
+      return handleErrorClient(
+        res,
+        400,
+        "Error de validación",
+        "Ya existe un menú con este nombre."
+      );
+    }
+
     const [updatedMenuItem, errorUpdate] = await updateMenuItem(id, body);
 
     if (errorUpdate) {
       return handleErrorClient(res, 404, "Error al actualizar el plato", errorUpdate);
     }
+
+    // Formatear el precio antes de enviar la respuesta
+    updatedMenuItem.precio = formatPrecio(updatedMenuItem.precio);
 
     handleSuccess(res, 200, "Plato actualizado con éxito", updatedMenuItem);
   } catch (error) {
