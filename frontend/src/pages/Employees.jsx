@@ -14,15 +14,18 @@ const Employees = () => {
     const { handleDelete } = useDeleteEmployee(fetchEmployees);
 
     useEffect(() => {
-        // Inicializa el porcentaje de asistencia con 0%
+        // Leer el porcentaje de asistencia desde localStorage al cargar
+        const storedAttendance = JSON.parse(localStorage.getItem('attendancePercentage')) || {};
+
+        // Si ya hay empleados y no están en localStorage, inicializa en 0%
         const initialAttendance = employees.reduce((acc, employee) => {
-            acc[employee.id] = 0; // Inicializa con 0%
+            acc[employee.id] = storedAttendance[employee.id] ?? 0; // Si no existe, empieza en 0%
             return acc;
         }, {});
+
         setAttendancePercentage(initialAttendance);
     }, [employees]);
 
-    // Función para manejar la asistencia (presente/ausente)
     const handleAttendance = (employee, isPresent) => {
         setAttendancePercentage((prev) => {
             const newAttendance = { ...prev };
@@ -32,6 +35,9 @@ const Employees = () => {
             newAttendance[employee.id] = isPresent
                 ? Math.min(currentPercentage + 5, 100)  // Incrementa en 5%
                 : Math.max(currentPercentage - 10, 0); // Decrece en 10%
+
+            // Guardar en localStorage
+            localStorage.setItem('attendancePercentage', JSON.stringify(newAttendance));
 
             // Verificamos si el empleado debe ser inactivo
             if (newAttendance[employee.id] <= 10) {
