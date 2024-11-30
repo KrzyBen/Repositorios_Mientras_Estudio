@@ -19,7 +19,6 @@
     text-align: center; /* Centrar el texto */
 }
 
-
 /* Estilos para la tabla de menú */
 .menu-table {
     width: 80%; /* Limitar el ancho a un 80% del contenedor principal */
@@ -28,9 +27,12 @@
     border-collapse: collapse;
     max-height: 400px; /* Limitar la altura máxima de la tabla */
     overflow-y: auto; /* Añadir desplazamiento vertical si el contenido excede el tamaño */
+    background-color: #D7CCC8; /* Color café claro para la tabla de pedidos */
 }
 
-.menu-table th, .menu-table td {
+/* Cambiar el color de texto a negro para todas las celdas de la tabla */
+.menu-table td {
+    color: black; /* Establecer el color de texto a negro */
     padding: 10px;
     border: 1px solid #FF5722;
     text-align: left;
@@ -241,4 +243,56 @@ button.cancel:hover {
     .menu-table {
         max-height: 300px; /* Limitar la altura de la tabla en pantallas pequeñas */
     }
+}
+
+/* Estilo para los botones de editar y eliminar */
+.menu-table button {
+    padding: 10px 15px;
+    border: 1px solid #FF5722; /* Color de borde */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s ease-in-out; /* Animación de color de fondo y transformación */
+    color: #FF5722; /* Color del texto */
+    background-color: #FFE0B2; /* Fondo naranja claro */
+}
+
+/* Efecto de hover para los botones de editar */
+.menu-table button:hover {
+    background-color: #FFCC80; /* Fondo más oscuro al hacer hover */
+    transform: scale(1.05); /* Aumentar ligeramente el tamaño del botón */
+}
+
+/* Efecto de hover para los botones de eliminar */
+.menu-table button:active {
+    background-color: #FF7043; /* Fondo oscuro cuando se hace clic */
+    transform: scale(0.95); /* Reducción del tamaño al hacer clic */
+}
+
+/* Estilo para el botón de editar */
+.menu-table button.edit {
+    background-color: #FFEBEE; /* Fondo rosa claro */
+    color: #FF5722; /* Texto naranja */
+}
+
+.menu-table button.edit:hover {
+    background-color: #FFCDD2; /* Fondo rosa más oscuro */
+}
+
+.menu-table button.edit:active {
+    background-color: #FF7043; /* Fondo rojo al hacer clic */
+}
+
+/* Estilo para el botón de eliminar */
+.menu-table button.delete {
+    background-color: #FFEBEE; /* Fondo rojo claro */
+    color: #FF5722; /* Texto naranja */
+}
+
+.menu-table button.delete:hover {
+    background-color: #FFCDD2; /* Fondo rojo más oscuro */
+}
+
+.menu-table button.delete:active {
+    background-color: #FF7043; /* Fondo más oscuro al hacer clic */
 }
