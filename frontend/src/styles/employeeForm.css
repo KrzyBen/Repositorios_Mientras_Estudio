@@ -1,225 +1,212 @@
-import React, { useState, useEffect } from 'react';
-import { createEmployee, updateEmployee } from '@services/employee.service';
-import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';
-import '@styles/employeeForm.css';
+/* Main container setup */
+.main-container {
+    display: flex;
+    flex-direction: column; /* Cambiado a column para que el contenedor principal sea flexible */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    color: #FFEBEE; /* Lavender blush */
+}
 
-const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
-    const [formData, setFormData] = useState({
-        nombreCompleto: '',
-        rut: '',
-        email: '',
-        cargo: '',
-        password: '',
-        fechaIngreso: '',
-        horarioTrabajo: { entrada: '', salida: '' },
-        estado: 'activo',
-    });
+/* Estilo para la tabla de empleados */
+.employee-table {
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #FFEBEE;
+}
 
-    const [errors, setErrors] = useState({});
+.employee-table th,
+.employee-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #FFC107;
+    color: #212121; /* Eerie black */
+}
 
-    useEffect(() => {
-        if (employee) {
-            const horario = employee.horarioTrabajo ? employee.horarioTrabajo.split('-') : ['', ''];
-            setFormData({
-                nombreCompleto: employee.nombreCompleto || '',
-                rut: employee.rut || '',
-                email: employee.email || '',
-                cargo: employee.cargo || 'desconocido',
-                password: '',
-                fechaIngreso: employee.fechaIngreso || '',
-                horarioTrabajo: { entrada: horario[0] || '', salida: horario[1] || '' },
-                estado: employee.estado || 'activo',
-            });
-        }
-    }, [employee]);
+.employee-table th {
+    background-color: #FF5722; /* Giants orange */
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: '' });
-    };
+.employee-table td {
+    background-color: rgba(255, 235, 238, 0.8); /* Slightly opaque Lavender blush */
+}
 
-    const handleScheduleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, horarioTrabajo: { ...formData.horarioTrabajo, [name]: value } });
-        setErrors({ ...errors, horarioTrabajo: '' });
-    };
+/* Estilo de los botones */
+button {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-    const validateForm = () => {
-        const validationErrors = {};
-        if (!formData.nombreCompleto) validationErrors.nombreCompleto = 'El nombre completo es obligatorio.';
-        if (!formData.rut) validationErrors.rut = 'El RUT es obligatorio.';
-        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) validationErrors.email = 'El email debe ser válido.';
-        if (!formData.password && !employee) validationErrors.password = 'La contraseña es obligatoria para nuevos empleados.';
-        if (!formData.horarioTrabajo.entrada || !formData.horarioTrabajo.salida) validationErrors.horarioTrabajo = 'Las horas de entrada y salida son obligatorias.';
-        return validationErrors;
-    };
+button:hover {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const validationErrors = validateForm();
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            return;
-        }
+.add-button {
+    background-color: #FF5722;
+    color: #FFFFFF;
+}
 
-        try {
-            const horarioTrabajo = `${formData.horarioTrabajo.entrada}-${formData.horarioTrabajo.salida}`;
-            const employeeData = { ...formData, horarioTrabajo };
-            if (employee && employee.id) {
-                await updateEmployee(employee.id, employeeData);
-                showSuccessAlert('Empleado actualizado con éxito');
-            } else {
-                await createEmployee(employeeData);
-                showSuccessAlert('Empleado creado con éxito');
-            }
-            onFormSubmit();
-            onClose();
-        } catch (error) {
-            if (error.response && error.response.status === 404) {
-                showErrorAlert('Error 404', 'No se encontró el recurso solicitado');
-            } else {
-                showErrorAlert('Error', 'No se pudo procesar la solicitud');
-            }
-        }
-    };
+.edit-button {
+    background-color: #FFC107; /* Amber */
+    color: #212121;
+}
 
-    // Modificamos el generador de opciones de horarios para adaptarnos a los nuevos rangos
-    const generateTimeOptions = (isEntrada = true) => {
-        const times = [];
-        const startHour = isEntrada ? 8 : 12;  // Entrada comienza a las 8:00 AM, Salida a las 12:00 PM
-        const endHour = isEntrada ? 12 : 24;   // Entrada hasta las 11:30 AM, Salida hasta la medianoche (00:00 AM)
-        
-        for (let i = startHour; i < endHour; i++) {
-            for (let j = 0; j < 60; j += 30) {
-                const hour = i % 12 === 0 ? 12 : i % 12;  // Para que 12 PM y 12 AM se manejen correctamente
-                const minute = String(j).padStart(2, '0');
-                const period = i < 12 ? 'AM' : 'PM';
-                const time = `${hour}:${minute} ${period}`;
-                times.push(time);
-            }
-        }
+.delete-button {
+    background-color: #d32f2f; /* Red */
+    color: #FFFFFF;
+}
 
-        // Para salir a las 00:00 AM
-        if (!isEntrada) {
-            times.push('00:00 AM');
-        }
+/* Estilo para el input de filtro de RUT */
+.rut-filter-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
 
-        return times;
-    };
+.rut-filter-input {
+    padding: 8px;
+    width: 180px; /* Ancho pequeño para el input */
+    border: 1px solid #FF5722; /* Borde naranja para el input de RUT */
+    border-radius: 5px;
+    color: #212121;
+    background-color: #FFCC80; /* Fondo naranja claro */
+    font-size: 0.9em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
 
-    return (
-        <form onSubmit={handleSubmit} className="employee-form">
-            <h2>{employee ? 'Editar Empleado' : 'Agregar Empleado'}</h2>
-            <div className="form-group">
-                <label>Nombre Completo</label>
-                <input
-                    type="text"
-                    name="nombreCompleto"
-                    value={formData.nombreCompleto}
-                    onChange={handleInputChange}
-                    placeholder="Nombre Completo"
-                />
-                {errors.nombreCompleto && <span className="error">{errors.nombreCompleto}</span>}
-            </div>
-            <div className="form-group">
-                <label>RUT</label>
-                <input
-                    type="text"
-                    name="rut"
-                    value={formData.rut}
-                    onChange={handleInputChange}
-                    placeholder="RUT"
-                />
-                {errors.rut && <span className="error">{errors.rut}</span>}
-            </div>
-            <div className="form-group">
-                <label>Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Email"
-                />
-                {errors.email && <span className="error">{errors.email}</span>}
-            </div>
-            <div className="form-group">
-                <label>Cargo</label>
-                <input
-                    type="text"
-                    name="cargo"
-                    value={formData.cargo}
-                    onChange={handleInputChange}
-                    placeholder="Cargo"
-                />
-            </div>
-            <div className="form-group">
-                <label>Contraseña</label>
-                <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Contraseña"
-                />
-                {errors.password && <span className="error">{errors.password}</span>}
-            </div>
-            <div className="form-group">
-                <label>Fecha de Ingreso</label>
-                <input
-                    type="date"
-                    name="fechaIngreso"
-                    value={formData.fechaIngreso}
-                    onChange={handleInputChange}
-                />
-            </div>
-            <div className="form-group">
-                <label></label>
-                <div className="time-selectors">
-                    <div>
-                        <label> Horario de Entrada</label>
-                        <select
-                            name="entrada"
-                            value={formData.horarioTrabajo.entrada}
-                            onChange={handleScheduleChange}
-                        >
-                            <option value="">Selecciona una hora</option>
-                            {generateTimeOptions(true).map((time, index) => (
-                                <option key={index} value={time}>
-                                    {time}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label>Horario de Salida</label>
-                        <select
-                            name="salida"
-                            value={formData.horarioTrabajo.salida}
-                            onChange={handleScheduleChange}
-                        >
-                            <option value="">Selecciona una hora</option>
-                            {generateTimeOptions(false).map((time, index) => (
-                                <option key={index} value={time}>
-                                    {time}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                {errors.horarioTrabajo && <span className="error">{errors.horarioTrabajo}</span>}
-            </div>
-            <div className="form-group">
-                <label>Estado</label>
-                <select name="estado" value={formData.estado} onChange={handleInputChange}>
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
-                </select>
-            </div>
-            <button type="submit" className="submit-button">{employee ? 'Actualizar' : 'Agregar'}</button>
-        </form>
-    );
-};
+.rut-filter-button {
+    padding: 8px 15px;
+    margin-left: 10px;
+    background-color: #FF5722; /* Color de fondo del botón */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-export default EmployeeForm;
+.rut-filter-button:hover {
+    background-color: #e64a19; /* Naranja más oscuro en hover */
+}
+
+/* Estilo para los botones de editar y eliminar */
+.edit-button, .delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+.edit-button {
+    color: #FFC107; /* Color ámbar para editar */
+}
+
+.delete-button {
+    color: #d32f2f; /* Rojo para eliminar */
+}
+
+.edit-button:hover, .delete-button:hover {
+    transform: scale(1.1); /* Aumentar tamaño ligeramente en hover */
+}
+
+/* Estilo para el formulario en formato horizontal */
+.employee-form {
+    border: 2px solid #FF5722; /* Borde naranja */
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    width: 100%;
+    max-width: 1150px; /* Aumento el ancho máximo a 1150px (más largo de los lados) */
+    display: flex;
+    flex-direction: row; /* Cambié a horizontal */
+    gap: 20px; /* Espacio entre los elementos */
+    justify-content: space-between; /* Justifica los elementos para tener espacio entre ellos */
+    flex-wrap: wrap; /* Permite que el formulario se ajuste en pantallas pequeñas */
+}
+
+/* Estilo para cada campo dentro del formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 45%; /* Hace que cada grupo ocupe el 45% del espacio */
+}
+
+.form-group label {
+    color: #FF5722; /* Naranja para las etiquetas */
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    width: 100%; /* Los inputs ocupan todo el ancho disponible */
+    border: 1px solid #FF5722;
+    border-radius: 5px;
+    background-color: rgba(255, 235, 238, 0.1); /* Fondo claro para los inputs */
+    color: #FF5722; /* Naranja oscuro para el texto */
+    font-size: 1em;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+}
+
+/* Estilo para el botón de enviar */
+.submit-button {
+    padding: 12px 20px;
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%; /* Hace que el botón ocupe todo el ancho */
+    margin-top: 20px;
+}
+
+.submit-button:hover {
+    background-color: #FF7043; /* Naranja más claro en hover */
+}
+
+/* Estilo para el título del formulario con sombra */
+.employee-form h2 {
+    color: #FF5722; /* Naranja fuerte para el texto */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Sombra oscura para dar el efecto de profundidad */
+    font-size: 1.8em; /* Tamaño de fuente para el título */
+    margin-bottom: 15px; /* Separación entre el título y el formulario */
+    font-weight: bold; /* Hacer el texto en negrita */
+    text-align: center; /* Centrado del título */
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 767px) {
+    .employee-form {
+        flex-direction: column; /* Cambia la dirección a columna en pantallas pequeñas */
+        width: 100%;
+    }
+
+    .form-group {
+        width: 100%; /* Los campos ocupan el 100% del espacio en pantallas pequeñas */
+    }
+
+    .submit-button {
+        padding: 10px 15px;
+    }
+
+    .rut-filter-input {
+        width: 150px; /* Ancho más pequeño en móvil */
+    }
+
+    .rut-filter-button {
+        padding: 6px 12px; /* Ajusta el tamaño del botón */
+    }
+}
