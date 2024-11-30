@@ -47,13 +47,43 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
 
     const validateForm = () => {
         const validationErrors = {};
-        if (!formData.nombreCompleto) validationErrors.nombreCompleto = 'El nombre completo es obligatorio.';
-        if (!formData.rut) validationErrors.rut = 'El RUT es obligatorio.';
-        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) validationErrors.email = 'El email debe ser válido.';
-        if (!formData.password && !employee) validationErrors.password = 'La contraseña es obligatoria para nuevos empleados.';
-        if (!formData.horarioTrabajo.entrada || !formData.horarioTrabajo.salida) validationErrors.horarioTrabajo = 'Las horas de entrada y salida son obligatorias.';
+    
+        // Validación del nombre completo
+        if (!formData.nombreCompleto) {
+            validationErrors.nombreCompleto = 'El nombre completo es obligatorio.';
+        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(formData.nombreCompleto)) {
+            validationErrors.nombreCompleto = 'El nombre solo puede contener letras y espacios.';
+        } else if (formData.nombreCompleto.trim().length < 3) {
+            validationErrors.nombreCompleto = 'El nombre debe tener al menos 3 caracteres.';
+        } else if (formData.nombreCompleto.trim().length > 50) {
+            validationErrors.nombreCompleto = 'El nombre no debe exceder los 50 caracteres.';
+        }
+    
+        // Validación del RUT
+        if (!formData.rut) {
+            validationErrors.rut = 'El RUT es obligatorio.';
+        } else if (!/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/.test(formData.rut)) {
+            validationErrors.rut = 'El RUT debe tener un formato válido (ej: 12.345.678-9).';
+        }
+    
+        // Validación del email
+        if (!formData.email) {
+            validationErrors.email = 'El email es obligatorio.';
+        } else if (!/^[\w.-]+@[\w.-]+\.(com|cl)$/.test(formData.email)) {
+            validationErrors.email = 'El email debe ser válido y terminar en ".com" o ".cl".';
+        }
+    
+        // Validación de la contraseña (solo para nuevos empleados)
+        if (!formData.password && !employee) {
+            validationErrors.password = 'La contraseña es obligatoria para nuevos empleados.';
+        } else if (formData.password && formData.password.length < 6) {
+            validationErrors.password = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+    
         return validationErrors;
     };
+    
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
