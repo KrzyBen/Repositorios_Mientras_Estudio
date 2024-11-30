@@ -1,63 +1,62 @@
 "use strict";
-import EmpleadoSchema from "../entity/empleado.entity.js";
+import Menu from "../entity/menu.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
-
-// Crear empleado
-export async function createEmployeesService(data) {
+export async function addMenuItem(menuItem) {
   try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const newEmployee = employeeRepository.create(data);
-    const savedEmployee = await employeeRepository.save(newEmployee);
-    return [savedEmployee, null];
+    const menuRepository = AppDataSource.getRepository(Menu);
+    const newMenuItem = menuRepository.create(menuItem);
+    await menuRepository.save(newMenuItem);
+    return [newMenuItem, null];
   } catch (error) {
-    return [null, error.message];
+    console.error("Error al añadir un plato:", error);
+    return [null, "Error interno del servidor"];
   }
 }
 
-// Obtener todos los empleados
-export async function getEmployeesService() {
+export async function getMenu() {
   try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const employees = await employeeRepository.find();
-    return [employees, null];
+    const menuRepository = AppDataSource.getRepository(Menu);
+    const menu = await menuRepository.find({ where: { disponible: true } });
+    return [menu, null];
   } catch (error) {
-    return [null, error.message];
+    console.error("Error al obtener el menú:", error);
+    return [null, "Error interno del servidor"];
   }
 }
 
-// Obtener un solo empleado
-export async function getEmployeeService(id) {
+export async function updateMenuItem(id, updatedData) {
   try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const employee = await employeeRepository.findOne({ where: { id } });
-    return [employee, null];
+    const menuRepository = AppDataSource.getRepository(Menu);
+    let menuItem = await menuRepository.findOne({ where: { id } });
+
+    if (!menuItem) {
+      return [null, "Plato no encontrado"];
+    }
+
+    menuItem = Object.assign(menuItem, updatedData);
+    await menuRepository.save(menuItem);
+    return [menuItem, null];
   } catch (error) {
-    return [null, error.message];
+    console.error("Error al actualizar un plato:", error);
+    return [null, "Error interno del servidor"];
   }
 }
 
-// Actualizar empleado
-export async function updateEmployeeService(id, data) {
+export async function deleteMenuItem(id) {
   try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    await employeeRepository.update(id, data);
-    const updatedEmployee = await employeeRepository.findOne({ where: { id } });
-    return [updatedEmployee, null];
+    const menuRepository = AppDataSource.getRepository(Menu);
+    const menuItem = await menuRepository.findOne({ where: { id } });
+
+    if (!menuItem) {
+      return [null, "Plato no encontrado"];
+    }
+
+    menuItem.disponible = false; // Marcamos como no disponible en lugar de eliminar
+    await menuRepository.save(menuItem);
+    return [menuItem, null];
   } catch (error) {
-    return [null, error.message];
+    console.error("Error al eliminar un plato:", error);
+    return [null, "Error interno del servidor"];
   }
 }
-
-// Eliminar empleado
-export async function deleteEmployeeService(id) {
-  try {
-    const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const result = await employeeRepository.delete(id);
-    return [result, null];
-  } catch (error) {
-    return [null, error.message];
-  }
-}
-
-
