@@ -1,3 +1,4 @@
+// Menu.jsx
 import React, { useState, useEffect } from 'react';
 import MenuTable from '@components/MenuTable';
 import MenuForm from '@components/MenuForm';
@@ -5,12 +6,14 @@ import MenuModal from '@components/MenuModal';
 import { deleteMenuItem, getMenuItems, createMenuItem } from '../services/menu.service'; // Importando servicios
 import Swal from 'sweetalert2';  // Importando SweetAlert2
 import '@styles/menu.css';
+import Chatbot from '@components/Chatbot'; // Importando el Chatbot
 
 const Menu = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [menuItemToEdit, setMenuItemToEdit] = useState(null);
     const [menuItems, setMenuItems] = useState([]);  // Estado para los elementos del menú
     const [menuItemToDelete, setMenuItemToDelete] = useState(null); // Elemento a eliminar
+    const [chatbotOpen, setChatbotOpen] = useState(false); // Estado para controlar si el chatbot está abierto
     const user = JSON.parse(sessionStorage.getItem('usuario')) || null; // Obtener usuario desde sessionStorage
     const userRole = user?.rol; // Obtener el rol del usuario
 
@@ -100,6 +103,10 @@ const Menu = () => {
         setIsModalOpen(true);  // Abrir modal para confirmar eliminación
     };
 
+    const toggleChatbot = () => {
+        setChatbotOpen(prevState => !prevState);  // Alternar el estado del chatbot
+    };
+
     return (
         <div className="main-container">
             {/* Mostrar solo para administradores */}
@@ -123,6 +130,26 @@ const Menu = () => {
                 onClose={() => setIsModalOpen(false)} 
                 onConfirm={handleDeleteMenuItem}  // Llamar a la función de eliminar
             />
+
+            {/* Ícono del chatbot con el globo de texto */}
+            <div className="chatbot-container">
+                <div className="chatbot-icon" onClick={toggleChatbot}>
+                    <img 
+                        src="https://media.giphy.com/media/VTwDfhNOmMxZMm2iYf/giphy.gif" 
+                        alt="Chatbot Icon" 
+                        width="60" 
+                        height="60" 
+                        style={{ cursor: 'pointer' }} 
+                    />
+                </div>
+                {/* Globot de ayuda */}
+                <div className="chatbot-bubble">
+                    <span></span>
+                </div>
+            </div>
+
+            {/* Integrar el Chatbot */}
+            <Chatbot isOpen={chatbotOpen} onClose={toggleChatbot} />
         </div>
     );
 };
