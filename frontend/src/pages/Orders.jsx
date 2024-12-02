@@ -4,36 +4,18 @@ import OrderForm from '@components/OrderForm';
 import OrderModal from '@components/OrderModal';
 import { addOrder, deleteOrder, updateOrder, getOrders } from '@services/orders.service';
 import '@styles/orders.css';
-import Swal from 'sweetalert2';
+import Chatbot from '@components/Chatbot'; // Importando el Chatbot
+import Swal from 'sweetalert2';  // Importando SweetAlert2
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [actionType, setActionType] = useState('');
-
+  const [chatbotOpen, setChatbotOpen] = useState(false); // Estado para controlar el chatbot
   const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
   const userRole = user?.rol;
   const userId = user?.id;
-
-  const fetchOrders = async () => {
-    try {
-      const ordersData = await getOrders();
-      // Filtrar las órdenes según el rol del usuario
-      if (userRole === 'administrador') {
-        setOrders(ordersData); // Administradores ven todas las órdenes
-      } else if (userRole === 'usuario') {
-        const userOrders = ordersData.filter((order) => order.clientId === userId);
-        setOrders(userOrders); // Solo las órdenes del usuario
-      }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, [userRole, userId]);
 
   const handleAddOrder = async (orderData) => {
     try {
@@ -59,34 +41,48 @@ const Orders = () => {
     }
   };
 
-  const handleDeleteOrder = async (orderId) => {
+  const handleDeleteOrder = async () => {
     try {
-      // Confirmación con SweetAlert
-      const result = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'No podrás revertir esta acción',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-      });
-
-      if (result.isConfirmed) {
-        await deleteOrder(orderId); // Llama al servicio para eliminar la orden
-        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId)); // Actualiza la lista de órdenes
-
-        Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success'); // Notificación de éxito
+      if (selectedOrder) {
+        await deleteOrder(selectedOrder.id);
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== selectedOrder.id));
+        setIsModalOpen(false);
+        setSelectedOrder(null);
+      } else {
+        console.error('No order selected for deletion.');
       }
     } catch (error) {
       console.error('Error deleting order:', error);
-      Swal.fire('Error', 'No se pudo eliminar la orden', 'error'); // Notificación de error
     }
   };
+
+  const toggleChatbot = () => {
+    setChatbotOpen((prevState) => !prevState); // Alternar el estado del chatbot
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const ordersData = await getOrders();
+        // Filtrar las órdenes según el rol del usuario
+        if (userRole === 'administrador') {
+          setOrders(ordersData); // Administradores ven todas las órdenes
+        } else if (userRole === 'usuario') {
+          const userOrders = ordersData.filter(order => order.clientId === userId);
+          setOrders(userOrders); // Solo las órdenes del usuario
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+    fetchOrders();
+  }, [userRole, userId]);
 
   return (
     <div className="main-container">
       <h1>Gestión de Órdenes</h1>
 
+      {/* Mostrar tabla con las órdenes filtradas por usuario */}
       <OrderTable
         orders={orders}
         onEdit={(order) => {
@@ -97,7 +93,9 @@ const Orders = () => {
         }}
         onDelete={(order) => {
           if (userRole === 'administrador' || order.clientId === userId) {
-            handleDeleteOrder(order.id); // Llama directamente a la función de eliminación
+            setSelectedOrder(order);
+            setActionType('eliminar');
+            setIsModalOpen(true);
           }
         }}
         showActions={userRole === 'administrador'}
@@ -111,9 +109,28 @@ const Orders = () => {
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={() => handleDeleteOrder(selectedOrder?.id)}
+        onConfirm={handleDeleteOrder}
         action={actionType}
       />
+
+      {/* Ícono del chatbot flotante */}
+      <div className="chatbot-container">
+        <div className="chatbot-icon" onClick={toggleChatbot}>
+          <img
+            src="https://media.giphy.com/media/VTwDfhNOmMxZMm2iYf/giphy.gif"
+            alt="Chatbot Icon"
+            width="60"
+            height="60"
+            style={{ cursor: 'pointer' }}
+          />
+        </div>
+        <div className="chatbot-bubble">
+          <span></span>
+        </div>
+      </div>
+
+      {/* Integrar el Chatbot */}
+      <Chatbot isOpen={chatbotOpen} onClose={toggleChatbot} />
     </div>
   );
 };
