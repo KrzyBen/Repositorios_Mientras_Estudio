@@ -35,18 +35,21 @@ export const updateOrder = async (orderId, updatedData) => {
 
 // Eliminar una orden
 export const deleteOrder = async (orderId) => {
-    if (!orderId) {
-      console.error("ID de la orden no válido");  // Verificación del ID
-      return;
-    }
-  
-    try {
-      console.log("Eliminando orden con ID:", orderId);  // Asegúrate de que el ID es correcto
-  
-      const response = await axios.delete(`/orders/${orderId}`);  // Llamada DELETE al backend
-      return response.data;  // Devolver la respuesta del backend
-    } catch (error) {
-      console.error('Error al eliminar la orden:', error);  // Manejo de errores
-      throw error;  // Lanza el error para que lo maneje el frontend
-    }
-  };
+  if (!orderId) {
+    console.error('ID de la orden no válido');
+    return;
+  }
+
+  try {
+    console.log('Eliminando orden con ID:', orderId);
+
+    // Llamada DELETE al backend
+    const response = await axios.delete(`/orders/${orderId}`);
+    console.log('Orden eliminada:', response.data); // Confirmación en consola
+
+    return response.data; // Retornar datos del backend si son necesarios
+  } catch (error) {
+    console.error('Error al eliminar la orden:', error.response?.data || error.message);
+    throw error; // Lanzar el error para que el frontend lo maneje
+  }
+};
