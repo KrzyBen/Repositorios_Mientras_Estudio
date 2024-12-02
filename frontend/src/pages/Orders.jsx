@@ -41,18 +41,34 @@ const Orders = () => {
     }
   };
 
+  // Eliminación con confirmación de SweetAlert
   const handleDeleteOrder = async () => {
     try {
       if (selectedOrder) {
-        await deleteOrder(selectedOrder.id);
-        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== selectedOrder.id));
-        setIsModalOpen(false);
-        setSelectedOrder(null);
+        // Confirmación de eliminación
+        const result = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: 'No podrás revertir esta acción',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+        });
+
+        if (result.isConfirmed) {
+          // Llamada al servicio para eliminar la orden
+          await deleteOrder(selectedOrder.id);
+          setOrders((prevOrders) => prevOrders.filter((order) => order.id !== selectedOrder.id)); // Actualiza la lista de órdenes
+          setIsModalOpen(false); // Cierra el modal
+          setSelectedOrder(null); // Resetea la orden seleccionada
+          Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success'); // Notificación de éxito
+        }
       } else {
         console.error('No order selected for deletion.');
       }
     } catch (error) {
       console.error('Error deleting order:', error);
+      Swal.fire('Error', 'No se pudo eliminar la orden', 'error'); // Notificación de error
     }
   };
 
@@ -93,9 +109,9 @@ const Orders = () => {
         }}
         onDelete={(order) => {
           if (userRole === 'administrador' || order.clientId === userId) {
-            setSelectedOrder(order);
+            setSelectedOrder(order); // Asignamos la orden seleccionada
             setActionType('eliminar');
-            setIsModalOpen(true);
+            setIsModalOpen(true); // Abrimos el modal de confirmación
           }
         }}
         showActions={userRole === 'administrador'}
@@ -109,7 +125,7 @@ const Orders = () => {
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={handleDeleteOrder}
+        onConfirm={handleDeleteOrder} // Llamamos a la función de eliminación al confirmar
         action={actionType}
       />
 
