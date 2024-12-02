@@ -158,19 +158,21 @@
 }
 
 .chatbot-icon::before {
-    content: "¿Necesitas ayuda? \00bb";
+    content: "¿Necesitas ayuda? ";
     position: absolute;
     bottom: 80px;
     right: 75px;
     background-color: #FF5722;
     color: white;
-    padding: 6px 12px;
+    padding: 12px 20px;  /* Aumento del tamaño del fondo */
     border-radius: 15px;
-    font-size: 12px;
+    font-size: 16px;  /* Aumento del tamaño de la fuente */
     font-weight: bold;
     white-space: nowrap;
     display: none;
     transition: opacity 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);  /* Añadir sombra para darle un efecto de comic */
+    transform: scale(1.1);  /* Le da un pequeño tamaño extra */
 }
 
 .chatbot-icon:hover::before {
@@ -195,4 +197,3 @@
 .menu-btn:focus {
     outline: none;
 }
-
