@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import OrderTable from '@components/OrderTable';
 import OrderForm from '@components/OrderForm';
 import OrderModal from '@components/OrderModal';
-import { addOrder, deleteOrder, updateOrder, getOrders } from '@services/orders.service'; 
+import { addOrder, deleteOrder, updateOrder, getOrders } from '@services/orders.service';
 import '@styles/orders.css';
 
 const Orders = () => {
@@ -10,18 +10,23 @@ const Orders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [actionType, setActionType] = useState('');
+  const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
+  const userRole = user?.rol;
+  const userId = user?.id;
 
-  // Crear una nueva orden
   const handleAddOrder = async (orderData) => {
     try {
-      const { data: newOrder } = await addOrder(orderData);
+      const newOrderData = {
+        ...orderData,
+        clientId: userRole === 'administrador' ? orderData.clientId : userId, 
+      };
+      const { data: newOrder } = await addOrder(newOrderData);
       setOrders((prevOrders) => [...prevOrders, newOrder]);
     } catch (error) {
       console.error('Error adding order:', error);
     }
   };
 
-  // Actualizar una orden
   const handleEditOrder = async (updatedData) => {
     try {
       const { data: updatedOrder } = await updateOrder(updatedData.id, updatedData);
@@ -33,7 +38,6 @@ const Orders = () => {
     }
   };
 
-  // Eliminar una orden
   const handleDeleteOrder = async () => {
     try {
       if (selectedOrder) {
@@ -49,44 +53,53 @@ const Orders = () => {
     }
   };
 
-  // Cargar las órdenes al montar el componente
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const ordersData = await getOrders();
-        setOrders(ordersData);
+        // Filtrar las órdenes según el rol del usuario
+        if (userRole === 'administrador') {
+          setOrders(ordersData); // Administradores ven todas las órdenes
+        } else if (userRole === 'usuario') {
+          // Filtrar solo las órdenes que pertenecen al usuario
+          const userOrders = ordersData.filter(order => order.clientId === userId);
+          setOrders(userOrders);
+        }
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
     };
     fetchOrders();
-  }, []);
+  }, [userRole, userId]);
 
   return (
     <div className="main-container">
       <h1>Gestión de Órdenes</h1>
 
-      {/* Tabla de Órdenes */}
+      {/* Mostrar tabla con las órdenes filtradas por usuario */}
       <OrderTable
         orders={orders}
         onEdit={(order) => {
-          setSelectedOrder(order);
-          setActionType('editar');
+          if (userRole === 'administrador' || order.clientId === userId) {
+            setSelectedOrder(order);
+            setActionType('editar');
+          }
         }}
         onDelete={(order) => {
-          setSelectedOrder(order);
-          setActionType('eliminar');
-          setIsModalOpen(true);
+          if (userRole === 'administrador' || order.clientId === userId) {
+            setSelectedOrder(order);
+            setActionType('eliminar');
+            setIsModalOpen(true);
+          }
         }}
+        showActions={userRole === 'administrador'}
       />
 
-      {/* Formulario para Crear y Editar Órdenes */}
       <OrderForm
         orderData={selectedOrder}
         onSubmit={selectedOrder ? handleEditOrder : handleAddOrder}
       />
 
-      {/* Modal de Confirmación de eliminación */}
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
