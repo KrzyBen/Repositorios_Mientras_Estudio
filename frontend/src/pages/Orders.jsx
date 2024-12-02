@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import OrderTable from '@components/OrderTable';
 import OrderForm from '@components/OrderForm';
-import OrderModal from '@components/OrderModal';
 import { addOrder, deleteOrder, updateOrder, getOrders } from '@services/orders.service';
 import '@styles/orders.css';
 import Chatbot from '@components/Chatbot'; // Importando el Chatbot
@@ -9,7 +8,6 @@ import Swal from 'sweetalert2';  // Importando SweetAlert2
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [actionType, setActionType] = useState('');
   const [chatbotOpen, setChatbotOpen] = useState(false); // Estado para controlar el chatbot
@@ -42,29 +40,23 @@ const Orders = () => {
   };
 
   // Eliminación con confirmación de SweetAlert
-  const handleDeleteOrder = async () => {
+  const handleDeleteOrder = async (orderId) => {
     try {
-      if (selectedOrder) {
-        // Confirmación de eliminación
-        const result = await Swal.fire({
-          title: '¿Estás seguro?',
-          text: 'No podrás revertir esta acción',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar',
-        });
+      // Confirmación de eliminación
+      const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'No podrás revertir esta acción',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+      });
 
-        if (result.isConfirmed) {
-          // Llamada al servicio para eliminar la orden
-          await deleteOrder(selectedOrder.id);
-          setOrders((prevOrders) => prevOrders.filter((order) => order.id !== selectedOrder.id)); // Actualiza la lista de órdenes
-          setIsModalOpen(false); // Cierra el modal
-          setSelectedOrder(null); // Resetea la orden seleccionada
-          Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success'); // Notificación de éxito
-        }
-      } else {
-        console.error('No order selected for deletion.');
+      if (result.isConfirmed) {
+        // Llamada al servicio para eliminar la orden
+        await deleteOrder(orderId);
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId)); // Actualiza la lista de órdenes
+        Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success'); // Notificación de éxito
       }
     } catch (error) {
       console.error('Error deleting order:', error);
@@ -109,9 +101,7 @@ const Orders = () => {
         }}
         onDelete={(order) => {
           if (userRole === 'administrador' || order.clientId === userId) {
-            setSelectedOrder(order); // Asignamos la orden seleccionada
-            setActionType('eliminar');
-            setIsModalOpen(true); // Abrimos el modal de confirmación
+            handleDeleteOrder(order.id); // Llamamos directamente a la eliminación
           }
         }}
         showActions={userRole === 'administrador'}
@@ -120,13 +110,6 @@ const Orders = () => {
       <OrderForm
         orderData={selectedOrder}
         onSubmit={selectedOrder ? handleEditOrder : handleAddOrder}
-      />
-
-      <OrderModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleDeleteOrder} // Llamamos a la función de eliminación al confirmar
-        action={actionType}
       />
 
       {/* Ícono del chatbot flotante */}
