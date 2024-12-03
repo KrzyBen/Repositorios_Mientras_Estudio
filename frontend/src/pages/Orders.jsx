@@ -30,6 +30,7 @@ const Orders = () => {
 
   const handleEditOrder = async (updatedData) => {
     try {
+      console.log(updatedData.id);
       const { data: updatedOrder } = await updateOrder(updatedData.id, updatedData);
       setOrders((prevOrders) =>
         prevOrders.map((order) => (order.id === updatedOrder.id ? updatedOrder : order))
@@ -41,29 +42,24 @@ const Orders = () => {
 
   // Eliminación con confirmación de SweetAlert
   const handleDeleteOrder = async (orderId) => {
-    try {
-      // Confirmación de eliminación
-      const result = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'No podrás revertir esta acción',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-      });
-
-      if (result.isConfirmed) {
-        // Llamada al servicio para eliminar la orden
-        await deleteOrder(orderId);
-        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId)); // Actualiza la lista de órdenes
-        Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success'); // Notificación de éxito
-      }
-    } catch (error) {
-      console.error('Error deleting order:', error);
-      Swal.fire('Error', 'No se pudo eliminar la orden', 'error'); // Notificación de error
+    // Confirmación de eliminación
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás revertir esta acción',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (result.isConfirmed) {
+      console.log(orderId);
+      // Llamada al servicio para eliminar la orden
+      await deleteOrder(orderId);
+      setOrders((prevOrders) => prevOrders.filter(order => order.id !== orderId));
+      Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success');
     }
   };
-
   const toggleChatbot = () => {
     setChatbotOpen((prevState) => !prevState); // Alternar el estado del chatbot
   };
@@ -101,7 +97,8 @@ const Orders = () => {
         }}
         onDelete={(order) => {
           if (userRole === 'administrador' || order.clientId === userId) {
-            handleDeleteOrder(order.id); // Llamamos directamente a la eliminación
+            console.log(order);
+            handleDeleteOrder(order); // Llamamos directamente a la eliminación
           }
         }}
         showActions={userRole === 'administrador'}
