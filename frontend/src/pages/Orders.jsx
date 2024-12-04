@@ -19,15 +19,16 @@ const Orders = () => {
     try {
       const newOrderData = {
         ...orderData,
-        clientId: userRole === 'administrador' ? orderData.clientId : userId,
+        clientId: userRole === 'administrador' || userRole === 'mesero' ? orderData.clientId : userId,
       };
+  
       const { data: newOrder } = await addOrder(newOrderData);
       setOrders((prevOrders) => [...prevOrders, newOrder]);
     } catch (error) {
       console.error('Error adding order:', error);
     }
   };
-
+  
   const handleEditOrder = async (updatedData) => {
     try {
       console.log(updatedData.id);
@@ -39,10 +40,8 @@ const Orders = () => {
       console.error('Error updating order:', error);
     }
   };
-
-  // Eliminación con confirmación de SweetAlert
+  
   const handleDeleteOrder = async (orderId) => {
-    // Confirmación de eliminación
     const result = await Swal.fire({
       title: '¿Estás seguro?',
       text: 'No podrás revertir esta acción',
@@ -54,26 +53,41 @@ const Orders = () => {
   
     if (result.isConfirmed) {
       console.log(orderId);
-      // Llamada al servicio para eliminar la orden
       await deleteOrder(orderId);
       setOrders((prevOrders) => prevOrders.filter(order => order.id !== orderId));
       Swal.fire('Eliminado', 'La orden ha sido eliminada con éxito', 'success');
     }
   };
-  const toggleChatbot = () => {
-    setChatbotOpen((prevState) => !prevState); // Alternar el estado del chatbot
+
+  // Cambiar el estado de la orden (solo para cocineros)
+  const handleChangeOrderStatus = async (order, newStatus) => {
+    try {
+      const updatedOrder = { ...order, status: newStatus };
+      const { data } = await updateOrder(order.id, updatedOrder);
+      setOrders((prevOrders) => prevOrders.map(o => o.id === order.id ? data : o));
+
+      // Notificar al usuario si la orden está lista
+      if (newStatus === '') {
+        Swal.fire({
+          title: '¡Orden lista!',
+          text: 'Tu orden ya está lista para ser retirada.',
+          icon: 'success',
+        });
+      }
+    } catch (error) {
+      console.error('Error al cambiar el estado de la orden:', error);
+    }
   };
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const ordersData = await getOrders();
-        // Filtrar las órdenes según el rol del usuario
-        if (userRole === 'administrador') {
-          setOrders(ordersData); // Administradores ven todas las órdenes
+        if (userRole === 'administrador' || userRole === 'mesero' || userRole === 'cocinero') {
+          setOrders(ordersData);
         } else if (userRole === 'usuario') {
           const userOrders = ordersData.filter(order => order.clientId === userId);
-          setOrders(userOrders); // Solo las órdenes del usuario
+          setOrders(userOrders);
         }
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -86,7 +100,6 @@ const Orders = () => {
     <div className="main-container">
       <h1>Gestión de Órdenes</h1>
 
-      {/* Mostrar tabla con las órdenes filtradas por usuario */}
       <OrderTable
         orders={orders}
         onEdit={(order) => {
@@ -97,11 +110,10 @@ const Orders = () => {
         }}
         onDelete={(order) => {
           if (userRole === 'administrador' || order.clientId === userId) {
-            console.log(order);
-            handleDeleteOrder(order); // Llamamos directamente a la eliminación
+            handleDeleteOrder(order);
           }
         }}
-        showActions={userRole === 'administrador'}
+        onChangeStatus={handleChangeOrderStatus}
       />
 
       <OrderForm
@@ -109,9 +121,9 @@ const Orders = () => {
         onSubmit={selectedOrder ? handleEditOrder : handleAddOrder}
       />
 
-      {/* Ícono del chatbot flotante */}
+      {/* Chatbot */}
       <div className="chatbot-container">
-        <div className="chatbot-icon" onClick={toggleChatbot}>
+        <div className="chatbot-icon" onClick={() => setChatbotOpen((prev) => !prev)}>
           <img
             src="https://media.giphy.com/media/VTwDfhNOmMxZMm2iYf/giphy.gif"
             alt="Chatbot Icon"
@@ -120,13 +132,10 @@ const Orders = () => {
             style={{ cursor: 'pointer' }}
           />
         </div>
-        <div className="chatbot-bubble">
-          <span></span>
-        </div>
       </div>
 
       {/* Integrar el Chatbot */}
-      <Chatbot isOpen={chatbotOpen} onClose={toggleChatbot} />
+      <Chatbot isOpen={chatbotOpen} onClose={() => setChatbotOpen(false)} />
     </div>
   );
 };
