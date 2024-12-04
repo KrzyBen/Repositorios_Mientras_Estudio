@@ -62,7 +62,7 @@ const Navbar = () => {
                         </>
                     )}
 
-                    {/* Menú visible para todos los usuarios y administradores */}
+                    {/* Menú visible para todos los usuarios, meseros, cocineros y administradores */}
                     <li>
                         <NavLink
                             to="/menu"
@@ -73,7 +73,7 @@ const Navbar = () => {
                         </NavLink>
                     </li>
 
-                    {/* Órdenes visible para todos los usuarios y administradores */}
+                    {/* Órdenes visible para todos los usuarios, meseros, cocineros y administradores */}
                     <li>
                         <NavLink
                             to="/orders"
@@ -84,12 +84,12 @@ const Navbar = () => {
                         </NavLink>
                     </li>
 
-                    {/* Inventario exclusivo para administradores */}
-                    {userRole === 'administrador' && (
+                    {/* Inventario visible solo para administradores y cocineros */}
+                    {(userRole === 'administrador' || userRole === 'cocinero') && (
                         <li>
-                            <NavLink 
-                                to="/batches" 
-                                onClick={() => setMenuOpen(false)} 
+                            <NavLink
+                                to="/batches"
+                                onClick={() => setMenuOpen(false)}
                                 className={({ isActive }) => isActive ? 'active' : ''}
                             >
                                 Inventario
