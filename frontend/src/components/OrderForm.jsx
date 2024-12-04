@@ -18,6 +18,11 @@ const OrderForm = ({ orderData, onSubmit }) => {
     }
   }, [orderData]);
 
+  // Si el usuario es cocinero, no se debe mostrar el formulario
+  if (userRole === 'cocinero') {
+    return null; // No renderiza nada si el rol es "cocinero"
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -62,8 +67,8 @@ const OrderForm = ({ orderData, onSubmit }) => {
         required
       />
 
-      {/* Solo mostrar el campo de estado si el usuario tiene rol de administrador */}
-      {userRole === 'administrador' && (
+      {/* Mostrar el campo de estado para administradores y meseros */}
+      {(userRole === 'administrador' || userRole === 'mesero') && (
         <>
           <label>Estado</label>
           <select
