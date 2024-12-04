@@ -33,10 +33,10 @@ const Menu = () => {
 
     // Manejar la creación de un nuevo elemento del menú
     const handleCreateMenuItem = async (menuData) => {
-        if (userRole !== 'administrador') {
+        if (userRole !== 'administrador' && userRole !== 'cocinero') {
             Swal.fire({
                 title: 'No tienes permisos',
-                text: 'Solo los administradores pueden agregar ítems al menú.',
+                text: 'Solo los administradores y cocineros pueden agregar ítems al menú.',
                 icon: 'error',
                 confirmButtonText: 'Cerrar'
             });
@@ -109,13 +109,13 @@ const Menu = () => {
 
     return (
         <div className="main-container">
-            {/* Mostrar solo para administradores */}
-            {userRole === 'administrador' && (
+            {/* Mostrar solo para administradores y cocineros */}
+            {(userRole === 'administrador' || userRole === 'cocinero') && (
                 <h2 className="title-table">Gestión de Menú</h2>
             )}
 
-            {/* Solo mostrar el formulario si el usuario es 'administrador' */}
-            {userRole === 'administrador' && (
+            {/* Mostrar formulario solo para administradores y cocineros */}
+            {(userRole === 'administrador' || userRole === 'cocinero') && (
                 <MenuForm menuItemToEdit={menuItemToEdit} onSave={handleCreateMenuItem} />
             )}
 
