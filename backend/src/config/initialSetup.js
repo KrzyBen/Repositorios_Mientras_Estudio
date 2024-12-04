@@ -29,14 +29,14 @@ async function createUsers() {
           rol: "usuario",
         })
       ),
-        userRepository.save(
-          userRepository.create({
-            nombreCompleto: "Benjamín Antonio Manríquez Ramírez",
-            rut: "20.464.375-K",
-            email: "adminisBJM22024@gmail.cl",
-            password: await encryptPassword("admin221234"),
-            rol: "administrador",
-          }),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Benjamín Antonio Manríquez Ramírez",
+          rut: "20.464.375-K",
+          email: "adminisBJM22024@gmail.cl",
+          password: await encryptPassword("admin221234"),
+          rol: "administrador",
+        }),
       ),
       userRepository.save(
         userRepository.create({
@@ -47,11 +47,31 @@ async function createUsers() {
           rol: "usuario",
         }),
       ),
+      // Nuevos usuarios con roles de Cocinero y Mesero
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Carlos Ramírez",
+          rut: "19.876.543-1",
+          email: "cocinero2024@gmail.cl",
+          password: await encryptPassword("cocinero1234"),
+          rol: "cocinero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Lucía González",
+          rut: "18.654.321-0",
+          email: "mesero2024@gmail.cl",
+          password: await encryptPassword("mesero1234"),
+          rol: "mesero",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
     console.error("Error al crear usuarios:", error);
   }
 }
+
 
 export { createUsers };
