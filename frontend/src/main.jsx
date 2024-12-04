@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       {
         path: '/batches',
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'cocinero']}>
             <BatchesPage />
           </ProtectedRoute>
         ),
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       {
         path: '/batchesItems/:batchId/items',
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'cocinero']}>
             <ItemsPage />
           </ProtectedRoute>
         ),
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
       {
         path: '/orders',
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'mesero' , 'cocinero']}>
             <Orders />
           </ProtectedRoute>
         ),
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
       {
         path: '/menu', 
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'cocinero', 'mesero']}>
             <Menu />
           </ProtectedRoute>
         ),
