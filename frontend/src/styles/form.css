@@ -39,10 +39,10 @@ background-color: #FFEBEE; /* Lavender blush */
 padding: 7vh;
 display: flex;
 flex-direction: column;
-border-radius: 24px;
+border-radius: 28px;
 align-items: center;
 h1 {
-  color: #FF5722; /* Giants orange */
+  color: #fc3d03; /* Giants orange */
   font-size: 30px;
   font-weight: bold;
   margin: 0;
@@ -232,4 +232,184 @@ top: 10px;
 width: 25px;
 height: 25px;
 margin-top: 4px;
+}
+
+/* Estilo para el contenedor principal con imagen de fondo */
+.container {
+  height: 100vh;
+  background: url('/image3.jpg') no-repeat center center/cover; /* Ruta de la imagen como fondo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover; /* Asegura que la imagen cubra todo el contenedor */
+  background-position: center; /* Alinea la imagen al centro */
+}
+
+
+@media (max-width: 480px) {
+  .form {
+    padding-left: 2px;
+    padding-right: 2px;
+    width: 90%;
+  }
+
+  .form h1 {
+    font-size: 24px;
+    margin-bottom: 2vh;
+  }
+
+  .form input, .form select {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .form button {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .form .footerContent {
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
+
+  .toggle-password-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.form {
+  background-color: #FFEBEE; /* Lavender blush */
+  padding: 7vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px;
+  align-items: center;
+
+  h1 {
+    color: #fc3d03; /* Giants orange */
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 4vh;
+    text-shadow: none; /* Eliminada la sombra del texto */
+  }
+
+  div {
+    width: 100%;
+    display: flex;
+  }
+
+  label {
+    color: #795548; /* Coffee */
+    font-weight: bold;
+    margin-bottom: 0.7vh;
+  }
+
+  input, select, textarea {
+    display: flex;
+    border: 3px solid #FF5722; /* Giants orange */
+    border-radius: 12px;
+    padding: 8px 5px;
+    background-color: #FFEBEE; /* Lavender blush */
+    margin-bottom: 0.8vh;
+    font-weight: regular;
+    font-size: 16px;
+    color: #795548; /* Coffee */
+    box-sizing: border-box;
+  }
+
+  input::placeholder, select::placeholder, textarea::placeholder {
+    color: rgba(121, 85, 72, 0.3); /* Coffee */
+    font-weight: light;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    background-color: rgba(255, 87, 34, 0.14); /* Giants orange with opacity */
+    font-weight: regular;
+  }
+
+  select {
+    appearance: none;
+    background-image: url('../assets/ChevronDownIcon.svg');
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+  }
+
+  button {
+    padding: 1.2vh 0;
+    border-radius: 12px;
+    border: none;
+    width: 100%;
+    background-color: #FF5722; /* Giants orange */
+    color: #FFEBEE; /* Lavender blush */
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+    border: 3px solid #FF5722; /* Giants orange */
+    transition: 0.3s ease-out;
+  }
+
+  button:hover {
+    background-color: #FFEBEE; /* Lavender blush */
+    color: #FF5722; /* Giants orange */
+  }
+
+  .footerContent {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .error-message {
+    visibility: hidden;
+    height: 20px;
+    color: #E4332C; /* Red Salsa */
+    font-size: 13px;
+    padding-left: 5px;
+  }
+
+  .error-message.visible {
+    visibility: visible;
+  }
+}
+
+.container {
+  height: 100vh;
+  background: url('/image3.jpg') no-repeat center center/cover; /* Ruta de la imagen como fondo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover; /* Asegura que la imagen cubra todo el contenedor */
+  background-position: center; /* Alinea la imagen al centro */
+}
+
+.container_inputs {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+input {
+  padding-right: 40px;
+  width: 100%;
+}
+
+.toggle-password-icon {
+  position: absolute;
+  right: 15px;
+  top: 44%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.toggle-password-icon img {
+  width: 25px;
+  height: 25px;
+  margin-top: 4px;
 }
