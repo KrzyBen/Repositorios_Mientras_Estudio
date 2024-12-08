@@ -17,9 +17,9 @@ const Employees = () => {
         // Leer el porcentaje de asistencia desde localStorage al cargar
         const storedAttendance = JSON.parse(localStorage.getItem('attendancePercentage')) || {};
 
-        // Si ya hay empleados y no están en localStorage, inicializa en 0%
+        // Si ya hay empleados y no están en localStorage, inicializa en 
         const initialAttendance = employees.reduce((acc, employee) => {
-            acc[employee.id] = storedAttendance[employee.id] ?? 0; // Si no existe, empieza en 0%
+            acc[employee.id] = storedAttendance[employee.id] ?? 100; // Si no existe, empieza en 0%
             return acc;
         }, {});
 
