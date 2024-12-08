@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'; // Importar SweetAlert2
-import '@styles/EmployeeList.css'; // Archivo CSS para los estilos
+import Swal from 'sweetalert2'; 
+import '@styles/EmployeeList.css'; 
 
 const EmployeeList = ({ employees, userRole }) => {
-    // Estado para almacenar la información de los turnos
     const [turnos, setTurnos] = useState({});
 
     // Cargar los turnos desde localStorage cuando el componente se monta
     useEffect(() => {
-        const today = new Date().toLocaleDateString(); // Obtener la fecha actual
-
+        const today = new Date().toLocaleDateString();
         const lastUpdateDate = localStorage.getItem('lastUpdateDate');
         const storedTurnos = JSON.parse(localStorage.getItem('turnos')) || {};
 
-        // Si la fecha de la última actualización es diferente de hoy, reiniciar los turnos
         if (lastUpdateDate !== today) {
             localStorage.setItem('lastUpdateDate', today);
-            localStorage.setItem('turnos', JSON.stringify({})); // Reiniciar turnos
-            setTurnos({}); // Limpiar los turnos en el estado
+            localStorage.setItem('turnos', JSON.stringify({}));
+            setTurnos({});
         } else {
-            setTurnos(storedTurnos); // Usar los turnos almacenados si no es un nuevo día
+            setTurnos(storedTurnos);
         }
     }, []);
 
-    // Función para guardar los turnos en localStorage
     const saveTurnosToLocalStorage = (updatedTurnos) => {
         localStorage.setItem('turnos', JSON.stringify(updatedTurnos));
     };
 
-    const handleTurnoEntrada = (employeeId) => {
+    const handleTurnoEntrada = (employeeId, estado) => {
+        if (estado === 'inactivo') {
+            Swal.fire({
+                title: 'Empleado inactivo',
+                text: 'No puedes marcar tu turno porque estás inactivo. Por favor, contacta a tu jefe.',
+                icon: 'warning',
+            });
+            return;
+        }
+
         Swal.fire({
             title: '¿Confirmas tu turno de entrada?',
             icon: 'question',
@@ -37,7 +42,7 @@ const EmployeeList = ({ employees, userRole }) => {
             cancelButtonText: 'Cancelar',
         }).then((result) => {
             if (result.isConfirmed) {
-                const horaEntrada = new Date().toLocaleTimeString(); // Obtener la hora exacta
+                const horaEntrada = new Date().toLocaleTimeString();
                 const updatedTurnos = {
                     ...turnos,
                     [employeeId]: { ...turnos[employeeId], entrada: horaEntrada, entradaMarcado: true },
@@ -49,7 +54,16 @@ const EmployeeList = ({ employees, userRole }) => {
         });
     };
 
-    const handleTurnoSalida = (employeeId) => {
+    const handleTurnoSalida = (employeeId, estado) => {
+        if (estado === 'inactivo') {
+            Swal.fire({
+                title: 'Empleado inactivo',
+                text: 'No puedes marcar tu turno porque estás inactivo. Por favor, contacta a tu jefe.',
+                icon: 'warning',
+            });
+            return;
+        }
+
         Swal.fire({
             title: '¿Confirmas tu turno de salida?',
             icon: 'question',
@@ -58,7 +72,7 @@ const EmployeeList = ({ employees, userRole }) => {
             cancelButtonText: 'Cancelar',
         }).then((result) => {
             if (result.isConfirmed) {
-                const horaSalida = new Date().toLocaleTimeString(); // Obtener la hora exacta
+                const horaSalida = new Date().toLocaleTimeString();
                 const updatedTurnos = {
                     ...turnos,
                     [employeeId]: { ...turnos[employeeId], salida: horaSalida, salidaMarcado: true },
@@ -86,12 +100,10 @@ const EmployeeList = ({ employees, userRole }) => {
                 </thead>
                 <tbody>
                     {employees.map((employee) => {
-                        // Descomponer horarioTrabajo en entrada y salida
                         const [entrada, salida] = employee.horarioTrabajo
                             ? employee.horarioTrabajo.split('-')
                             : ['No asignado', 'No asignado'];
 
-                        // Obtener los turnos marcados del estado
                         const turnoEntrada = turnos[employee.id]?.entrada || 'No marcado';
                         const turnoSalida = turnos[employee.id]?.salida || 'No marcado';
                         const entradaMarcado = turnos[employee.id]?.entradaMarcado ? 'Sí' : 'No';
@@ -106,31 +118,27 @@ const EmployeeList = ({ employees, userRole }) => {
                                     Entrada: {entrada} <br />
                                     Salida: {salida}
                                 </td>
-                                {/* Solo mostrar Estado si no es mesero o cocinero */}
                                 {userRole !== 'mesero' && userRole !== 'cocinero' && (
                                     <td>{employee.estado === 'activo' ? 'Activo' : 'Inactivo'}</td>
                                 )}
-                                {/* Columna de botones para marcar turnos */}
                                 <td>
-                                    {/* Asegurarse que el userRole sea diferente de 'admin' */}
                                     {userRole !== 'cocinero' && (
                                         <>
                                             <button
                                                 className="btn-turno-entrada"
-                                                onClick={() => handleTurnoEntrada(employee.id)}
+                                                onClick={() => handleTurnoEntrada(employee.id, employee.estado)}
                                             >
                                                 🚪⏰🏁
                                             </button>
                                             <button
                                                 className="btn-turno-salida"
-                                                onClick={() => handleTurnoSalida(employee.id)}
+                                                onClick={() => handleTurnoSalida(employee.id, employee.estado)}
                                             >
                                                 🚶‍♂️⛔🏁
                                             </button>
                                         </>
                                     )}
                                 </td>
-                                {/* Nueva columna para mostrar los turnos marcados y las horas */}
                                 <td>
                                     Entrada: {turnoEntrada} <br />
                                     Salida: {turnoSalida} <br />
