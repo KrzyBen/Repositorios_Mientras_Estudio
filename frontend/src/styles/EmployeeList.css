@@ -22,3 +22,14 @@
 .btn-turno-salida:hover {
     opacity: 0.8;
 }
+
+
+
+textarea {
+    width: 100%;
+    resize: none;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+}
+
