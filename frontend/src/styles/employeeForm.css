@@ -236,5 +236,9 @@ button:hover {
     background-color: #E64A19;
 }
 
+.employee-form h2 {
+    margin-bottom: 20px;
 
-
+    margin-top: 10px;
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+}
