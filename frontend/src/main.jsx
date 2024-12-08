@@ -12,6 +12,7 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import BatchesPage from '@pages/Inventory/BatchesPage';
 import ItemsPage from '@pages/Inventory/ItemsPage';
+import Turnos from '@pages/Turnos'; // Import your Turnos page
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -71,7 +72,16 @@ const router = createBrowserRouter([
             <Menu />
           </ProtectedRoute>
         ),
-      }
+      },
+      // New Turnos route added
+      {
+        path: '/turnos',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'cocinero', 'mesero']}>
+            <Turnos />
+          </ProtectedRoute>
+        ),
+      },
     ]
   },
   {
