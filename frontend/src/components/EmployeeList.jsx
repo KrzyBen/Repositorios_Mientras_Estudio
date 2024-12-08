@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'; 
-import '@styles/EmployeeList.css'; 
+import '@styles/EmployeeList.css';
 
 const EmployeeList = ({ employees, userRole }) => {
     const [turnos, setTurnos] = useState({});
