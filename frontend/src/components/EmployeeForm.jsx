@@ -3,6 +3,41 @@ import { createEmployee, updateEmployee } from '@services/employee.service';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';
 import '@styles/employeeForm.css';
 
+// Función para formatear el RUT mientras se escribe
+const formatRut = (rut) => {
+    let cleaned = rut.replace(/[^\dKk]/g, ''); // Eliminar caracteres no numéricos
+    if (cleaned.length <= 1) return cleaned; // Si solo hay un dígito, no formatear
+
+    // Agregar puntos y guion
+    const body = cleaned.slice(0, -1);
+    const dv = cleaned.slice(-1).toUpperCase();
+    const bodyWithDots = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${bodyWithDots}-${dv}`;
+};
+
+// Función para validar el RUT con las nuevas restricciones
+const validateRut = (rut) => {
+    const cleaned = rut.replace(/[^\dKk]/g, ''); // Eliminar caracteres no numéricos
+    if (cleaned.length < 7 || cleaned.length > 9) return false; // El RUT debe tener entre 7 y 9 caracteres
+    const body = cleaned.slice(0, -1);
+    const dv = cleaned.slice(-1).toUpperCase();
+
+    // Validar que el RUT no sea mayor a 30 millones o menor a 1 millón
+    if (parseInt(body) < 1000000 || parseInt(body) >= 30000000) return false;
+
+    // Validación del dígito verificador (simplificada)
+    let sum = 0;
+    let factor = 2;
+    for (let i = body.length - 1; i >= 0; i--) {
+        sum += parseInt(body.charAt(i)) * factor;
+        factor = factor === 7 ? 2 : factor + 1;
+    }
+
+    const remainder = sum % 11;
+    const calculatedDV = remainder === 0 ? '0' : remainder === 1 ? 'K' : (11 - remainder).toString();
+    return calculatedDV === dv;
+};
+
 const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
     const [formData, setFormData] = useState({
         nombreCompleto: '',
@@ -12,7 +47,7 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
         password: '',
         fechaIngreso: '',
         horarioTrabajo: { entrada: '', salida: '' },
-        estado: 'activo',
+        estado: 'activo', // Estado por defecto
     });
 
     const [errors, setErrors] = useState({});
@@ -35,7 +70,13 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        if (name === 'rut') {
+            // Formatear el RUT mientras se escribe
+            const formattedRut = formatRut(value);
+            setFormData({ ...formData, [name]: formattedRut });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
         setErrors({ ...errors, [name]: '' });
     };
 
