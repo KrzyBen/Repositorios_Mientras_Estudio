@@ -12,7 +12,7 @@ const Navbar = () => {
     const logoutSubmit = () => {
         try {
             logout();
-            sessionStorage.removeItem('usuario'); // Asegúrate de limpiar el sessionStorage también
+            sessionStorage.removeItem('usuario'); 
             navigate('/auth');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
@@ -62,6 +62,19 @@ const Navbar = () => {
                         </>
                     )}
 
+                    {/* Turnos visible para administradores, meseros y cocineros */}
+                    {(userRole === 'administrador' || userRole === 'mesero' || userRole === 'cocinero') && (
+                        <li>
+                            <NavLink
+                                to="/turnos"
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Turnos
+                            </NavLink>
+                        </li>
+                    )}
+
                     {/* Menú visible para todos los usuarios, meseros, cocineros y administradores */}
                     <li>
                         <NavLink
@@ -97,7 +110,7 @@ const Navbar = () => {
                         </li>
                     )}
 
-                    {/* Cerrar sesión visible para todos los usuarios */}
+                    {/* */}
                     <li>
                         <NavLink
                             to="/auth"
@@ -113,7 +126,7 @@ const Navbar = () => {
                 </ul>
             </div>
 
-            {/* Ícono de la hamburguesa */}
+            {/*  */}
             <div className="hamburger" onClick={toggleMenu} aria-label="Toggle menu">
                 <span className="bar"></span>
                 <span className="bar"></span>
