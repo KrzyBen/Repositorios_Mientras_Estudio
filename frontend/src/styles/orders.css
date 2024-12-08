@@ -281,3 +281,11 @@ th {
 tr:hover {
   background-color: #b55d42;  /* Amarillo claro para el hover en las filas */
 }
+
+/* Cambiar el color de texto a negro para todas las celdas de la tabla */
+.order-table td {
+  color: rgb(32, 29, 29); /* Establecer el color de texto a negro */
+  padding: 10px;
+  border: 1px solid #FF5722;
+  text-align: left;
+}
