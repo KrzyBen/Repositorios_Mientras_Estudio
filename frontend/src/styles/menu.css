@@ -40,7 +40,7 @@
 
 /* Cambiar el color de texto a negro para todas las celdas de la tabla */
 .menu-table td {
-    color: rgb(239, 237, 237); /* Establecer el color de texto a negro */
+    color: rgb(32, 29, 29); /* Establecer el color de texto a negro */
     padding: 10px;
     border: 1px solid #FF5722;
     text-align: left;
