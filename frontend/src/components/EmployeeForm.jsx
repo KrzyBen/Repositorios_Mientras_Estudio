@@ -24,7 +24,7 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
                 nombreCompleto: employee.nombreCompleto || '',
                 rut: employee.rut || '',
                 email: employee.email || '',
-                cargo: employee.cargo || 'desconocido',
+                cargo: employee.cargo || '',
                 password: '',
                 fechaIngreso: employee.fechaIngreso || '',
                 horarioTrabajo: { entrada: horario[0] || '', salida: horario[1] || '' },
@@ -47,7 +47,7 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
 
     const validateForm = () => {
         const validationErrors = {};
-    
+
         // Validación del nombre completo
         if (!formData.nombreCompleto) {
             validationErrors.nombreCompleto = 'El nombre completo es obligatorio.';
@@ -58,32 +58,42 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
         } else if (formData.nombreCompleto.trim().length > 50) {
             validationErrors.nombreCompleto = 'El nombre no debe exceder los 50 caracteres.';
         }
-    
+
         // Validación del RUT
         if (!formData.rut) {
             validationErrors.rut = 'El RUT es obligatorio.';
         } else if (!/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/.test(formData.rut)) {
             validationErrors.rut = 'El RUT debe tener un formato válido (ej: 12.345.678-9).';
         }
-    
+
         // Validación del email
         if (!formData.email) {
             validationErrors.email = 'El email es obligatorio.';
         } else if (!/^[\w.-]+@[\w.-]+\.(com|cl)$/.test(formData.email)) {
             validationErrors.email = 'El email debe ser válido y terminar en ".com" o ".cl".';
         }
-    
+
         // Validación de la contraseña (solo para nuevos empleados)
         if (!formData.password && !employee) {
             validationErrors.password = 'La contraseña es obligatoria para nuevos empleados.';
         } else if (formData.password && formData.password.length < 6) {
             validationErrors.password = 'La contraseña debe tener al menos 6 caracteres.';
         }
-    
+
+        // Validación de la fecha de ingreso
+        if (!formData.fechaIngreso) {
+            validationErrors.fechaIngreso = 'La fecha de ingreso es obligatoria.';
+        } else if (new Date(formData.fechaIngreso) > new Date('2024-12-31')) {
+            validationErrors.fechaIngreso = 'La fecha de ingreso no puede exceder el 31 de diciembre de 2024.';
+        }
+
+        // Validación del cargo
+        if (!formData.cargo) {
+            validationErrors.cargo = 'El cargo es obligatorio.';
+        }
+
         return validationErrors;
     };
-    
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -114,15 +124,14 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
         }
     };
 
-    // Modificamos el generador de opciones de horarios para adaptarnos a los nuevos rangos
     const generateTimeOptions = (isEntrada = true) => {
         const times = [];
-        const startHour = isEntrada ? 8 : 12;  // Entrada comienza a las 8:00 AM, Salida a las 12:00 PM
-        const endHour = isEntrada ? 12 : 24;   // Entrada hasta las 11:30 AM, Salida hasta la medianoche (00:00 AM)
-        
+        const startHour = isEntrada ? 8 : 12;
+        const endHour = isEntrada ? 12 : 24;
+
         for (let i = startHour; i < endHour; i++) {
             for (let j = 0; j < 60; j += 30) {
-                const hour = i % 12 === 0 ? 12 : i % 12;  // Para que 12 PM y 12 AM se manejen correctamente
+                const hour = i % 12 === 0 ? 12 : i % 12;
                 const minute = String(j).padStart(2, '0');
                 const period = i < 12 ? 'AM' : 'PM';
                 const time = `${hour}:${minute} ${period}`;
@@ -130,7 +139,6 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
             }
         }
 
-        // Para salir a las 00:00 AM
         if (!isEntrada) {
             times.push('00:00 AM');
         }
@@ -176,13 +184,16 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
             </div>
             <div className="form-group">
                 <label>Cargo</label>
-                <input
-                    type="text"
+                <select
                     name="cargo"
                     value={formData.cargo}
                     onChange={handleInputChange}
-                    placeholder="Cargo"
-                />
+                >
+                    <option value="">Selecciona un cargo</option>
+                    <option value="mesero">Mesero</option>
+                    <option value="cocinero">Cocinero</option>
+                </select>
+                {errors.cargo && <span className="error">{errors.cargo}</span>}
             </div>
             <div className="form-group">
                 <label>Contraseña</label>
@@ -202,52 +213,57 @@ const EmployeeForm = ({ employee, onFormSubmit, onClose }) => {
                     name="fechaIngreso"
                     value={formData.fechaIngreso}
                     onChange={handleInputChange}
+                    max="2024-12-31" // Límite máximo: 31 de diciembre de 2024
                 />
-            </div>
-            <div className="form-group">
-                <label></label>
-                <div className="time-selectors">
-                    <div>
-                        <label> Horario de Entrada</label>
-                        <select
-                            name="entrada"
-                            value={formData.horarioTrabajo.entrada}
-                            onChange={handleScheduleChange}
-                        >
-                            <option value="">Selecciona una hora</option>
-                            {generateTimeOptions(true).map((time, index) => (
-                                <option key={index} value={time}>
-                                    {time}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label>Horario de Salida</label>
-                        <select
-                            name="salida"
-                            value={formData.horarioTrabajo.salida}
-                            onChange={handleScheduleChange}
-                        >
-                            <option value="">Selecciona una hora</option>
-                            {generateTimeOptions(false).map((time, index) => (
-                                <option key={index} value={time}>
-                                    {time}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                {errors.horarioTrabajo && <span className="error">{errors.horarioTrabajo}</span>}
+                {errors.fechaIngreso && <span className="error">{errors.fechaIngreso}</span>}
             </div>
             <div className="form-group">
                 <label>Estado</label>
-                <select name="estado" value={formData.estado} onChange={handleInputChange}>
+                <select
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleInputChange}
+                >
                     <option value="activo">Activo</option>
                     <option value="inactivo">Inactivo</option>
                 </select>
             </div>
-            <button type="submit" className="submit-button">{employee ? 'Actualizar' : 'Agregar'}</button>
+            <div className="form-group">
+                <label>Horario de Entrada</label>
+                <select
+                    name="entrada"
+                    value={formData.horarioTrabajo.entrada}
+                    onChange={handleScheduleChange}
+                >
+                    <option value="">Selecciona un horario</option>
+                    {generateTimeOptions(true).map((time) => (
+                        <option key={time} value={time}>
+                            {time}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="form-group">
+                <label>Horario de Salida</label>
+                <select
+                    name="salida"
+                    value={formData.horarioTrabajo.salida}
+                    onChange={handleScheduleChange}
+                >
+                    <option value="">Selecciona un horario</option>
+                    {generateTimeOptions(false).map((time) => (
+                        <option key={time} value={time}>
+                            {time}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="form-buttons">
+                <button type="submit">{employee ? 'Actualizar' : 'Crear'}</button>
+                <button type="button" onClick={onClose}>
+                    Cancelar
+                </button>
+            </div>
         </form>
     );
 };
