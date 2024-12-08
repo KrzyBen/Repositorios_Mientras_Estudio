@@ -265,10 +265,6 @@ th, td {
   background-color: #795548;  /* Fondo blanco para las celdas */
 }
 
-/* Cambiar color de fondo de las celdas al pasar el mouse */
-tr:hover td {
-  background-color: #f2b90c;  /* Fondo amarillo claro al hacer hover */
-}
 
 /* Cabeceras de la tabla */
 th {
@@ -288,4 +284,10 @@ tr:hover {
   padding: 10px;
   border: 1px solid #FF5722;
   text-align: left;
+}
+
+
+/* Cambiar color de fondo de las celdas al pasar el mouse PARA ORDERS, MENU EMPLEADOS & TURNOS */
+tr:hover td {
+  background-color: #eaac76; 
 }
