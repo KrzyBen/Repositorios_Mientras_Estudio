@@ -1,0 +1,24 @@
+/* Estilos específicos para los botones */
+.btn-turno-entrada {
+    background-color: #4CAF50; /* Verde para entrada */
+    color: white;
+    border: 2px solid #FFC107; /* Borde amarillo */
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-turno-salida {
+    background-color: #ff6358; /* Rojo para salida */
+    color: white;
+    border: 2px solid #FFC107; /* Borde amarillo */
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-turno-entrada:hover,
+.btn-turno-salida:hover {
+    opacity: 0.8;
+}
