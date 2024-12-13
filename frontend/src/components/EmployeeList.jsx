@@ -1,4 +1,3 @@
-// src/components/EmployeeList.js
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import '@styles/EmployeeList.css';
@@ -175,33 +174,34 @@ const EmployeeList = ({ employees, userRole }) => {
     };
 
     const toggleAttendanceHistory = (employeeId) => {
+        // Toggle visibilidad para el historial de asistencia de un empleado
         setAttendanceHistoryVisible(prev => prev === employeeId ? null : employeeId);
     };
 
     const handleBitacoraChange = (employeeId, event) => {
         setNuevoTexto(event.target.value);
     };
-
+    
     const handleSaveBitacora = (employeeId) => {
         const updatedBitacoras = {
             ...bitacoras,
             [employeeId]: nuevoTexto,
         };
-
+    
         setBitacoras(updatedBitacoras);
         saveBitacorasToLocalStorage(updatedBitacoras);
-
+    
         setNuevoTexto('');
         setEditando(null);
-
+    
         Swal.fire('¡Éxito!', 'La bitácora ha sido guardada correctamente.', 'success');
     };
-
+    
     const handleEditBitacora = (employeeId) => {
         setEditando(employeeId);
         setNuevoTexto(bitacoras[employeeId] || '');
     };
-
+    
     return (
         <div className="employee-list">
             <table>
@@ -224,7 +224,7 @@ const EmployeeList = ({ employees, userRole }) => {
                         const [entrada, salida] = employee.horarioTrabajo
                             ? employee.horarioTrabajo.split('-')
                             : ['No asignado', 'No asignado'];
-
+    
                         const turnoEntrada = turnos[employee.id]?.entrada || 'No marcado';
                         const turnoSalida = turnos[employee.id]?.salida || 'No marcado';
                         const entradaMarcado = turnos[employee.id]?.entradaMarcado ? 'Sí' : 'No';
@@ -232,7 +232,7 @@ const EmployeeList = ({ employees, userRole }) => {
                         const bitacora = bitacoras[employee.id] || '';
                         const attendancePercentageValue = attendancePercentage[employee.id] || 0;
                         const employeeAttendance = attendanceData[employee.id] || {};
-
+    
                         return (
                             <tr key={employee.id}>
                                 <td>{employee.nombreCompleto}</td>
@@ -306,34 +306,30 @@ const EmployeeList = ({ employees, userRole }) => {
                                     )}
                                 </td>
                                 <td>
-                                    <div>{`Entrada: ${turnoEntrada}`}</div>
-                                    <div>{`Salida: ${turnoSalida}`}</div>
+                                    Entrada: {turnoEntrada} <br />
+                                    Salida: {turnoSalida} <br />
+                                    {entradaMarcado === 'Sí' && `Entrada marcada a las ${turnoEntrada}`} <br />
+                                    {salidaMarcado === 'Sí' && `Salida marcada a las ${turnoSalida}`}
                                 </td>
                                 <td>
-                                    {editando === employee.id ? (
-                                        <div>
-                                            <textarea
-                                                value={nuevoTexto}
-                                                onChange={handleBitacoraChange}
-                                                rows="3"
-                                            ></textarea>
-                                            <button
-                                                onClick={() => handleSaveBitacora(employee.id)}
-                                                className="btn-save"
-                                            >
-                                                Guardar
-                                            </button>
-                                        </div>
+                                    {employee.estado === 'inactivo' ? (
+                                        <p>No puedes editar la bitácora porque estás inactivo</p>
                                     ) : (
-                                        <div>
-                                            <p>{bitacora || 'No hay bitácora disponible.'}</p>
-                                            <button
-                                                onClick={() => handleEditBitacora(employee.id)}
-                                                className="btn-edit"
-                                            >
-                                                Editar
-                                            </button>
-                                        </div>
+                                        editando === employee.id ? (
+                                            <div>
+                                                <textarea
+                                                    value={nuevoTexto}
+                                                    onChange={(e) => handleBitacoraChange(employee.id, e)}
+                                                    placeholder="Escribe aquí la bitácora"
+                                                />
+                                                <button onClick={() => handleSaveBitacora(employee.id)}>Guardar</button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <p>{bitacora || 'No hay bitácora disponible'}</p>
+                                                <button onClick={() => handleEditBitacora(employee.id)}>Editar</button>
+                                            </>
+                                        )
                                     )}
                                 </td>
                             </tr>
