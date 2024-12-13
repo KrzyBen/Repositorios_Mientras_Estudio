@@ -15,20 +15,16 @@ import {
 
 export async function createOrder(req, res) {
   try {
-    // Validar el cuerpo de la solicitud
     const { error } = orderBodyValidation.validate(req.body);
     if (error) return handleErrorClient(res, 400, error.message);
 
-    // Obtener todos los pedidos existentes
     const [existingOrders, errorOrders] = await getOrdersService();
     if (errorOrders) return handleErrorClient(res, 500, errorOrders);
 
-    // Verificar que no haya más de 30 pedidos
     if (existingOrders.length >= 30) {
       return handleErrorClient(res, 400, "No se pueden crear más de 30 pedidos.");
     }
 
-    // Verificar si ya existe un pedido con los mismos datos
     const duplicateOrder = existingOrders.find(order =>
       order.clientName === req.body.clientName && order.product === req.body.product
     );
@@ -37,11 +33,9 @@ export async function createOrder(req, res) {
       return handleErrorClient(res, 400, "Ya existe un pedido con los mismos datos.");
     }
 
-    // Crear el nuevo pedido
     const [order, errorOrder] = await createOrderService(req.body);
     if (errorOrder) return handleErrorClient(res, 400, errorOrder);
 
-    // Responder con el pedido creado
     handleSuccess(res, 201, "Pedido creado exitosamente", order);
   } catch (error) {
     console.error("Error al crear pedido:", error);
@@ -66,7 +60,6 @@ export async function getOrders(req, res) {
   try {
     const [orders, errorOrders] = await getOrdersService();
     if (errorOrders) {
-      // Si no hay pedidos, devolvemos un array vacío
       return handleSuccess(res, 200, "No hay pedidos", []);
     }
 
