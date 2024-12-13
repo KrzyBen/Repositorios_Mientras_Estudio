@@ -5,12 +5,11 @@ import {
   handleErrorServer,
 } from "../handlers/responseHandlers.js";
 
-// Middleware para verificar si el usuario es Administrador
+// Verifica si Usuario es Admin
 export async function isAdmin(req, res, next) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    // Buscar al usuario por su correo electrónico
     const userFound = await userRepository.findOneBy({ email: req.user.email });
 
     if (!userFound) {
@@ -32,19 +31,17 @@ export async function isAdmin(req, res, next) {
       );
     }
 
-    // Si el usuario es administrador, continuar con la ejecución
     next();
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
 }
 
-// Middleware para verificar si el usuario es Cocinero
+// Usuario es Cocinero?
 export async function isCook(req, res, next) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    // Buscar al usuario por su correo electrónico
     const userFound = await userRepository.findOneBy({ email: req.user.email });
 
     if (!userFound) {
@@ -66,19 +63,17 @@ export async function isCook(req, res, next) {
       );
     }
 
-    // Si el usuario es cocinero, continuar con la ejecución
     next();
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
 }
 
-// Middleware para verificar si el usuario es Mesero
+// Usuario es Mesero?
 export async function isWaiter(req, res, next) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    // Buscar al usuario por su correo electrónico
     const userFound = await userRepository.findOneBy({ email: req.user.email });
 
     if (!userFound) {
@@ -100,7 +95,6 @@ export async function isWaiter(req, res, next) {
       );
     }
 
-    // Si el usuario es mesero, continuar con la ejecución
     next();
   } catch (error) {
     handleErrorServer(res, 500, error.message);
