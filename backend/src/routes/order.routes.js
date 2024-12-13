@@ -11,12 +11,12 @@ import {
 
 const router = Router();
 
-// Rutas para el manejo de pedidos
+// Rutas manejo de pedidos
 router
-  .post("/create", createOrder) // Crear un pedido admin & usuarios
-  .get("/get", getOrders) // Obtener todos los pedidos solo admin & usuarios
-  .get("/:id", authenticateJwt, getOrder) // Obtener un pedido por ID solo ADMIN
-  .put("/:id/status", authenticateJwt, updateOrderStatus) // Actualizar el estado de un pedido por ID solo ADMIN
-  .delete("/:id", authenticateJwt, cancelOrder); // Cancelar un pedido por ID solo ADMIN
+  .post("/create", createOrder) 
+  .get("/get", getOrders) 
+  .get("/:id", authenticateJwt, getOrder) 
+  .put("/:id/status", authenticateJwt, updateOrderStatus) 
+  .delete("/:id", authenticateJwt, cancelOrder); 
 
 export default router;
