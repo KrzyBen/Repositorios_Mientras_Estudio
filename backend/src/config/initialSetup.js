@@ -66,6 +66,54 @@ async function createUsers() {
           rol: "mesero",
         }),
       ),
+
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Claudia Isabel Navarro Cortés",
+          rut: "19.451.120-8",
+          email: "usuario5@gmail.cl",
+          password: await encryptPassword("user5678"),
+          rol: "usuario",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Martina Fabiola Díaz Morales",
+          rut: "18.435.617-9",
+          email: "mesero2@gmail.cl",
+          password: await encryptPassword("mesero5678"),
+          rol: "mesero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Pedro Pastal Silva López",
+          rut: "21.763.909-3",
+          email: "cocinero2@gmail.cl",
+          password: await encryptPassword("cocinero5678"),
+          rol: "cocinero",
+        }),
+      ),
+
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Sara Elizabeth Herrera Castillo",
+          rut: "20.123.543-4",
+          email: "usuario4@gmail.cl",
+          password: await encryptPassword("user4321"),
+          rol: "usuario",
+        }),
+      ),
+
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Claudia Isabel Navarro Cortés",
+          rut: "19.451.120-8",
+          email: "usuario5@gmail.cl",
+          password: await encryptPassword("user5678"),
+          rol: "usuario",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
