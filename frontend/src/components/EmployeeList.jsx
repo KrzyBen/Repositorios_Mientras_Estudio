@@ -11,6 +11,7 @@ const EmployeeList = ({ employees, userRole }) => {
     const [nuevoTexto, setNuevoTexto] = useState('');
     const [attendanceHistoryVisible, setAttendanceHistoryVisible] = useState(null);
 
+    // This effect runs once when the component mounts
     useEffect(() => {
         const today = new Date().toLocaleDateString();
         const lastUpdateDate = localStorage.getItem('lastUpdateDate');
@@ -19,24 +20,28 @@ const EmployeeList = ({ employees, userRole }) => {
         const storedAttendance = JSON.parse(localStorage.getItem('attendancePercentage')) || {};
         const storedAttendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
 
+        // If the date has changed, reset the turnos (shifts)
         if (lastUpdateDate !== today) {
             localStorage.setItem('lastUpdateDate', today);
-            localStorage.setItem('turnos', JSON.stringify({}));
-            localStorage.setItem('bitacoras', JSON.stringify({}));
-            localStorage.setItem('attendancePercentage', JSON.stringify({}));
-            localStorage.setItem('attendanceData', JSON.stringify({}));
-            setTurnos({});
-            setBitacoras({});
-            setAttendancePercentage({});
-            setAttendanceData({});
+            localStorage.setItem('turnos', JSON.stringify({}));  // Reset turnos
+            localStorage.setItem('bitacoras', JSON.stringify({}));  // Reset bitacoras
+            localStorage.setItem('attendancePercentage', JSON.stringify({}));  // Reset attendance percentages
+            localStorage.setItem('attendanceData', JSON.stringify({}));  // Reset attendance data
+
+            // Reset state values
+            setTurnos({});  // Reset turnos
+            setBitacoras({});  // Reset bitacoras
+            setAttendancePercentage({});  // Reset attendance percentages
+            setAttendanceData({});  // Reset attendance data
         } else {
-            setTurnos(storedTurnos);
-            setBitacoras(storedBitacoras);
-            setAttendancePercentage(storedAttendance);
-            setAttendanceData(storedAttendanceData);
+            setTurnos(storedTurnos);  // Load stored turnos
+            setBitacoras(storedBitacoras);  // Load stored bitacoras
+            setAttendancePercentage(storedAttendance);  // Load stored attendance percentages
+            setAttendanceData(storedAttendanceData);  // Load stored attendance data
         }
     }, []);
 
+    // Save updated data to localStorage
     const saveTurnosToLocalStorage = (updatedTurnos) => {
         localStorage.setItem('turnos', JSON.stringify(updatedTurnos));
     };
@@ -53,6 +58,7 @@ const EmployeeList = ({ employees, userRole }) => {
         localStorage.setItem('attendanceData', JSON.stringify(updatedAttendanceData));
     };
 
+    // Handle employee shift entry
     const handleTurnoEntrada = (employeeId, estado) => {
         if (estado === 'inactivo') {
             Swal.fire({
@@ -92,6 +98,7 @@ const EmployeeList = ({ employees, userRole }) => {
         });
     };
 
+    // Handle employee shift exit
     const handleTurnoSalida = (employeeId, estado) => {
         if (estado === 'inactivo') {
             Swal.fire({
@@ -131,6 +138,7 @@ const EmployeeList = ({ employees, userRole }) => {
         });
     };
 
+    // Handle attendance (presence or absence)
     const handleAttendance = (employeeId, isPresent) => {
         const todayDate = new Date().toLocaleDateString();
 
@@ -173,35 +181,38 @@ const EmployeeList = ({ employees, userRole }) => {
         });
     };
 
+    // Toggle attendance history visibility
     const toggleAttendanceHistory = (employeeId) => {
-        // Toggle visibilidad para el historial de asistencia de un empleado
-        setAttendanceHistoryVisible(prev => prev === employeeId ? null : employeeId);
+        setAttendanceHistoryVisible((prev) => (prev === employeeId ? null : employeeId));
     };
 
+    // Handle bitacora text change
     const handleBitacoraChange = (employeeId, event) => {
         setNuevoTexto(event.target.value);
     };
-    
+
+    // Save bitacora
     const handleSaveBitacora = (employeeId) => {
         const updatedBitacoras = {
             ...bitacoras,
             [employeeId]: nuevoTexto,
         };
-    
+
         setBitacoras(updatedBitacoras);
         saveBitacorasToLocalStorage(updatedBitacoras);
-    
+
         setNuevoTexto('');
         setEditando(null);
-    
+
         Swal.fire('¡Éxito!', 'La bitácora ha sido guardada correctamente.', 'success');
     };
-    
+
+    // Edit bitacora
     const handleEditBitacora = (employeeId) => {
         setEditando(employeeId);
         setNuevoTexto(bitacoras[employeeId] || '');
     };
-    
+
     return (
         <div className="employee-list">
             <table>
@@ -224,7 +235,7 @@ const EmployeeList = ({ employees, userRole }) => {
                         const [entrada, salida] = employee.horarioTrabajo
                             ? employee.horarioTrabajo.split('-')
                             : ['No asignado', 'No asignado'];
-    
+
                         const turnoEntrada = turnos[employee.id]?.entrada || 'No marcado';
                         const turnoSalida = turnos[employee.id]?.salida || 'No marcado';
                         const entradaMarcado = turnos[employee.id]?.entradaMarcado ? 'Sí' : 'No';
@@ -232,7 +243,7 @@ const EmployeeList = ({ employees, userRole }) => {
                         const bitacora = bitacoras[employee.id] || '';
                         const attendancePercentageValue = attendancePercentage[employee.id] || 0;
                         const employeeAttendance = attendanceData[employee.id] || {};
-    
+
                         return (
                             <tr key={employee.id}>
                                 <td>{employee.nombreCompleto}</td>
@@ -242,25 +253,17 @@ const EmployeeList = ({ employees, userRole }) => {
                                     Entrada: {entrada} <br />
                                     Salida: {salida}
                                 </td>
-                                {userRole !== 'mesero' && userRole !== 'cocinero' && (
-                                    <td>{employee.estado === 'activo' ? 'Activo' : 'Inactivo'}</td>
-                                )}
+                                <td>{employee.estado === 'activo' ? 'Activo' : 'Inactivo'}</td>
                                 <td>{attendancePercentageValue}%</td>
                                 <td>
-                                    <button
-                                        onClick={() => toggleAttendanceHistory(employee.id)}
-                                        className="btn-history"
-                                    >
+                                    <button onClick={() => toggleAttendanceHistory(employee.id)} className="btn-history">
                                         🗓️
                                     </button>
                                     {attendanceHistoryVisible === employee.id && (
                                         <div className="attendance-history-container">
                                             <div className="attendance-history-header">
                                                 <h4>Historial de Asistencia</h4>
-                                                <button 
-                                                    className="close-history"
-                                                    onClick={() => setAttendanceHistoryVisible(null)}
-                                                >
+                                                <button className="close-history" onClick={() => setAttendanceHistoryVisible(null)}>
                                                     X
                                                 </button>
                                             </div>
@@ -288,22 +291,12 @@ const EmployeeList = ({ employees, userRole }) => {
                                     )}
                                 </td>
                                 <td>
-                                    {userRole !== 'cocinero' && (
-                                        <>
-                                            <button
-                                                className="btn-turno-entrada"
-                                                onClick={() => handleTurnoEntrada(employee.id, employee.estado)}
-                                            >
-                                                🚪⏰🏁
-                                            </button>
-                                            <button
-                                                className="btn-turno-salida"
-                                                onClick={() => handleTurnoSalida(employee.id, employee.estado)}
-                                            >
-                                                🚶‍♂️⛔🏁
-                                            </button>
-                                        </>
-                                    )}
+                                    <button className="btn-turno-entrada" onClick={() => handleTurnoEntrada(employee.id, employee.estado)}>
+                                        🚪⏰🏁
+                                    </button>
+                                    <button className="btn-turno-salida" onClick={() => handleTurnoSalida(employee.id, employee.estado)}>
+                                        🚶‍♂️⛔🏁
+                                    </button>
                                 </td>
                                 <td>
                                     Entrada: {turnoEntrada} <br />
@@ -325,10 +318,10 @@ const EmployeeList = ({ employees, userRole }) => {
                                                 <button onClick={() => handleSaveBitacora(employee.id)}>Guardar</button>
                                             </div>
                                         ) : (
-                                            <>
-                                                <p>{bitacora || 'No hay bitácora disponible'}</p>
+                                            <div>
+                                                <p>{bitacora || 'No hay bitácora'}</p>
                                                 <button onClick={() => handleEditBitacora(employee.id)}>Editar</button>
-                                            </>
+                                            </div>
                                         )
                                     )}
                                 </td>
