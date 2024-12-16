@@ -1,4 +1,3 @@
-// components/MenuModal.jsx
 import React from 'react';
 
 const MenuModal = ({ isOpen, onClose, onConfirm }) => {
