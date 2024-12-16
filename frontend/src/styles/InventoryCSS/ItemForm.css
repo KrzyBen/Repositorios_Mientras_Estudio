@@ -1,0 +1,48 @@
+/* Formulario de ítems */
+.item-form {
+    display: flex; /* Utiliza flexbox para organizar los elementos del formulario */
+    flex-direction: column; /* Coloca los elementos uno debajo del otro */
+    gap: 15px; /* Espaciado de 15px entre los elementos del formulario */
+    padding: 15px; /* Espaciado interno del formulario */
+    background-color: #FF5722; /* Fondo blanco con una opacidad del 90% */
+    border-radius: 8px; /* Bordes redondeados para el formulario */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra alrededor del formulario para un efecto de profundidad */
+}
+
+/* Estilo para el título en el formulario de ítems */
+.item-selection-container h1 {
+    color: #000000; /* Aquí puedes poner el color que desees */
+}
+
+.item-form label {
+    font-size: 14px; /* Tamaño de la fuente para las etiquetas */
+    color: #333; /* Color gris oscuro para el texto de las etiquetas */
+}
+
+.item-form input[type="text"],
+.item-form input[type="number"],
+.item-form input[type="date"] {
+    padding: 10px; /* Espaciado interno para los campos de entrada */
+    border-radius: 4px; /* Bordes redondeados para los campos de entrada */
+    border: 1px solid #ccc; /* Borde gris claro alrededor de los campos de entrada */
+}
+
+.item-form input[type="text"]:focus,
+.item-form input[type="number"]:focus,
+.item-form input[type="date"]:focus {
+    border-color: #4CAF50; /* Cambia el color del borde a verde al enfocar el campo */
+    outline: none; /* Elimina el contorno azul por defecto de los navegadores */
+}
+
+.item-form button {
+    background-color: #4CAF50; /* Fondo verde para el botón */
+    color: white; /* Texto blanco para el botón */
+    padding: 10px; /* Espaciado interno para el botón */
+    border: none; /* Elimina el borde del botón */
+    border-radius: 4px; /* Bordes redondeados para el botón */
+    cursor: pointer; /* Cambia el cursor a una mano al pasar sobre el botón */
+}
+
+.item-form button:hover {
+    background-color: #45a049; /* Cambia el color del fondo a un verde más oscuro al pasar el cursor */
+}
