@@ -47,7 +47,7 @@ async function createUsers() {
           rol: "usuario",
         }),
       ),
-      // Nuevos usuarios con roles de Cocinero y Mesero
+      
       userRepository.save(
         userRepository.create({
           nombreCompleto: "Carlos Ramírez",
@@ -114,17 +114,6 @@ async function createUsers() {
           rol: "usuario",
         }),
       ),
-
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Pepe Toño Macias",
-          rut: "22.692.776-k",
-          email: "mesero22024@gmail.cl",
-          password: await encryptPassword("mesero2222"),
-          rol: "usuario",
-        }),
-      ),
-      
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
