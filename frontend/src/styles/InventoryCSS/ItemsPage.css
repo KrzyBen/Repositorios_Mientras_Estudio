@@ -34,15 +34,3 @@
     margin-bottom: 15px; /* Espaciado inferior para separar el título del contenido siguiente */
     text-align: center; /* Centra el texto del título horizontalmente */
 }
-/* Ajuste del navbar */
-.navbar {
-    height: 60px; /* Establece una altura fija para el navbar */
-    line-height: 60px; /* Alinea verticalmente el texto dentro del navbar */
-    padding: 0 20px; /* Controla el espaciado alrededor del contenido */
-  }
-  
-  
-  /* Si el navbar está dentro de un contenedor específico */
-  .navbar-container {
-    margin-top: 55px; /* Ajusta el margen superior del contenedor para dar espacio */
-  }
