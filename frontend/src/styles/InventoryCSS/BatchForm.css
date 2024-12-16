@@ -1,0 +1,43 @@
+/* Ahora, el formulario es más transparente */
+.batch-form {
+    display: flex; /* Utiliza flexbox para organizar los elementos del formulario */
+    flex-direction: column; /* Coloca los elementos uno debajo del otro */
+    gap: 15px; /* Espaciado de 15px entre los elementos del formulario */
+    padding: 15px; /* Espaciado interno del formulario */
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con una opacidad del 90% */
+    border-radius: 8px; /* Bordes redondeados para el formulario */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra alrededor del formulario para un efecto de profundidad */
+}
+
+.batch-form label {
+    font-size: 14px; /* Tamaño de la fuente para las etiquetas */
+    color: #333; /* Color gris oscuro para el texto de las etiquetas */
+}
+
+.batch-form input[type="date"],
+.batch-form input[type="number"],
+.batch-form input[type="text"] {
+    padding: 10px; /* Espaciado interno para los campos de entrada */
+    border-radius: 4px; /* Bordes redondeados para los campos de entrada */
+    border: 1px solid #ccc; /* Borde gris claro alrededor de los campos de entrada */
+}
+
+.batch-form input[type="date"]:focus,
+.batch-form input[type="number"]:focus,
+.batch-form input[type="text"]:focus {
+    border-color: #4CAF50; /* Cambia el color del borde a verde al enfocar el campo */
+    outline: none; /* Elimina el contorno azul por defecto de los navegadores */
+}
+
+.batch-form button {
+    background-color: #4CAF50; /* Fondo verde para el botón */
+    color: white; /* Texto blanco para el botón */
+    padding: 10px; /* Espaciado interno para el botón */
+    border: none; /* Elimina el borde del botón */
+    border-radius: 4px; /* Bordes redondeados para el botón */
+    cursor: pointer; /* Cambia el cursor a una mano al pasar sobre el botón */
+}
+
+.batch-form button:hover {
+    background-color: #45a049; /* Cambia el color del fondo a un verde más oscuro al pasar el cursor */
+}

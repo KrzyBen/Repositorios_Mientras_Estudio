@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
-// Componentes
-import Table from '@components/Table';
+import React, { useState } from 'react';
+import BatchesTable from '@components/Inventory/BatchTable';
 import BatchForm from '@components/Inventory/BatchForm';
 import BatchFormUpt from '@components/Inventory/BatchFormUpt';
 import BatchPopup from '@components/Inventory/BatchPopup';
-import Search from '@components/Search';
+import { useNavigate } from 'react-router-dom';
+
 // Hooks
 import { useFetchAllBatches } from '@hooks/inventory/batch/useFetchAllBatches';
 import { useCreateBatch } from '@hooks/inventory/batch/useCreateBatch';
@@ -12,14 +12,9 @@ import { useUpdateBatch } from '@hooks/inventory/batch/useUpdateBatch';
 import { useDeleteBatch } from '@hooks/inventory/batch/useDeleteBatch';
 import { useFetchBatchItems } from '@hooks/inventory/items/useFetchBatchItems';
 import { useDeleteItem } from '@hooks/inventory/items/useDeleteItem';
-// assets
-import DeleteIcon from '@assets/deleteIcon.svg';
-import UpdateIcon from '@assets/updateIcon.svg';
-import UpdateIconDisable from '@assets/updateIconDisabled.svg';
-import DeleteIconDisable from '@assets/deleteIconDisabled.svg';
-// otros
 
-import { useNavigate } from 'react-router-dom';
+// Estilos
+import '@styles/InventoryCSS/BatchPages.css';
 
 const BatchesPage = () => {
   const navigate = useNavigate();
@@ -35,10 +30,6 @@ const BatchesPage = () => {
   const { handleDelete } = useDeleteBatch(fetchBatches);
   const { handleDelete: deleteItem } = useDeleteItem(fetchBatchItems);
 
-  const handleIdFilterChange = (e) => {
-    setFilterId(e.target.value);
-  };
-
   const handleCreateBatch = (batch) => {
     handleCreate(batch);
     setShowPopup(false);
@@ -48,7 +39,7 @@ const BatchesPage = () => {
     try {
       const previousTotalItems = items.length;
       const newTotalItems = updatedBatch.totalItems;
-      
+
       if (newTotalItems < previousTotalItems) {
         const itemsToRemoveCount = previousTotalItems - newTotalItems;
         let removedCount = 0;
@@ -68,89 +59,43 @@ const BatchesPage = () => {
     }
   };
 
-  const handleDeleteBatch = () => {
-    if (batchToEdit) {
-      handleDelete(batchToEdit.id);
-      setBatchToEdit(null);
-    }
-  };
+  const handleDeleteBatch = (batchId) => {
+    handleDelete(batchId);
+    setBatchToEdit(null);
+  };  
 
   const handleEditItems = (batchId) => {
     navigate(`/batchesItems/${batchId}/items`);
   };
 
-  const columns = [
-    { title: 'ID del Lote', field: 'id', width: 200, responsive: 2 },
-    { title: 'Fecha de Adquisición', field: 'acquisitionDate', width: 500, responsive: 2 },
-    { title: 'Total de Ítems', field: 'totalItems', width: 250, responsive: 3 }
-  ];
-
-  const handleSelectionChange = useCallback((selectedRows) => {
-    if (selectedRows.length > 0) {
-      setBatchToEdit(selectedRows[0]);
-      fetchBatchItems();
-    } else {
-      setBatchToEdit(null);
-    }
-  }, [fetchBatchItems]);
-
   return (
-    <div className="main-container">
-      <div className="table-container">
-        <div className="top-table">
-          <h1 className="title-table">Lotes de Inventario</h1>
-          <div className="filter-actions">
-            <Search
-              value={filterId}
-              onChange={handleIdFilterChange}
-              placeholder="Filtrar por ID de lote"
-              style={{ width: '150px' }}
-            />
-            <button
-              onClick={() => {
-                setPopupMode('create');
-                setShowPopup(true);
-              }}
-              style={{ marginRight: '10px' }}
-            >
-              <span>Crear Lote</span>
-            </button>
-            <button
-              onClick={() => {
-                setPopupMode('update');
-                setShowPopup(true);
-              }}
-              disabled={!batchToEdit}
-              style={{ marginRight: '10px' }}
-            >
-              <img src={batchToEdit ? UpdateIcon : UpdateIconDisable} alt="update" />
-            </button>
-            <button
-              onClick={handleDeleteBatch}
-              disabled={!batchToEdit}
-              style={{ marginRight: '10px' }}
-            >
-              <img src={batchToEdit ? DeleteIcon : DeleteIconDisable} alt="delete" />
-            </button>
-            <button
-              onClick={() => handleEditItems(batchToEdit.id)}
-              className="btn btn-secondary"
-              style={{ marginRight: '70px' }}
-            >
-              Editar Ítems
-            </button>
-          </div>
-        </div>
-        {loading ? <p>Cargando...</p> : null}
-        <Table
-          data={batches}
-          columns={columns}
-          filter={filterId}
-          dataToFilter="id"
-          onSelectionChange={handleSelectionChange}
-        />
+    <div className="batch-main-container">
+      <div className="batch-table-container">
+        <h1 className="batch-title-table">Lotes de Inventario</h1>
+        {loading ? (
+          <p>Cargando...</p>
+        ) : (
+          <BatchesTable
+            batches={batches.filter((batch) =>
+              batch.id.toString().includes(filterId)
+            )}
+            filterValue={filterId}
+            onFilterChange={(e) => setFilterId(e.target.value)}
+            onEdit={(batch) => {
+              setPopupMode('update');
+              setBatchToEdit(batch);
+              setShowPopup(true);
+            }}
+            onDelete={handleDeleteBatch}
+            onEditItems={handleEditItems}
+            onCreate={() => {
+              setPopupMode('create');
+              setShowPopup(true);
+            }}
+          />
+        )}
       </div>
-      <BatchPopup show={showPopup} setShow={setShowPopup} className={showPopup ? 'show' : ''}>
+      <BatchPopup show={showPopup} setShow={setShowPopup}>
         {popupMode === 'create' ? (
           <BatchForm onSubmit={handleCreateBatch} />
         ) : (
