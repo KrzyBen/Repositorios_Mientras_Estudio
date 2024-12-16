@@ -118,7 +118,7 @@ async function createUsers() {
       userRepository.save(
         userRepository.create({
           nombreCompleto: "Pepe Toño Macias",
-          rut: "22692776-k",
+          rut: "22.692.776-k",
           email: "mesero22024@gmail.cl",
           password: await encryptPassword("mesero2222"),
           rol: "usuario",
