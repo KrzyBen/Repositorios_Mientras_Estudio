@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createMenuItem, updateMenuItem } from '../services/menu.service';
-import { showSuccessAlert, showErrorAlert } from '../helpers/sweetAlert'; // Importa las alertas
+import { showSuccessAlert, showErrorAlert } from '../helpers/sweetAlert';
 
 const MenuForm = ({ menuItemToEdit, onSave }) => {
     const [nombre, setNombre] = useState('');
@@ -89,7 +89,7 @@ const MenuForm = ({ menuItemToEdit, onSave }) => {
                     value={precio}
                     onChange={(e) => setPrecio(e.target.value)}
                     required
-                    step="0.01" // Permite decimales
+                    step="0.01"
                 />
             </div>
             <button type="submit">{menuItemToEdit ? 'Actualizar' : 'Agregar'} Plato</button>
