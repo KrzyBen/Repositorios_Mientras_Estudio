@@ -114,6 +114,17 @@ async function createUsers() {
           rol: "usuario",
         }),
       ),
+
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Pepe Toño Macias",
+          rut: "22692776-k",
+          email: "mesero22024@gmail.cl",
+          password: await encryptPassword("mesero2222"),
+          rol: "usuario",
+        }),
+      ),
+      
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
