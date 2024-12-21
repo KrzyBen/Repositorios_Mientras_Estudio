@@ -9,47 +9,55 @@ import { getEmployees } from '../services/employee.service';
 const Turnos = () => {
     const { shifts, assignShift } = useShifts();
     const [employees, setEmployees] = useState([]);
-    const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isSearching, setIsSearching] = useState(false); // Estado para controlar el bloqueo
 
-    // Obtener el rol del usuario desde sessionStorage
+    // Obtener el usuario logueado desde sessionStorage
     const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
-    const userRole = user?.rol;
+    const userEmail = user?.email;  // Obtenemos el correo del usuario logueado
+    const userRole = user?.rol;  // Obtenemos el rol del usuario logueado (admin o no)
 
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
                 const employeeData = await getEmployees();
-                setEmployees(employeeData);
+
+                // Verifica si la respuesta contiene los empleados correctos
+                console.log("Empleado Data:", employeeData);
+
+                // Guardar los empleados en sessionStorage para persistencia
+                sessionStorage.setItem('employees', JSON.stringify(employeeData));
+
+                // Filtrar empleados según el rol
+                if (userRole === 'administrador') {
+                    setEmployees(employeeData); // Mostrar todos los empleados si es administrador
+                } else if (userEmail) {
+                    const filteredEmployees = employeeData.filter((employee) => employee.email === userEmail);
+                    console.log("Filtered Employees:", filteredEmployees);
+                    setEmployees(filteredEmployees); // Solo mostrar el empleado logueado
+                }
             } catch (error) {
                 console.error('Error fetching employees:', error);
             }
         };
 
-        fetchEmployees();
-    }, []);
-
-    // Filtrar empleados en base al RUT ingresado solo si el RUT está completo
-    const handleSearch = () => {
-        if (searchTerm.length >= 8) {  // Considerando que el RUT completo tiene al menos 8 caracteres (ajustar según tu caso)
-            const filtered = employees.filter((employee) =>
-                employee.rut.includes(searchTerm)
-            );
-            setFilteredEmployees(filtered);
-
-            // Bloquear el cuadro de texto y el botón durante 20 segundos
-            setIsSearching(true);
-            setTimeout(() => {
-                setIsSearching(false); // Desbloquear después de 20 segundos
-                setSearchTerm(''); // Limpiar el campo de búsqueda
-                setFilteredEmployees([]); // Limpiar los resultados
-            }, 40000); // 20 segundos
+        // Primero intentar cargar empleados desde sessionStorage
+        const storedEmployees = sessionStorage.getItem('employees');
+        if (storedEmployees) {
+            // Si ya tenemos empleados en sessionStorage, usarlos
+            const parsedEmployees = JSON.parse(storedEmployees);
+            if (userRole === 'administrador') {
+                setEmployees(parsedEmployees);
+            } else if (userEmail) {
+                const filteredEmployees = parsedEmployees.filter(employee => employee.email === userEmail);
+                setEmployees(filteredEmployees);
+            }
         } else {
-            setFilteredEmployees([]); // Limpiar resultados si el RUT no está completo
+            // Si no hay empleados en sessionStorage, realizar la llamada a la API
+            if (userEmail && userRole) {
+                fetchEmployees();
+            }
         }
-    };
+    }, [userEmail, userRole]); // Dependemos de userEmail y userRole para obtener la lista adecuada de empleados
 
     const handleAssignShift = (employeeId) => {
         setSelectedEmployeeId(employeeId);
@@ -64,56 +72,14 @@ const Turnos = () => {
         <div className="turnos-page">
             <h2>Gestión de Turnos</h2>
 
-            {/* Administrador: Solo ve la tabla de empleados */}
-            {userRole === 'administrador' && (
-                <div className="employee-list-container">
-                    <EmployeeList 
-                        employees={employees} 
-                        onAssignShift={handleAssignShift} 
-                        userRole={userRole} 
-                    />
-                </div>
-            )}
-
-            {/* Cocinero y Mesero: Verán primero el formulario de búsqueda */}
-            {(userRole === 'cocinero' || userRole === 'mesero') && (
-                <>
-                    {/* Formulario de búsqueda */}
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Buscar por RUT"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            disabled={isSearching} // Bloquear el campo de texto si estamos buscando
-                        />
-                        <button 
-                            onClick={handleSearch} 
-                            disabled={isSearching || searchTerm.length < 8} // Deshabilitar el botón si estamos buscando o si el RUT no es válido
-                        >
-                            Buscar
-                        </button>
-                    </div>
-
-                    {/* Mostrar la tabla solo si hay resultados */}
-                    {filteredEmployees.length > 0 ? (
-                        <div className="employee-list-container">
-                            <EmployeeList 
-                                employees={filteredEmployees} 
-                                onAssignShift={handleAssignShift} 
-                                userRole={userRole} 
-                                showAllColumns // Asegura que todas las columnas estén visibles
-                            />
-                        </div>
-                    ) : (
-                        searchTerm && searchTerm.length >= 8 && !isSearching && (
-                            <div className="no-results">
-                                <p>No se encontraron resultados.</p>
-                            </div>
-                        )
-                    )}
-                </>
-            )}
+            {/* Muestra la lista de empleados */}
+            <div className="employee-list-container">
+                <EmployeeList 
+                    employees={employees} 
+                    onAssignShift={handleAssignShift} 
+                    userRole={userRole}  // Pasamos el rol para que se pueda usar en EmployeeList
+                />
+            </div>
 
             {/* Formulario para asignar turnos */}
             {selectedEmployeeId && (
