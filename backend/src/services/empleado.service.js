@@ -16,10 +16,27 @@ export async function createEmployeesService(data) {
 }
 
 // Obtener todos los empleados
-export async function getEmployeesService() {
+// Obtener todos los empleados con filtros (rol y email opcionales)
+export async function getEmployeesService(filters = {}) {
   try {
     const employeeRepository = AppDataSource.getRepository(EmpleadoSchema);
-    const employees = await employeeRepository.find();
+    
+    const whereConditions = {};
+    const { rol, email } = filters;
+    
+    // Filtrar por rol si se proporciona
+    if (rol) {
+      whereConditions.rol = rol;
+    }
+    
+    // Filtrar por email si se proporciona (en caso de que el rol no sea administrador)
+    if (email) {
+      whereConditions.email = email;
+    }
+    
+    // Obtener empleados según las condiciones de filtro
+    const employees = await employeeRepository.find({ where: whereConditions });
+    
     return [employees, null];
   } catch (error) {
     return [null, error.message];
@@ -59,5 +76,3 @@ export async function deleteEmployeeService(id) {
     return [null, error.message];
   }
 }
-
-
