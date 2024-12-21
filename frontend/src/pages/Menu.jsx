@@ -1,4 +1,3 @@
-// Menu.jsx
 import React, { useState, useEffect } from 'react';
 import MenuTable from '@components/MenuTable';
 import MenuForm from '@components/MenuForm';
@@ -14,6 +13,7 @@ const Menu = () => {
     const [menuItems, setMenuItems] = useState([]);  // Estado para los elementos del menú
     const [menuItemToDelete, setMenuItemToDelete] = useState(null); // Elemento a eliminar
     const [chatbotOpen, setChatbotOpen] = useState(false); // Estado para controlar si el chatbot está abierto
+    const [isFormOpen, setIsFormOpen] = useState(false); // Estado para controlar si el formulario está abierto
     const user = JSON.parse(sessionStorage.getItem('usuario')) || null; // Obtener usuario desde sessionStorage
     const userRole = user?.rol; // Obtener el rol del usuario
 
@@ -107,6 +107,10 @@ const Menu = () => {
         setChatbotOpen(prevState => !prevState);  // Alternar el estado del chatbot
     };
 
+    const toggleFormVisibility = () => {
+        setIsFormOpen(!isFormOpen);  // Alternar la visibilidad del formulario
+    };
+
     return (
         <div className="main-container">
             {/* Mostrar solo para administradores y cocineros */}
@@ -114,17 +118,27 @@ const Menu = () => {
                 <h2 className="title-table">Gestión de Menú</h2>
             )}
 
-            {/* Mostrar formulario solo para administradores y cocineros */}
+            {/* Botón para mostrar/ocultar el formulario */}
             {(userRole === 'administrador' || userRole === 'cocinero') && (
+                <button onClick={toggleFormVisibility} className="toggle-form-btn">
+                    {isFormOpen ? 'Cerrar Formulario' : 'Agregar Menú'}
+                </button>
+            )}
+
+            {/* Mostrar el formulario solo si isFormOpen es true */}
+            {isFormOpen && (
                 <MenuForm menuItemToEdit={menuItemToEdit} onSave={handleCreateMenuItem} />
             )}
 
+            {/* Tabla de menús */}
             <MenuTable 
                 menuItems={menuItems} 
                 onEdit={handleEditMenuItem} 
                 onDelete={handleDeleteClick}  // Pasar el ítem a eliminar
                 userRole={userRole}  // Pasar el rol de usuario a la tabla
             />
+            
+            {/* Modal de confirmación de eliminación */}
             <MenuModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
