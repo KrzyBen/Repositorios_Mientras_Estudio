@@ -1,5 +1,12 @@
 import React from 'react';
-import '@styles/InventoryCSS/BatchTable.css'
+import '@styles/InventoryCSS/BatchTable.css';
+
+const statusLabels = {
+  pending: 'Pendiente',
+  in_stock: 'En stock',
+  expired: 'Expirado',
+  out_stock: 'Fuera de stock', // Agregado
+};
 
 const BatchesTable = ({
   batches,
@@ -7,17 +14,16 @@ const BatchesTable = ({
   filterValue,
   onEdit,
   onDelete,
-  onEditItems,
   onCreate,
 }) => {
   const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
   const userRole = user?.rol;
   const showActions = userRole === 'administrador';
+  
 
   const handleDelete = (batchId) => {
     onDelete(batchId);
   };
-  
 
   return (
     <div className="batches-table-container">
@@ -43,8 +49,11 @@ const BatchesTable = ({
           <tr>
             <th>ID del Lote</th>
             <th>Fecha de Adquisición</th>
+            <th>Fecha de Expiración</th>
             <th>Total de Ítems</th>
             <th>Origen de la Compra</th>
+            <th>Estado</th>
+            <th>Descripción</th>
             {showActions && <th>Acciones</th>}
           </tr>
         </thead>
@@ -54,27 +63,24 @@ const BatchesTable = ({
               <tr key={batch.id}>
                 <td>{batch.id}</td>
                 <td>{batch.acquisitionDate}</td>
+                <td>{batch.expirationDate}</td>
                 <td>{batch.totalItems}</td>
                 <td>{batch.originPurchase}</td>
+                <td>{statusLabels[batch.status] || batch.status}</td>
+                <td>{batch.description}</td>
                 {showActions && (
                   <td>
                     <button
                       onClick={() => onEdit(batch)}
-                      className="batches-edit-button"
+                      className="batches-create-button"
                     >
-                      ✏️
+                      Modificar
                     </button>
                     <button
                       onClick={() => handleDelete(batch.id)}
-                      className="batches-delete-button"
+                      className="batches-create-button"
                     >
-                      🗑️
-                    </button>
-                    <button
-                      onClick={() => onEditItems(batch.id)}
-                      className="batches-items-button"
-                    >
-                      📜
+                      Eliminar
                     </button>
                   </td>
                 )}
@@ -82,7 +88,7 @@ const BatchesTable = ({
             ))
           ) : (
             <tr>
-              <td colSpan={showActions ? '5' : '4'}>No hay lotes disponibles.</td>
+              <td colSpan={showActions ? '8' : '7'}>No hay lotes disponibles.</td>
             </tr>
           )}
         </tbody>

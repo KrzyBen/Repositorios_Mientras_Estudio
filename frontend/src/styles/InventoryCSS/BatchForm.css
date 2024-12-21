@@ -29,6 +29,15 @@
     outline: none; /* Elimina el contorno azul por defecto de los navegadores */
 }
 
+/* Estilo específico para el nuevo campo de Descripción */
+.batch-form textarea {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    min-height: 100px; /* Altura mínima para la caja de texto */
+}
+
+/* Botón de acción */
 .batch-form button {
     background-color: #4CAF50; /* Fondo verde para el botón */
     color: white; /* Texto blanco para el botón */

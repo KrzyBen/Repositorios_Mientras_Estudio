@@ -4,7 +4,7 @@ import {
     getAllBatchesService,
     getBatchService,
     updateBatchService,
-    deleteBatchService,
+    deleteBatchService
 } from '../services/batch.service.js';
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { BatchBodyValidation } from '../validations/batch.validation.js';
@@ -21,7 +21,6 @@ export async function createBatch(req, res) {
 
         // Llamar al servicio para crear el lote
         const [batch, serviceError] = await createBatchService(data);
-
         if (serviceError) {
             if (serviceError.includes('ítems')) {
                 return handleErrorClient(res, 400, serviceError);
@@ -69,6 +68,16 @@ export async function updateBatch(req, res) {
         if (error) {
             const errorMessages = error.details.map(err => err.message);
             return handleErrorClient(res, 400, errorMessages);
+        }
+
+        // Si la cantidad es 0, el estado debe cambiar a 'out_stock'
+        if (batchData.totalItems === 0 && batchData.status !== 'out_stock') {
+            batchData.status = 'out_stock';
+        }
+
+        // Si el estado es 'out_stock', la cantidad debe ser 0
+        if (batchData.status === 'out_stock' && batchData.totalItems !== 0) {
+            batchData.totalItems = 0;
         }
 
         // Llamar al servicio para actualizar el lote

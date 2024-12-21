@@ -14,22 +14,29 @@ const purchaseBatchSchema = new EntitySchema({
       type: "date",
       nullable: false,
     },
+    expirationDate: {
+      type: "date",
+      nullable: false,
+    },
     totalItems: {
       type: "int",
       nullable: false,
     },
-    originPurchase:{
+    originPurchase: {
       type: "varchar",
-      length: 20,
+      length: 50,
       nullable: false,
     },
-  },
-  relations: {
-    items: {
-      type: "one-to-many",
-      target: "BatchItem", 
-      inverseSide: "batch",
-      cascade: false,
+    status: {
+      type: "enum",
+      enum: ["pending", "in_stock", "expired", "out_stock"],
+      default: "pending",
+      nullable: false,
+    },
+    description: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
     },
   },
 });
