@@ -6,7 +6,6 @@ import empleadoRoutes from "./empleado.routes.js"; // Importar las rutas de empl
 import orderRoutes from "./order.routes.js"; // Importar las rutas de pedidos
 import menuRoutes from "./menu.routes.js"; // Rutas de menú
 import batchRoutes from "./batch.routes.js"; // Importar las rutas de lotes
-import batchItemRoutes from "./batchItems.routes.js"; // Importar las rutas de ítems de lotes
 import turnoRoutes from "./turno.routes.js";
 
 const router = Router();
@@ -18,7 +17,6 @@ router
     .use("/orders", orderRoutes) // Rutas de Valter Lineros
     .use("/menu", menuRoutes) //Ruta de Fernando Flores
     .use("/batches", batchRoutes) // Rutas de lotes Benjamin
-    .use("/batchesItems", batchItemRoutes) // Rutas de ítems Benjamin
     .use("/turnos", turnoRoutes);
 
 export default router;

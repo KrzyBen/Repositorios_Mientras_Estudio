@@ -4,33 +4,38 @@ import { AppDataSource } from "../config/configDb.js";
 // Crear lote
 export async function createBatchService(data) {
   try {
+    const { acquisitionDate, expirationDate, totalItems, originPurchase, status, description } = data;
 
-    const { totalItems } = data;
+    if (!acquisitionDate || !expirationDate || !originPurchase || !status) {
+      return [null, "Todos los campos obligatorios deben estar presentes."];
+    }
+  
 
-    if (!totalItems) {
-      return [null, "Debe proporcionar una cantidad válida de ítems"];
+    if (totalItems <= 0 || totalItems > 50) {
+      return [null, "La cantidad total de ítems debe estar entre 1 y 50."];
     }
 
-    // Verificación de que totalItems no sea superior al límite máximo permitido
-    // Se puede modificar a necesidad
-    if (totalItems > 20) {
-      return [null, "No se pueden crear lotes con más de 20 de ítems."];
-    }
-
-    // Verificación de que totalItems sea un número válido
-    if (totalItems <= 0) {
-      return [null, "La cantidad total de ítems debe ser mayor que 0."];
+    if (new Date(expirationDate) <= new Date(acquisitionDate)) {
+      return [null, "La fecha de vencimiento debe ser posterior a la fecha de adquisición."];
     }
 
     const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
-    
+
     // Verificar el número total de lotes
     const batchCount = await batchRepository.count();
-    if (batchCount >= 20) {
-      throw new Error("No se pueden crear más de 20 lotes");
+    if (batchCount >= 100) {
+      throw new Error("No se pueden crear más de 100 lotes.");
     }
 
-    const newBatch = batchRepository.create(data);
+    const newBatch = batchRepository.create({
+      acquisitionDate,
+      expirationDate,
+      totalItems,
+      originPurchase,
+      status,
+      description,
+    });
+
     const savedBatch = await batchRepository.save(newBatch);
     return [savedBatch, null];
   } catch (error) {
@@ -38,7 +43,7 @@ export async function createBatchService(data) {
   }
 }
 
-// Función para obtener todos los lotes
+// Obtener todos los lotes
 export async function getAllBatchesService() {
   try {
     const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
@@ -49,20 +54,21 @@ export async function getAllBatchesService() {
   }
 }
 
-// Función para obtener un lote por su ID
+// Obtener un lote por su ID
 export async function getBatchService(id) {
   try {
     const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
     const batch = await batchRepository.findOneBy({ id });
 
     if (!batch) throw new Error("Lote no encontrado");
-    
+
     return [batch, null];
   } catch (error) {
     return [null, error.message];
   }
 }
 
+// Actualizar un lote
 export async function updateBatchService(id, batchData) {
   try {
     const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
@@ -71,38 +77,45 @@ export async function updateBatchService(id, batchData) {
     const batch = await batchRepository.findOneBy({ id });
     if (!batch) throw new Error("Lote no encontrado");
 
-    // Validar que batchData.totalItems sea un número válido
-    const newTotalItems = typeof batchData.totalItems === 'number' ? batchData.totalItems : batch.totalItems;
+    const {
+      acquisitionDate = batch.acquisitionDate,
+      expirationDate = batch.expirationDate,
+      totalItems = batch.totalItems,
+      originPurchase = batch.originPurchase,
+      status = batch.status,
+      description = batch.description,
+    } = batchData;
 
-    // Verificar si el total de ítems excede el límite
-    if (newTotalItems > 20) {
-      throw new Error(`La cantidad de ítems no puede exceder los 20`);
+    if (new Date(expirationDate) <= new Date(acquisitionDate)) {
+      throw new Error("La fecha de vencimiento debe ser posterior a la fecha de adquisición.");
     }
 
-    // Actualizar las propiedades del lote
-    Object.assign(batch, batchData);
+    // Actualizar las propiedades
+    Object.assign(batch, {
+      acquisitionDate,
+      expirationDate,
+      totalItems,
+      originPurchase,
+      status,
+      description,
+    });
 
-    // Guardar los cambios en la base de datos
     const updatedBatch = await batchRepository.save(batch);
-    
     return [updatedBatch, null];
   } catch (error) {
     return [null, error.message];
   }
 }
 
-// Función para eliminar un lote por su ID
+// Eliminar un lote
 export async function deleteBatchService(id) {
   try {
     const batchRepository = AppDataSource.getRepository(BatchPurchaseSchema);
-    
-    // Buscar el lote por ID
+
     const batch = await batchRepository.findOneBy({ id });
     if (!batch) throw new Error("Lote no encontrado");
 
-    // Eliminar el lote
     const result = await batchRepository.remove(batch);
-    
     return [result, null];
   } catch (error) {
     return [null, error.message];

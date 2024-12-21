@@ -11,7 +11,6 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import BatchesPage from '@pages/Inventory/BatchesPage';
-import ItemsPage from '@pages/Inventory/ItemsPage';
 import Turnos from '@pages/Turnos'; // Import your Turnos page
 import '@styles/styles.css';
 
@@ -46,14 +45,6 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'cocinero']}>
             <BatchesPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/batchesItems/:batchId/items',
-        element: (
-          <ProtectedRoute allowedRoles={['administrador', 'usuario' , 'cocinero']}>
-            <ItemsPage />
           </ProtectedRoute>
         ),
       },
