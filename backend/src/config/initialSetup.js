@@ -50,7 +50,7 @@ async function createUsers() {
       
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Carlos Ramírez",
+          nombreCompleto: "Carlos Ramírez López",
           rut: "19.876.543-1",
           email: "cocinero2024@gmail.cl",
           password: await encryptPassword("cocinero1234"),
@@ -59,7 +59,7 @@ async function createUsers() {
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Lucía González",
+          nombreCompleto: "Lucía González Carrera",
           rut: "18.654.321-0",
           email: "mesero2024@gmail.cl",
           password: await encryptPassword("mesero1234"),
@@ -114,12 +114,66 @@ async function createUsers() {
           rol: "usuario",
         }),
       ),
+
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Javier Hernández López",
+          rut: "21.562.763-4",
+          email: "mesero3@gmail.cl",
+          password: await encryptPassword("mesero6789"),
+          rol: "mesero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Patricia López Hernández",
+          rut: "20.234.122-5",
+          email: "mesera4@gmail.cl",
+          password: await encryptPassword("mesera7890"),
+          rol: "mesero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Marco Antonio Rivas",
+          rut: "21.343.222-6",
+          email: "cocinero3@gmail.cl",
+          password: await encryptPassword("cocinero7890"),
+          rol: "cocinero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Isabel María Reyes",
+          rut: "19.334.882-7",
+          email: "cocinera4@gmail.cl",
+          password: await encryptPassword("cocinera1234"),
+          rol: "cocinero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Carlos Alberto Silva",
+          rut: "18.234.124-9",
+          email: "cocinero4@gmail.cl",
+          password: await encryptPassword("cocinero4321"),
+          rol: "cocinero",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Verónica Mendoza Rosales",
+          rut: "21.211.334-0",
+          email: "mesero5@gmail.cl",
+          password: await encryptPassword("mesero4321"),
+          rol: "mesero",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
     console.error("Error al crear usuarios:", error);
   }
 }
-
 
 export { createUsers };
