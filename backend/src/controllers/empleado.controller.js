@@ -5,7 +5,6 @@ import {
   getEmployeesService,
   updateEmployeeService,
   deleteEmployeeService,
-
 } from "../services/empleado.service.js";
 import {
   EmployeeBodyValidation,
@@ -54,13 +53,33 @@ export async function createEmployees(req, res) {
   }
 }
 
-// Obtener todos los empleados
+// Obtener todos los empleados (actualizado para filtrar por rol)
 export async function getEmployees(req, res) {
   try {
+    const { rol, email } = req.user; // Extraer datos del usuario autenticado (desde el token)
+
     const [Employees, errorEmployees] = await getEmployeesService();
     if (errorEmployees) return handleErrorClient(res, 404, errorEmployees);
 
-    handleSuccess(res, 200, "Empleados encontrados", Employees);
+    // Filtrar los empleados según el rol
+    let filteredEmployees;
+
+    switch (rol) {
+      case "administrador":
+        filteredEmployees = Employees; // Administrador ve todo
+        break;
+      case "cocinero":
+        filteredEmployees = Employees.filter(emp => emp.rol === "cocinero");
+        break;
+      case "mesero":
+        filteredEmployees = Employees.filter(emp => emp.rol === "mesero");
+        break;
+      default:
+        filteredEmployees = Employees.filter(emp => emp.email === email); // Otros roles ven solo sus datos
+        break;
+    }
+
+    handleSuccess(res, 200, "Datos obtenidos correctamente", filteredEmployees);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -118,6 +137,3 @@ export async function deleteEmployee(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
-
-
-
