@@ -400,3 +400,83 @@ button:focus {
 .calendar-button:focus {
     outline: none;
 }
+
+
+
+
+
+
+
+/* Modal para el reporte */
+.report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Contenido del modal */
+.report-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    position: relative; /* Asegura que el botón de cierre se posicione respecto al contenido */
+}
+
+/* Botón de cierre de la ventana de reporte */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Cambiar color de la X al pasar el mouse */
+.close-modal:hover {
+    color: #f44336;
+}
+
+/* Estilos para el botón de reporte (por ejemplo, el botón en la tabla) */
+.report-button {
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+}
+
+
+/* Estilos para el botón de reporte */
+.report-button {
+    cursor: pointer;
+    width: 65px; /* Ajustar el tamaño del botón */
+    height: 50px;
+    background-color: #ffe6e6; /* Fondo rosado claro */
+    border: 2px solid red; /* Contorno rojo */
+    border-radius: 10px; /* Bordes redondeados */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px; /* Ajuste del tamaño del contenido */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+    padding: 0;
+}
+
+
+/* Efecto hover */
+.report-button:hover {
+    background-color: #fe5900; /* Fondo ligeramente más oscuro al pasar el mouse */
+    transform: scale(1.1); /* Efecto de zoom */
+    transition: all 0.2s ease-in-out; /* Transiciones suaves */
+}
