@@ -4,11 +4,8 @@ import '@styles/EmployeeList.css';
 
 const EmployeeList = ({ employees, userRole }) => {
     const [turnos, setTurnos] = useState({});
-    const [bitacoras, setBitacoras] = useState({});
     const [attendancePercentage, setAttendancePercentage] = useState({});
     const [attendanceData, setAttendanceData] = useState({});
-    const [editando, setEditando] = useState(null);
-    const [nuevoTexto, setNuevoTexto] = useState('');
     const [attendanceHistoryVisible, setAttendanceHistoryVisible] = useState(null);
 
     // This effect runs once when the component mounts
@@ -16,7 +13,6 @@ const EmployeeList = ({ employees, userRole }) => {
         const today = new Date().toLocaleDateString();
         const lastUpdateDate = localStorage.getItem('lastUpdateDate');
         const storedTurnos = JSON.parse(localStorage.getItem('turnos')) || {};
-        const storedBitacoras = JSON.parse(localStorage.getItem('bitacoras')) || {};
         const storedAttendance = JSON.parse(localStorage.getItem('attendancePercentage')) || {};
         const storedAttendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
 
@@ -24,18 +20,15 @@ const EmployeeList = ({ employees, userRole }) => {
         if (lastUpdateDate !== today) {
             localStorage.setItem('lastUpdateDate', today);
             localStorage.setItem('turnos', JSON.stringify({}));  // Reset turnos
-            localStorage.setItem('bitacoras', JSON.stringify({}));  // Reset bitacoras
             localStorage.setItem('attendancePercentage', JSON.stringify({}));  // Reset attendance percentages
             localStorage.setItem('attendanceData', JSON.stringify({}));  // Reset attendance data
 
             // Reset state values
             setTurnos({});  // Reset turnos
-            setBitacoras({});  // Reset bitacoras
             setAttendancePercentage({});  // Reset attendance percentages
             setAttendanceData({});  // Reset attendance data
         } else {
             setTurnos(storedTurnos);  // Load stored turnos
-            setBitacoras(storedBitacoras);  // Load stored bitacoras
             setAttendancePercentage(storedAttendance);  // Load stored attendance percentages
             setAttendanceData(storedAttendanceData);  // Load stored attendance data
         }
@@ -44,10 +37,6 @@ const EmployeeList = ({ employees, userRole }) => {
     // Save updated data to localStorage
     const saveTurnosToLocalStorage = (updatedTurnos) => {
         localStorage.setItem('turnos', JSON.stringify(updatedTurnos));
-    };
-
-    const saveBitacorasToLocalStorage = (updatedBitacoras) => {
-        localStorage.setItem('bitacoras', JSON.stringify(updatedBitacoras));
     };
 
     const saveAttendanceToLocalStorage = (updatedAttendance) => {
@@ -188,33 +177,6 @@ const EmployeeList = ({ employees, userRole }) => {
         setAttendanceHistoryVisible((prev) => (prev === employeeId ? null : employeeId));
     };
 
-    // Handle bitacora text change
-    const handleBitacoraChange = (employeeId, event) => {
-        setNuevoTexto(event.target.value);
-    };
-
-    // Save bitacora
-    const handleSaveBitacora = (employeeId) => {
-        const updatedBitacoras = {
-            ...bitacoras,
-            [employeeId]: nuevoTexto,
-        };
-
-        setBitacoras(updatedBitacoras);
-        saveBitacorasToLocalStorage(updatedBitacoras);
-
-        setNuevoTexto('');
-        setEditando(null);
-
-        Swal.fire('¡Éxito!', 'La bitácora ha sido guardada correctamente.', 'success');
-    };
-
-    // Edit bitacora
-    const handleEditBitacora = (employeeId) => {
-        setEditando(employeeId);
-        setNuevoTexto(bitacoras[employeeId] || '');
-    };
-
     return (
         <div className="employee-list">
             <table>
@@ -229,7 +191,6 @@ const EmployeeList = ({ employees, userRole }) => {
                         <th>Historial Asistencia</th>
                         <th>Marcar Turno</th>
                         <th>Turnos Marcados</th>
-                        <th>Bitácora</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -242,7 +203,6 @@ const EmployeeList = ({ employees, userRole }) => {
                         const turnoSalida = turnos[employee.id]?.salida || 'No marcado';
                         const entradaMarcado = turnos[employee.id]?.entradaMarcado ? 'Sí' : 'No';
                         const salidaMarcado = turnos[employee.id]?.salidaMarcado ? 'Sí' : 'No';
-                        const bitacora = bitacoras[employee.id] || '';
                         const attendancePercentageValue = attendancePercentage[employee.id] || 0;
                         const employeeAttendance = attendanceData[employee.id] || {};
 
@@ -305,25 +265,6 @@ const EmployeeList = ({ employees, userRole }) => {
                                     Salida: {turnoSalida} <br />
                                     {entradaMarcado === 'Sí' && `Entrada marcada a las ${turnoEntrada}`} <br />
                                     {salidaMarcado === 'Sí' && `Salida marcada a las ${turnoSalida}`}
-                                </td>
-                                <td>
-                                    {employee.estado === 'activo' ? (
-                                        <div>
-                                            {editando === employee.id ? (
-                                                <div>
-                                                    <textarea value={nuevoTexto} onChange={(e) => handleBitacoraChange(employee.id, e)} />
-                                                    <button onClick={() => handleSaveBitacora(employee.id)}>Guardar Bitácora</button>
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <p>{bitacora || 'Sin bitácora aún.'}</p>
-                                                    <button onClick={() => handleEditBitacora(employee.id)}>Editar</button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <p>No disponible para empleados inactivos.</p>
-                                    )}
                                 </td>
                             </tr>
                         );
