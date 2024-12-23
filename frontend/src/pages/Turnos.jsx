@@ -11,28 +11,21 @@ const Turnos = () => {
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
-    // Obtener el usuario logueado desde sessionStorage
+    // Obtener el rol y el email del usuario desde sessionStorage
     const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
-    const userEmail = user?.email;  // Obtenemos el correo del usuario logueado
-    const userRole = user?.rol;  // Obtenemos el rol del usuario logueado (admin o no)
+    const userEmail = user?.email;
+    const userRole = user?.rol;
 
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
                 const employeeData = await getEmployees();
 
-                // Verifica si la respuesta contiene los empleados correctos
-                console.log("Empleado Data:", employeeData);
-
-                // Guardar los empleados en sessionStorage para persistencia
-                sessionStorage.setItem('employees', JSON.stringify(employeeData));
-
                 // Filtrar empleados según el rol
                 if (userRole === 'administrador') {
                     setEmployees(employeeData); // Mostrar todos los empleados si es administrador
                 } else if (userEmail) {
-                    const filteredEmployees = employeeData.filter((employee) => employee.email === userEmail);
-                    console.log("Filtered Employees:", filteredEmployees);
+                    const filteredEmployees = employeeData.filter(employee => employee.email === userEmail);
                     setEmployees(filteredEmployees); // Solo mostrar el empleado logueado
                 }
             } catch (error) {
@@ -40,25 +33,24 @@ const Turnos = () => {
             }
         };
 
-        // Primero intentar cargar empleados desde sessionStorage
-        const storedEmployees = sessionStorage.getItem('employees');
-        if (storedEmployees) {
-            // Si ya tenemos empleados en sessionStorage, usarlos
-            const parsedEmployees = JSON.parse(storedEmployees);
-            if (userRole === 'administrador') {
-                setEmployees(parsedEmployees);
-            } else if (userEmail) {
-                const filteredEmployees = parsedEmployees.filter(employee => employee.email === userEmail);
-                setEmployees(filteredEmployees);
-            }
-        } else {
-            // Si no hay empleados en sessionStorage, realizar la llamada a la API
-            if (userEmail && userRole) {
-                fetchEmployees();
-            }
-        }
-    }, [userEmail, userRole]); // Dependemos de userEmail y userRole para obtener la lista adecuada de empleados
+        fetchEmployees();
+    }, [userEmail, userRole]); // Dependencia para actualizar cuando cambia el usuario logueado
 
+    // Función para eliminar un empleado
+    const handleDeleteEmployee = (employeeId) => {
+        setEmployees(prevEmployees => prevEmployees.filter(emp => emp.id !== employeeId));
+    };
+
+    // Función para actualizar el estado de un empleado (activo/inactivo)
+    const handleUpdateEmployeeStatus = (employeeId, status) => {
+        setEmployees(prevEmployees => 
+            prevEmployees.map(emp => 
+                emp.id === employeeId ? { ...emp, status } : emp
+            )
+        );
+    };
+
+    // Asignar turno a un empleado
     const handleAssignShift = (employeeId) => {
         setSelectedEmployeeId(employeeId);
     };
@@ -72,14 +64,35 @@ const Turnos = () => {
         <div className="turnos-page">
             <h2>Gestión de Turnos</h2>
 
-            {/* Muestra la lista de empleados */}
-            <div className="employee-list-container">
-                <EmployeeList 
-                    employees={employees} 
-                    onAssignShift={handleAssignShift} 
-                    userRole={userRole}  // Pasamos el rol para que se pueda usar en EmployeeList
-                />
-            </div>
+            {/* Administrador: Solo ve la tabla de empleados */}
+            {userRole === 'administrador' && (
+                <div className="employee-list-container">
+                    <EmployeeList 
+                        employees={employees} 
+                        onAssignShift={handleAssignShift} 
+                        onDeleteEmployee={handleDeleteEmployee} 
+                        onUpdateEmployeeStatus={handleUpdateEmployeeStatus}
+                        userRole={userRole} 
+                    />
+                </div>
+            )}
+
+            {/* Cocinero y Mesero: Verán un mensaje si no hay empleados asignados */}
+            {(userRole === 'cocinero' || userRole === 'mesero') && (
+                <div className="employee-list-container">
+                    {employees.length === 0 ? (
+                        <div className="no-access-message">
+                            <h3>El administrador aún no habilita el módulo.</h3>
+                        </div>
+                    ) : (
+                        <EmployeeList 
+                            employees={employees} 
+                            onAssignShift={handleAssignShift} 
+                            userRole={userRole} 
+                        />
+                    )}
+                </div>
+            )}
 
             {/* Formulario para asignar turnos */}
             {selectedEmployeeId && (
