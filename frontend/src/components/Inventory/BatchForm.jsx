@@ -3,6 +3,7 @@ import '@styles/InventoryCSS/BatchForm.css';
 
 const BatchForm = ({ batchToEdit, onSubmit }) => {
   const [batch, setBatch] = useState({
+    batchName: '',
     acquisitionDate: '',
     expirationDate: '',
     totalItems: 0,
@@ -14,6 +15,7 @@ const BatchForm = ({ batchToEdit, onSubmit }) => {
   useEffect(() => {
     if (batchToEdit) {
       setBatch({
+        batchName: batchToEdit.batchName || '',
         acquisitionDate: batchToEdit.acquisitionDate,
         expirationDate: batchToEdit.expirationDate,
         totalItems: batchToEdit.totalItems,
@@ -27,27 +29,38 @@ const BatchForm = ({ batchToEdit, onSubmit }) => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
   
-    // Manipula la fecha de adquisición si es necesario
+    if (!batch.batchName) {
+      alert('El nombre del lote es obligatorio');
+      return; // Evita el envío si el nombre del lote está vacío
+    }
+  
+    // Manipula las fechas de adquisición y expiración...
     const acquisitionDate = new Date(batch.acquisitionDate);
-    acquisitionDate.setDate(acquisitionDate.getDate() + 1); // Ajuste si es necesario
+    acquisitionDate.setDate(acquisitionDate.getDate() + 1);
     const updatedAcquisitionDate = acquisitionDate.toISOString().split('T')[0];
   
-    // Manipula la fecha de vencimiento si es necesario (asegúrate de no restar un día)
     const expirationDate = new Date(batch.expirationDate);
-    expirationDate.setDate(expirationDate.getDate() + 1); // Ajuste si es necesario
+    expirationDate.setDate(expirationDate.getDate() + 1);
     const updatedExpirationDate = expirationDate.toISOString().split('T')[0];
   
     if (batchToEdit) {
-      // Si estamos editando, enviamos el id junto con los datos
       onSubmit(batchToEdit.id, { ...batch, acquisitionDate: updatedAcquisitionDate, expirationDate: updatedExpirationDate });
     } else {
-      // Si estamos creando un nuevo lote
       onSubmit({ ...batch, acquisitionDate: updatedAcquisitionDate, expirationDate: updatedExpirationDate });
     }
-  };
+  };  
 
   return (
     <form onSubmit={handleFormSubmit}>
+      <label>
+        Nombre del Lote:
+        <input
+          type="text"
+          value={batch.batchName}
+          onChange={(e) => setBatch({ ...batch, batchName: e.target.value })}
+        />
+      </label>
+
       <label>
         Fecha de Adquisición:
         <input

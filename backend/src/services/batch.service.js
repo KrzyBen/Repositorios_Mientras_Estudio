@@ -4,9 +4,9 @@ import { AppDataSource } from "../config/configDb.js";
 // Crear lote
 export async function createBatchService(data) {
   try {
-    const { acquisitionDate, expirationDate, totalItems, originPurchase, status, description } = data;
+    const { batchName ,acquisitionDate, expirationDate, totalItems, originPurchase, status, description } = data;
 
-    if (!acquisitionDate || !expirationDate || !originPurchase || !status) {
+    if (!acquisitionDate || !expirationDate || !originPurchase || !status || !batchName) {
       return [null, "Todos los campos obligatorios deben estar presentes."];
     }
   
@@ -28,6 +28,7 @@ export async function createBatchService(data) {
     }
 
     const newBatch = batchRepository.create({
+      batchName,
       acquisitionDate,
       expirationDate,
       totalItems,
@@ -78,6 +79,7 @@ export async function updateBatchService(id, batchData) {
     if (!batch) throw new Error("Lote no encontrado");
 
     const {
+      batchName = batch.batchName,
       acquisitionDate = batch.acquisitionDate,
       expirationDate = batch.expirationDate,
       totalItems = batch.totalItems,
@@ -92,6 +94,7 @@ export async function updateBatchService(id, batchData) {
 
     // Actualizar las propiedades
     Object.assign(batch, {
+      batchName,
       acquisitionDate,
       expirationDate,
       totalItems,

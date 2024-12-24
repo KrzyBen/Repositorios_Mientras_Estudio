@@ -38,6 +38,7 @@ export async function getBatch(batchId) {
 
 export async function createBatch(batchData) {
     try {
+        console.log(batchData);
         const response = await axios.post('/batches/', batchData); // Ruta para crear un lote
         console.log('Lote creado con éxito:', response.data);
         return response.data;

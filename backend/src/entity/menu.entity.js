@@ -1,3 +1,4 @@
+// menu.entity.js
 "use strict";
 import { EntitySchema } from "typeorm";
 
@@ -10,25 +11,43 @@ const MenuSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    nombre: {
+    name: {
       type: "varchar",
-      length: 100,
+      length: 255,
       nullable: false,
     },
-    descripcion: {
+    description: {
       type: "text",
       nullable: false,
     },
-    precio: {
+    price: {
       type: "decimal",
       precision: 10,
       scale: 2,
       nullable: false,
     },
-    disponible: {
-      type: "boolean",
-      default: true,
-      nullable: false,
+    status: {
+      type: "varchar",
+      length: 50,
+      default: "disponible",
+    },
+    createdAt: {
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
+    },
+    updatedAt: {
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+    },
+  },
+  relations: {
+    menuBatchItems: {
+      target: "MenuBatchItem",
+      type: "one-to-many",
+      inverseSide: "menu",
+      cascade: ["insert", "update"],
+      eager: true,
     },
   },
 });

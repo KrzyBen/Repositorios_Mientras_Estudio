@@ -2,27 +2,26 @@ import React, { useState, useEffect } from 'react';
 import MenuTable from '@components/MenuTable';
 import MenuForm from '@components/MenuForm';
 import MenuModal from '@components/MenuModal';
-import { deleteMenuItem, getMenuItems, createMenuItem } from '../services/menu.service'; // Importando servicios
-import Swal from 'sweetalert2';  // Importando SweetAlert2
+import { deleteMenuItem, getMenuItems, createMenuItem } from '../services/menu.service';
+import Swal from 'sweetalert2';
 import '@styles/menu.css';
-import Chatbot from '@components/Chatbot'; // Importando el Chatbot
+import Chatbot from '@components/Chatbot';
 
 const Menu = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [menuItemToEdit, setMenuItemToEdit] = useState(null);
-    const [menuItems, setMenuItems] = useState([]);  // Estado para los elementos del menú
-    const [menuItemToDelete, setMenuItemToDelete] = useState(null); // Elemento a eliminar
-    const [chatbotOpen, setChatbotOpen] = useState(false); // Estado para controlar si el chatbot está abierto
-    const [isFormOpen, setIsFormOpen] = useState(false); // Estado para controlar si el formulario está abierto
-    const user = JSON.parse(sessionStorage.getItem('usuario')) || null; // Obtener usuario desde sessionStorage
-    const userRole = user?.rol; // Obtener el rol del usuario
+    const [menuItems, setMenuItems] = useState([]);
+    const [menuItemToDelete, setMenuItemToDelete] = useState(null);
+    const [chatbotOpen, setChatbotOpen] = useState(false);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const user = JSON.parse(sessionStorage.getItem('usuario')) || null;
+    const userRole = user?.rol;
 
-    // Cargar los elementos del menú al montar el componente
     useEffect(() => {
         const fetchMenuItems = async () => {
             try {
                 const response = await getMenuItems();
-                setMenuItems(response); // Establecer los elementos obtenidos en el estado
+                setMenuItems(response);
             } catch (error) {
                 console.error('Error al obtener los elementos del menú:', error);
             }
@@ -31,7 +30,6 @@ const Menu = () => {
         fetchMenuItems();
     }, []);
 
-    // Manejar la creación de un nuevo elemento del menú
     const handleCreateMenuItem = async (menuData) => {
         if (userRole !== 'administrador' && userRole !== 'cocinero') {
             Swal.fire({
@@ -44,14 +42,13 @@ const Menu = () => {
         }
 
         try {
-            const newMenuItem = await createMenuItem(menuData);  // Crear nuevo ítem
-            setMenuItems([...menuItems, newMenuItem]); // Agregar nuevo ítem al estado
+            const newMenuItem = await createMenuItem(menuData);
+            setMenuItems([...menuItems, newMenuItem]);
         } catch (error) {
             console.error('Error al crear un elemento del menú:', error);
         }
     };
 
-    // Manejar la edición de un elemento del menú
     const handleEditMenuItem = (menuItem) => {
         if (userRole !== 'administrador') {
             Swal.fire({
@@ -65,7 +62,6 @@ const Menu = () => {
         setMenuItemToEdit(menuItem);
     };
 
-    // Manejar la eliminación de un elemento del menú
     const handleDeleteMenuItem = async () => {
         if (userRole !== 'administrador') {
             Swal.fire({
@@ -79,10 +75,10 @@ const Menu = () => {
 
         if (menuItemToDelete) {
             try {
-                await deleteMenuItem(menuItemToDelete.id); // Eliminar ítem del backend
-                setMenuItems(menuItems.filter(item => item.id !== menuItemToDelete.id)); // Eliminar ítem del estado
-                setIsModalOpen(false); // Cerrar modal de confirmación de eliminación
-                setMenuItemToDelete(null); // Resetear el ítem a eliminar
+                await deleteMenuItem(menuItemToDelete.id);
+                setMenuItems(menuItems.filter(item => item.id !== menuItemToDelete.id));
+                setIsModalOpen(false);
+                setMenuItemToDelete(null);
             } catch (error) {
                 console.error('Error al eliminar el elemento del menú:', error);
             }
@@ -97,55 +93,49 @@ const Menu = () => {
                 icon: 'error',
                 confirmButtonText: 'Cerrar'
             });
-            return;  // Prevenir la eliminación si no es administrador
+            return;
         }
         setMenuItemToDelete(menuItem);
-        setIsModalOpen(true);  // Abrir modal para confirmar eliminación
+        setIsModalOpen(true);
     };
 
     const toggleChatbot = () => {
-        setChatbotOpen(prevState => !prevState);  // Alternar el estado del chatbot
+        setChatbotOpen(prevState => !prevState);
     };
 
     const toggleFormVisibility = () => {
-        setIsFormOpen(!isFormOpen);  // Alternar la visibilidad del formulario
+        setIsFormOpen(!isFormOpen);
     };
 
     return (
         <div className="main-container">
-            {/* Mostrar solo para administradores y cocineros */}
             {(userRole === 'administrador' || userRole === 'cocinero') && (
                 <h2 className="title-table">Gestión de Menú</h2>
             )}
 
-            {/* Botón para mostrar/ocultar el formulario */}
             {(userRole === 'administrador' || userRole === 'cocinero') && (
                 <button onClick={toggleFormVisibility} className="toggle-form-btn">
                     {isFormOpen ? 'Cerrar Formulario' : 'Agregar Menú'}
                 </button>
             )}
 
-            {/* Mostrar el formulario solo si isFormOpen es true */}
             {isFormOpen && (
                 <MenuForm menuItemToEdit={menuItemToEdit} onSave={handleCreateMenuItem} />
             )}
 
-            {/* Tabla de menús */}
             <MenuTable 
                 menuItems={menuItems} 
                 onEdit={handleEditMenuItem} 
-                onDelete={handleDeleteClick}  // Pasar el ítem a eliminar
-                userRole={userRole}  // Pasar el rol de usuario a la tabla
+                onDelete={handleDeleteClick} 
+                userRole={userRole} 
             />
             
-            {/* Modal de confirmación de eliminación */}
             <MenuModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
-                onConfirm={handleDeleteMenuItem}  // Llamar a la función de eliminar
+                onConfirm={handleDeleteMenuItem} 
             />
 
-            {/* Ícono del chatbot con el globo de texto */}
             <div className="chatbot-container">
                 <div className="chatbot-icon" onClick={toggleChatbot}>
                     <img 
@@ -156,13 +146,11 @@ const Menu = () => {
                         style={{ cursor: 'pointer' }} 
                     />
                 </div>
-                {/* Globot de ayuda */}
                 <div className="chatbot-bubble">
                     <span></span>
                 </div>
             </div>
 
-            {/* Integrar el Chatbot */}
             <Chatbot isOpen={chatbotOpen} onClose={toggleChatbot} />
         </div>
     );

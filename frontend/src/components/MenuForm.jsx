@@ -1,98 +1,143 @@
 import React, { useState, useEffect } from 'react';
-import { createMenuItem, updateMenuItem } from '../services/menu.service';
-import { showSuccessAlert, showErrorAlert } from '../helpers/sweetAlert';
+import { getAllBatches } from '@services/batch.service.js';
 
 const MenuForm = ({ menuItemToEdit, onSave }) => {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-    const [precio, setPrecio] = useState('');
+    const [menuItem, setMenuItem] = useState(menuItemToEdit || {});
+    const [batchItems, setBatchItems] = useState([]);
+    const [selectedBatch, setSelectedBatch] = useState('');
+    const [batchQuantity, setBatchQuantity] = useState(0);
+    const [batchList, setBatchList] = useState([]); // Para almacenar los lotes y sus cantidades
 
-    // Establecer los valores cuando se edite un plato
     useEffect(() => {
-        if (menuItemToEdit) {
-            setNombre(menuItemToEdit.nombre);
-            setDescripcion(menuItemToEdit.descripcion);
-            setPrecio(menuItemToEdit.precio);
-        }
-    }, [menuItemToEdit]);
-
-    // Manejar el envío del formulario
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Convertir el precio a número, permitiendo decimales
-        const precioNumber = parseFloat(precio);
-
-        // Asegurarse de que el precio es un número válido
-        if (isNaN(precioNumber)) {
-            alert("Por favor ingrese un precio válido.");
-            return;
-        }
-
-        // Verificar que el precio esté dentro del rango aceptado por el backend
-        if (precioNumber < 990 || precioNumber > 999999) {
-            alert("El precio debe estar entre $990 y $999,999.");
-            return;
-        }
-
-        const newMenuItem = { nombre, descripcion, precio: precioNumber };
-
-        try {
-            if (menuItemToEdit) {
-                // Actualizar un plato
-                await updateMenuItem(menuItemToEdit.id, newMenuItem);
-                showSuccessAlert('¡Actualizado!', 'El plato ha sido actualizado con éxito.');
-            } else {
-                // Agregar un nuevo plato
-                await createMenuItem(newMenuItem);
-                showSuccessAlert('¡Agregado!', 'El plato ha sido agregado con éxito.');
+        const fetchBatchItems = async () => {
+            try {
+                const response = await getAllBatches();
+                console.log('Lotes cargados:', response);  // Log para ver los lotes obtenidos
+                setBatchItems(response);
+            } catch (error) {
+                console.error('Error al obtener los lotes:', error);
             }
-            
-            onSave(newMenuItem); // Pasar el nuevo plato a la función de callback para actualizar la lista
-            clearForm();
-        } catch (error) {
-            console.error('Error saving menu item:', error);
-            showErrorAlert('Error', 'Hubo un problema al guardar el plato.');
-        }
+        };
+        fetchBatchItems();
+    }, []);
+
+    const handleAddBatch = () => {
+        if (!selectedBatch || batchQuantity <= 0) return;
+
+        const selectedBatchData = batchItems.find(batch => batch.id === selectedBatch);
+        const newBatch = {
+            id: selectedBatch,  // Usamos el ID del lote seleccionado
+            name: selectedBatchData?.batchName, // Asegúrate de obtener el nombre del lote correctamente
+            quantity: batchQuantity
+        };
+
+        // Añadir el lote a la lista
+        setBatchList([...batchList, newBatch]);
+
+        // Log para ver cómo queda la lista de lotes después de añadir
+        console.log('Lotes añadidos al menú:', [...batchList, newBatch]);
+
+        // Limpiar los campos después de agregar el lote
+        setSelectedBatch('');
+        setBatchQuantity(0);
     };
 
-    // Limpiar el formulario después de guardar
-    const clearForm = () => {
-        setNombre('');
-        setDescripcion('');
-        setPrecio('');
+    const handleRemoveBatch = (batchId) => {
+        const updatedBatchList = batchList.filter(batch => batch.id !== batchId);
+        setBatchList(updatedBatchList);
+
+        // Log para ver la lista actualizada después de eliminar un lote
+        console.log('Lotes actualizados (eliminado):', updatedBatchList);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (batchList.length === 0) {
+            alert("Debe añadir al menos un lote al menú.");
+            return;
+        }
+
+        const formData = {
+            ...menuItem,
+            batchItems: batchList // Incluimos los lotes y sus cantidades
+        };
+
+        // Log para revisar los datos antes de enviarlos
+        console.log('Datos a guardar:', formData);
+
+        onSave(formData);
     };
 
     return (
-        <form onSubmit={handleSubmit} className="menu-form">
-            <div>
-                <label>NOMBRE:</label>
-                <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    required
+        <form onSubmit={handleSubmit}>
+            <div className="form-group">
+                <label>Nombre</label>
+                <input 
+                    type="text" 
+                    value={menuItem.name || ''} 
+                    onChange={(e) => setMenuItem({ ...menuItem, name: e.target.value })} 
                 />
             </div>
-            <div>
-                <label>DESCRIPCIÓN:</label>
-                <textarea
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    required
+            <div className="form-group">
+                <label>Descripción</label>
+                <input 
+                    type="text" 
+                    value={menuItem.description || ''} 
+                    onChange={(e) => setMenuItem({ ...menuItem, description: e.target.value })} 
                 />
             </div>
-            <div>
-                <label>PRECIO:</label>
-                <input
-                    type="number"
-                    value={precio}
-                    onChange={(e) => setPrecio(e.target.value)}
-                    required
-                    step="0.01"
+            <div className="form-group">
+                <label>Precio</label>
+                <input 
+                    type="number" 
+                    value={menuItem.price || ''} 
+                    onChange={(e) => setMenuItem({ ...menuItem, price: e.target.value })} 
                 />
             </div>
-            <button type="submit">{menuItemToEdit ? 'Actualizar' : 'Agregar'} Plato</button>
+
+            <div className="form-group">
+                <label>Lote</label>
+                <select 
+                    value={selectedBatch} 
+                    onChange={(e) => setSelectedBatch(e.target.value)} 
+                >
+                    <option value="">Seleccione un lote</option>
+                    {batchItems.map((batch) => (
+                        <option key={batch.id} value={batch.id}>
+                            {batch.batchName} {/* Mostrar el nombre del lote */}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label>Cantidad del Lote</label>
+                <input 
+                    type="number" 
+                    value={batchQuantity} 
+                    onChange={(e) => setBatchQuantity(e.target.value)} 
+                />
+            </div>
+
+            <button type="button" onClick={handleAddBatch}>Añadir lote</button>
+
+            <div>
+                <h4>Lotes añadidos al menú:</h4>
+                <ul>
+                    {batchList.map((batch, index) => (
+                        <li key={index}>
+                            Ingrediente lote: {batch.id}, 
+                            Cantidad: {batch.quantity}
+                            <button type="button" onClick={() => handleRemoveBatch(batch.id)}>
+                                Eliminar
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <button type="submit">Guardar</button>
         </form>
     );
 };

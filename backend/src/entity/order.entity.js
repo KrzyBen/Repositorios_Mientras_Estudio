@@ -15,9 +15,8 @@ const OrderSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    product: {
-      type: "varchar",
-      length: 255,
+    menuId: {
+      type: "int",
       nullable: false,
     },
     status: {
@@ -38,6 +37,13 @@ const OrderSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    menu: {
+      target: "Menu",
+      type: "many-to-one",
+      joinColumn: { name: "menuId" },
+    },
+  },  
 });
 
 export default OrderSchema;
