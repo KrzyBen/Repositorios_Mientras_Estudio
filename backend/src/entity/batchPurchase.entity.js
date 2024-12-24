@@ -1,7 +1,7 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const purchaseBatchSchema = new EntitySchema({
+const PurchaseBatchSchema = new EntitySchema({
   name: "PurchaseBatch",
   tableName: "purchase_batches",
   columns: {
@@ -9,6 +9,11 @@ const purchaseBatchSchema = new EntitySchema({
       type: "int",
       primary: true,
       generated: true,
+    },
+    batchName: {
+      type: "varchar",
+      length: 100,
+      nullable: false,
     },
     acquisitionDate: {
       type: "date",
@@ -39,6 +44,14 @@ const purchaseBatchSchema = new EntitySchema({
       nullable: true,
     },
   },
+  relations: {
+    menuBatchItems: {
+      target: "MenuBatchItem",
+      type: "one-to-many",
+      inverseSide: "batchItem",
+      cascade: ["insert", "update"],
+    },
+  },
 });
 
-export default purchaseBatchSchema;
+export default PurchaseBatchSchema;

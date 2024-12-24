@@ -1,133 +1,95 @@
 "use strict";
 import {
-  addMenuItem,
-  getMenu,
-  updateMenuItem,
-  deleteMenuItem,
+  createMenuItemService,
+  getAllMenuItemsService,
+  getMenuItemService,
+  updateMenuItemService,
+  deleteMenuItemService,
 } from "../services/menu.service.js";
-import {
-  handleErrorClient,
-  handleErrorServer,
-  handleSuccess,
-} from "../handlers/responseHandlers.js";
+import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { menuValidation } from "../validations/menu.validation.js";
-import { AppDataSource } from "../config/configDb.js";
-import Menu from "../entity/menu.entity.js";
 
-// Función para formatear precios
-const formatPrecio = (precio) => `$${Number(precio).toLocaleString("es-CL")}`;
-
-export async function createMenuItem(req, res) {
+// Crear menú
+export async function createMenu(req, res) {
   try {
-    const { body } = req;
-    const { error } = menuValidation.validate(body);
+    const { error, value: data } = menuValidation.validate(req.body, { abortEarly: false });
 
     if (error) {
-      return handleErrorClient(res, 400, "Error de validación", error.message);
+      const errorMessages = error.details.map(err => err.message);
+      return handleErrorClient(res, 400, errorMessages);
     }
 
-    // Verificar si ya existe un menú con el mismo nombre
-    const menuRepository = AppDataSource.getRepository(Menu);
-    const existingMenu = await menuRepository.findOne({
-      where: { nombre: body.nombre },
-    });
-
-    if (existingMenu) {
-      return handleErrorClient(
-        res,
-        400,
-        "Error de validación",
-        "Ya existe un menú con este nombre."
-      );
+    // Llamar al servicio para crear el menú
+    const [menuItem, serviceError] = await createMenuItemService(data);
+    if (serviceError) {
+      if (serviceError.includes('ítems')) {
+        return handleErrorClient(res, 400, serviceError);
+      }
+      return handleErrorServer(res, 500, serviceError);
     }
 
-    const [newMenuItem, errorNewItem] = await addMenuItem(body);
-
-    if (errorNewItem) {
-      return handleErrorClient(res, 400, "Error añadiendo el plato", errorNewItem);
-    }
-
-    // Formatear el precio antes de enviar la respuesta
-    newMenuItem.precio = formatPrecio(newMenuItem.precio);
-
-    handleSuccess(res, 201, "Plato añadido con éxito", newMenuItem);
+    return handleSuccess(res, 201, "Menú creado exitosamente", menuItem);
   } catch (error) {
-    handleErrorServer(res, 500, error.message);
+    return handleErrorServer(res, 500, "Error en el servidor al crear el menú");
   }
 }
 
-export async function getAllMenuItems(req, res) {
+// Obtener todos los menús
+export async function getMenus(req, res) {
   try {
-    const [menu, error] = await getMenu();
+    const [menus, error] = await getAllMenuItemsService();
 
-    if (error) {
-      return handleErrorClient(res, 404, "No se encontró el menú");
-    }
-
-    // Formatear los precios en el menú
-    const formattedMenu = menu.map((item) => ({
-      ...item,
-      precio: formatPrecio(item.precio),
-    }));
-
-    handleSuccess(res, 200, "Menú encontrado", formattedMenu);
+    if (error) return handleErrorServer(res, 500, error);
+    return handleSuccess(res, 200, "Menús obtenidos", menus);
   } catch (error) {
-    handleErrorServer(res, 500, error.message);
+    return handleErrorServer(res, 500, "Error en el servidor al obtener los menús");
   }
 }
 
-export async function editMenuItem(req, res) {
+// Obtener un menú por su ID
+export async function getMenu(req, res) {
   try {
     const { id } = req.params;
-    const { body } = req;
-    const { error } = menuValidation.validate(body);
+    const [menuItem, error] = await getMenuItemService(id);
 
-    if (error) {
-      return handleErrorClient(res, 400, "Error de validación", error.message);
-    }
-
-    // Verificar si el nuevo nombre ya existe en otro plato
-    const menuRepository = AppDataSource.getRepository(Menu);
-    const existingMenu = await menuRepository.findOne({
-      where: { nombre: body.nombre },
-    });
-
-    if (existingMenu && existingMenu.id !== parseInt(id, 10)) {
-      return handleErrorClient(
-        res,
-        400,
-        "Error de validación",
-        "Ya existe un menú con este nombre."
-      );
-    }
-
-    const [updatedMenuItem, errorUpdate] = await updateMenuItem(id, body);
-
-    if (errorUpdate) {
-      return handleErrorClient(res, 404, "Error al actualizar el plato", errorUpdate);
-    }
-
-    // Formatear el precio antes de enviar la respuesta
-    updatedMenuItem.precio = formatPrecio(updatedMenuItem.precio);
-
-    handleSuccess(res, 200, "Plato actualizado con éxito", updatedMenuItem);
+    if (error) return handleErrorClient(res, 404, error);
+    return handleSuccess(res, 200, "Menú obtenido", menuItem);
   } catch (error) {
-    handleErrorServer(res, 500, error.message);
+    return handleErrorServer(res, 500, "Error en el servidor al obtener el menú");
   }
 }
 
-export async function removeMenuItem(req, res) {
+// Actualizar un menú
+export async function updateMenu(req, res) {
+  try {
+    const { id } = req.params;
+    const { error, value: menuData } = menuValidation.validate(req.body, { abortEarly: false });
+
+    if (error) {
+      const errorMessages = error.details.map(err => err.message);
+      return handleErrorClient(res, 400, errorMessages);
+    }
+
+    // Llamar al servicio para actualizar el menú
+    const [updatedMenu, serviceError] = await updateMenuItemService(id, menuData);
+    if (serviceError) return handleErrorServer(res, 500, serviceError);
+
+    return handleSuccess(res, 200, "Menú actualizado exitosamente", updatedMenu);
+  } catch (error) {
+    return handleErrorServer(res, 500, "Error en el servidor al actualizar el menú");
+  }
+}
+
+// Eliminar un menú
+export async function deleteMenu(req, res) {
   try {
     const { id } = req.params;
 
-    const [deletedMenuItem, error] = await deleteMenuItem(id);
+    const [deletedMenu, error] = await deleteMenuItemService(id);
 
-    if (error) {
-      return handleErrorClient(res, 404, "Error al eliminar el plato", error);
-    }
-
-    handleSuccess(res, 200, "Plato eliminado con éxito", deletedMenuItem);
+    if (error) return handleErrorClient(res, 404, error);
+    return handleSuccess(res, 200, "Menú eliminado exitosamente", deletedMenu);
   } catch (error) {
-    handleErrorServer(res, 500, error.message);
+    return handleErrorServer(res, 500, "Error en el servidor al eliminar el menú");
   }
 }

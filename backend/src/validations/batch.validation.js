@@ -5,6 +5,21 @@ const twoWeeksFromNow = new Date(today);
 twoWeeksFromNow.setDate(today.getDate() + 14);
 
 export const BatchBodyValidation = Joi.object({
+  batchName: Joi.string()
+    .pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/) // Solo letras, tildes y espacios
+    .pattern(/^(?!.*\s{2,}).*$/) // No permite espacios consecutivos
+    .min(5)
+    .max(30)
+    .required()
+    .messages({
+      "string.base": "El nombre del lote debe ser un texto.",
+      "string.empty": "El nombre del lote no puede estar vacío.",
+      "string.pattern.base": "El nombre del lote solo puede contener letras, tildes, ñ y espacios simples.",
+      "string.min": "El nombre del lote debe tener al menos 5 caracteres.",
+      "string.max": "El nombre del lote no debe exceder los 30 caracteres.", // Cambié el 100 por 30
+      "any.required": "El nombre del lote es obligatorio.",
+    }),
+
   acquisitionDate: Joi.date()
     .greater(today) // No permite fechas pasadas
     .less(twoWeeksFromNow) // Rango máximo de 2 semanas
@@ -27,12 +42,12 @@ export const BatchBodyValidation = Joi.object({
 
   totalItems: Joi.number()
     .integer()
-    .min(0)
+    .min(1) // Cambié 0 a 1
     .max(50) // Actualizado para reflejar un lote de 50 ítems
     .required()
     .messages({
       "number.base": "El número de ítems debe ser un número.",
-      "number.min": "Debe haber al menos un ítem en el lote.",
+      "number.min": "Debe haber al menos 1 ítem en el lote.", // Cambié el mensaje a 1
       "number.max": "Debe haber un máximo de 50 ítems en el lote.",
       "any.required": "El número de ítems es obligatorio.",
     }),
@@ -58,27 +73,13 @@ export const BatchBodyValidation = Joi.object({
     .required()
     .messages({
       "string.base": "El estado debe ser un texto.",
-      "any.only": "El estado debe ser uno de los siguientes valores: pending, in_stock, expired, consumed.",
+      "any.only": "El estado debe ser uno de los siguientes valores: pending, in_stock, expired, out_stock.", // Cambié el mensaje
       "any.required": "El estado es obligatorio.",
     }),
 
-    description: Joi.string()
+  description: Joi.string()
     .max(255)
-    .allow("") // Permite una cadena vacía
-    .custom((value, helper) => {
-      // Si no comienza con "Lote de ", agregarlo automáticamente
-      if (!value.startsWith("Lote de ")) {
-        value = "Lote de " + value;
-      }
-
-      // Validar que la descripción ahora comienza con "Lote de "
-      const regex = /^Lote de [a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-      if (!regex.test(value)) {
-        return helper.message("La descripción debe comenzar con 'Lote de ' seguido de un nombre de producto.");
-      }
-
-      return value; // Devuelve el valor modificado (si se cambió)
-    })
+    .required()
     .messages({
       "string.base": "La descripción debe ser un texto.",
       "string.max": "La descripción no debe exceder los 255 caracteres.",
