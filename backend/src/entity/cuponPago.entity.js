@@ -1,0 +1,59 @@
+'use strict';
+import { EntitySchema } from "typeorm";
+
+const CuponPagoSchema = new EntitySchema({
+  name: "CuponPago",
+  tableName: "cupones_pago",
+  columns: {
+    id: {
+      type: "int",
+      primary: true,
+      generated: true,
+    },
+    mes: {
+      type: "int",
+      nullable: false,
+    },
+    año: {
+      type: "int",
+      nullable: false,
+    },
+    monto: {
+      type: "int",
+      nullable: false,
+    },
+    estado: {
+      type: "varchar",
+      length: 20,
+      default: "pendiente",
+    },
+    tipo: {
+      type: "varchar",
+      length: 50,
+      default: "mensual", // 'mensual', 'renovación', 'extraordinario', etc.
+      nullable: false,
+    },
+    fechaPago: {
+      name: "fecha_pago",
+      type: "date",
+      nullable: true,
+    },
+    fechaCompromiso: {
+      name: "fecha_compromiso",
+      type: "date",
+      nullable: true,
+    },
+  },
+  relations: {
+    vecino: {
+      type: "many-to-one",
+      target: "User",
+      joinColumn: {
+        name: "vecino_id",
+      },
+      onDelete: "CASCADE",
+    },
+  }
+});
+
+export default CuponPagoSchema;
