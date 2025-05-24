@@ -20,7 +20,18 @@ const CuponPagoSchema = new EntitySchema({
     },
     monto: {
       type: "int",
+      default: 1000,
       nullable: false,
+    },
+    montoDescuento: {
+      type: "int",
+      default: 0,
+    },
+    descripcionPago: {
+      type: "varchar",
+      length: 255,
+      default: "Pago de cuota Mensual",
+      nullable: false, 
     },
     estado: {
       type: "varchar",
@@ -30,7 +41,7 @@ const CuponPagoSchema = new EntitySchema({
     tipo: {
       type: "varchar",
       length: 50,
-      default: "mensual", // 'mensual', 'renovación', 'extraordinario', etc.
+      default: "mensual",
       nullable: false,
     },
     fechaPago: {
