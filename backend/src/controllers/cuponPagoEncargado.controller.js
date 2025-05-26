@@ -44,13 +44,13 @@ export async function listarCuponesEncargado(req, res) {
 
 export async function actualizarCuponEncargado(req, res) {
   try {
-      const { id } = req.params;
-      const cuponId = Number(id);
-  
-      if (isNaN(cuponId)) {
+      const { cuponId } = req.params;
+      const id = Number(cuponId);
+
+      if (isNaN(id)) {
         return handleErrorClient(res, 400, "ID inválido");
       }
-  
+
       const { error, value } = crearCuponSchema.validate(req.body, { abortEarly: false });
 
       if (error) {
@@ -58,7 +58,7 @@ export async function actualizarCuponEncargado(req, res) {
         return handleErrorClient(res, 400, mensajes);
       }
   
-      const [cuponActualizado, serviceError] = await actualizarCuponEncargadoService(cuponId, value);
+      const [cuponActualizado, serviceError] = await actualizarCuponEncargadoService(id, value);
       if (serviceError) return handleErrorClient(res, 404, serviceError);
   
       return handleSuccess(res, 200, 'Cupón actualizado correctamente', cuponActualizado);
