@@ -60,7 +60,7 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
             año: añoActual,
             monto,
             montoDescuento: 0,
-            DescripcionPago: descripcion || `Pago de cuota mensual correspondiente a ${mes}/${añoActual}`,
+            descripcionPago: descripcion || `Pago de cuota mensual correspondiente a ${mes}/${añoActual}`,
             estado: 'pendiente',
             tipo: 'mensual',
             fechaPago: fechaPago || null,

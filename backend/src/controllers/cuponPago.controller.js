@@ -1,4 +1,3 @@
-// controllers/cupon.controller.js
 'use strict';
 
 import {
@@ -7,12 +6,12 @@ import {
   listarCuponesService,
   actualizarCuponService,
   eliminarCuponService
-} from '../services/cupon.service.js';
+} from '../services/cuponPago.service.js';
 
 import {
   crearCuponSchema,
   generarMensualesSchema
-} from '../validations/cupon.validation.js';
+} from '../validations/cuponPago.validation.js';
 import {
   handleSuccess,
   handleErrorClient,
@@ -100,7 +99,7 @@ export async function actualizarCupon(req, res) {
   }
 }
 
-// Eliminar cupón
+// Eliminar cupón (solo para administradores)
 export async function eliminarCupon(req, res) {
   try {
     const cuponId = Number(req.params.id);
