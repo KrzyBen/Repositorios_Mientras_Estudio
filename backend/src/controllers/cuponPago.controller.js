@@ -5,7 +5,9 @@ import {
   generarCuponesMensualesParaVecinos,
   listarCuponesService,
   actualizarCuponService,
-  eliminarCuponService
+  eliminarCuponService,
+  listarVecinosService,
+  listarCuponesVecinoService
 } from '../services/cuponPago.service.js';
 
 import {
@@ -102,14 +104,43 @@ export async function actualizarCupon(req, res) {
 // Eliminar cupón (solo para administradores)
 export async function eliminarCupon(req, res) {
   try {
-    const cuponId = Number(req.params.id);
-    if (isNaN(cuponId)) return handleErrorClient(res, 400, "ID inválido");
+    const { cuponId } = req.params;
+    const id = Number(cuponId);
+    if (isNaN(id)) return handleErrorClient(res, 400, "ID inválido");
 
-    const [cuponEliminado, serviceError] = await eliminarCuponService(cuponId);
+    const [cuponEliminado, serviceError] = await eliminarCuponService(id);
     if (serviceError) return handleErrorClient(res, 404, serviceError);
 
     return handleSuccess(res, 200, 'Cupón eliminado correctamente', cuponEliminado);
   } catch (err) {
     return handleErrorServer(res, 500, 'Error al eliminar el cupón');
+  }
+}
+
+// Obtener lista de todos los vecinos
+export async function listarVecinos(req, res) {
+  try {
+    const [vecinos, error] = await listarVecinosService();
+    if (error) return handleErrorClient(res, 404, error);
+    return handleSuccess(res, 200, 'Vecinos obtenidos con éxito', vecinos);
+  } catch (err) {
+    return handleErrorServer(res, 500, 'Error al obtener vecinos');
+  }
+}
+
+// Obtener cupones de un vecino
+export async function listarCuponesPorVecino(req, res) {
+  try {
+    const { vecinoId } = req.params;
+    const id = Number(vecinoId);
+
+    if (isNaN(id)) return handleErrorClient(res, 400, 'ID inválido');
+
+    const [cupones, error] = await listarCuponesVecinoService(id);
+    if (error) return handleErrorClient(res, 404, error);
+
+    return handleSuccess(res, 200, 'Cupones del vecino obtenidos con éxito', cupones);
+  } catch (err) {
+    return handleErrorServer(res, 500, 'Error al obtener los cupones del vecino');
   }
 }
