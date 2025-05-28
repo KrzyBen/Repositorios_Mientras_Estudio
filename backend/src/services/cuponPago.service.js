@@ -87,7 +87,7 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
 export async function listarCuponesService(estado = null) {
   try {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
-    const estadosValidos = ["pendiente", "pagado", "comprometido"];
+    const estadosValidos = ["pendiente", "pagado", "comprometido","oculto"];
 
     const where = estado && estadosValidos.includes(estado) ? { estado } : {};
     const cupones = await cuponRepository.find({

@@ -1,6 +1,7 @@
 import CuponPagoSchema from "../entity/cuponPago.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
+import { Not } from "typeorm";
 
 // Crear cupón para un vecino
 export async function crearCuponEncargadoService(data) {
@@ -78,7 +79,19 @@ export async function generarAnualesEncargadoService(opciones = {}) {
 export async function listarCuponesEncargadoService(estado = null) {
   try {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
-    const where = estado ? { estado } : {};
+
+    let where;
+
+    if (estado) {
+      // Si se especifica un estado, se filtra solo por ese estado
+      where = { estado };
+    } else {
+      // Si no se especifica estado, se listan todos excepto los ocultos
+      where = {
+        estado: Not("oculto"),
+      };
+    }
+
     const cupones = await cuponRepository.find({
       where,
       relations: ["vecino"],
