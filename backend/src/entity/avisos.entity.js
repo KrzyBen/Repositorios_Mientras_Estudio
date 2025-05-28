@@ -43,11 +43,11 @@ const Aviso = new EntitySchema({
       default: "pendiente", // pendiente, pendiente_aprobacion, publicado, rechazado, desactivado
     },
     fechaCreacion: {
-      type: "datetime",
+      type: "date",
       default: () => "CURRENT_TIMESTAMP",
     },
     fechaExpiracion: {
-      type: "datetime",
+      type: "date",
       nullable: true,
     },
   },
