@@ -147,3 +147,41 @@ export async function eliminarCuponService(id) {
     return [null, `Error en eliminarCuponService: ${error.message}`];
   }
 }
+
+// Listar todos los usuarios con rol 'vecino'
+export async function listarVecinosService() {
+  try {
+    const userRepository = AppDataSource.getRepository(UserSchema);
+    const vecinos = await userRepository.find({
+      where: { rol: 'vecino' },
+      select: ['id', 'nombre', 'email', 'rut'],
+    });
+
+    return [vecinos, null];
+  } catch (error) {
+    return [null, `Error al listar vecinos: ${error.message}`];
+  }
+}
+
+// Listar los cupones de un vecino específico
+export async function listarCuponesVecinoService(idVecino) {
+  try {
+    const userRepository = AppDataSource.getRepository(UserSchema);
+    const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
+
+    const vecino = await userRepository.findOneBy({ id: idVecino });
+
+    if (!vecino || vecino.rol !== 'vecino') {
+      return [null, 'Usuario no encontrado o no tiene rol de vecino'];
+    }
+
+    const cupones = await cuponRepository.find({
+      where: { vecino: { id: idVecino } },
+      relations: ['vecino'],
+    });
+
+    return [cupones, null];
+  } catch (error) {
+    return [null, `Error al obtener cupones del vecino: ${error.message}`];
+  }
+}
