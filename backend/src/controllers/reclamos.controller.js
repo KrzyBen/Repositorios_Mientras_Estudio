@@ -1,5 +1,5 @@
 "use strict";
-import * as service from "../services/reclamos.service.js";
+import * as service from "../services/reclamos.services.js";
 
 // Crear reclamo (vecino)
 export async function crear(req, res) {
