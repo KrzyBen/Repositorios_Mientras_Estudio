@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import CuponPago from "../entity/cuponPago.entity.js";
 import User from "../entity/user.entity.js";
+import { In } from "typeorm";
 
 export async function obtenerCuponesVecino(idVecino) {
   try {
@@ -16,7 +17,7 @@ export async function obtenerCuponesVecino(idVecino) {
     const cupones = await cuponRepo.find({
       where: {
         vecino: { id: idVecino },
-        estado: estadosPermitidos
+        estado: In(estadosPermitidos) // <--- CORREGIDO
       },
       relations: ["vecino"],
       order: { año: "DESC", mes: "DESC" }
