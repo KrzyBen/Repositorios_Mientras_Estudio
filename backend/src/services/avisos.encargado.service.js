@@ -4,7 +4,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import Aviso from "../entity/avisos.entity.js";
 
-export async function crearAvisoEncargado(data) {
+export async function crearAvisoEncargadoService(data) {
   try {
     const repo = AppDataSource.getRepository(Aviso);
     const aviso = repo.create({
@@ -19,7 +19,7 @@ export async function crearAvisoEncargado(data) {
   }
 }
 
-export async function validarAviso(id, apropiado, aprobado) {
+export async function validarAvisoService(id, apropiado, aprobado) {
   try {
     const repo = AppDataSource.getRepository(Aviso);
     const aviso = await repo.findOne({ where: { id } });
@@ -39,7 +39,7 @@ export async function validarAviso(id, apropiado, aprobado) {
   }
 }
 
-export async function ocultarAviso(id) {
+export async function ocultarAvisoService(id) {
   try {
     const repo = AppDataSource.getRepository(Aviso);
     const aviso = await repo.findOne({ where: { id } });

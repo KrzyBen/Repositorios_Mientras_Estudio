@@ -4,7 +4,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import Aviso from "../entity/avisos.entity.js";
 
-export async function crearAvisoVecino(data) {
+export async function crearAvisoVecinoService(data) {
   try {
     const avisoRepo = AppDataSource.getRepository(Aviso);
     const aviso = avisoRepo.create({
@@ -20,7 +20,7 @@ export async function crearAvisoVecino(data) {
   }
 }
 
-export async function editarAvisoVecino(id, data, usuarioId) {
+export async function editarAvisoVecinoService(id, data, usuarioId) {
   try {
     const repo = AppDataSource.getRepository(Aviso);
     const aviso = await repo.findOne({ where: { id, usuarioId } });
@@ -35,7 +35,7 @@ export async function editarAvisoVecino(id, data, usuarioId) {
   }
 }
 
-export async function obtenerAvisosPublicados() {
+export async function obtenerAvisosPublicadosService() {
   try {
     const repo = AppDataSource.getRepository(Aviso);
     const avisos = await repo.find({ where: { estado: "publicado", visible: true } });

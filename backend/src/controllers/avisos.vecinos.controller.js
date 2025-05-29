@@ -2,17 +2,17 @@
 // controllers/avisos.vecinos.controller.js
 
 import {
-  crearAvisoVecino,
-  editarAvisoVecino,
-  obtenerAvisosPublicados,
-} from "../services/avisos.vecinos.service.js";
+  crearAvisoVecinoService,
+  editarAvisoVecinoService,
+  obtenerAvisosPublicadosService
+} from "../services/avisos.vecino.service.js";
 import {
   handleSuccess,
   handleErrorClient,
   handleErrorServer,
 } from "../handlers/responseHandlers.js";
 
-export const crearAviso = async (req, res) => {
+export const crearAvisoVecino = async (req, res) => {
   try {
     const data = {
       ...req.body,
@@ -20,7 +20,7 @@ export const crearAviso = async (req, res) => {
       usuarioId: req.user.id,
     };
 
-    const [aviso, error] = await crearAvisoVecino(data);
+    const [aviso, error] = await crearAvisoVecinoService(data);
     if (error) {
       return handleErrorClient(res, 400, "Error al crear aviso", error);
     }
@@ -31,12 +31,12 @@ export const crearAviso = async (req, res) => {
   }
 };
 
-export const editarAviso = async (req, res) => {
+export const editarAvisoVecino = async (req, res) => {
   try {
     const { id } = req.params;
     const usuarioId = req.user.id;
 
-    const [aviso, error] = await editarAvisoVecino(id, req.body, usuarioId);
+    const [aviso, error] = await editarAvisoVecinoService(id, req.body, usuarioId);
     if (error) {
       return handleErrorClient(res, 403, "No autorizado o error", error);
     }
@@ -49,7 +49,7 @@ export const editarAviso = async (req, res) => {
 
 export const listarAvisosPublicados = async (req, res) => {
   try {
-    const [avisos, error] = await obtenerAvisosPublicados();
+    const [avisos, error] = await obtenerAvisosPublicadosService();
     if (error) {
       return handleErrorClient(res, 404, "No se pudieron obtener avisos", error);
     }

@@ -17,7 +17,7 @@ export async function obtenerCuponesVecino(idVecino) {
     const cupones = await cuponRepo.find({
       where: {
         vecino: { id: idVecino },
-        estado: In(estadosPermitidos) // <--- CORREGIDO
+        estado: In(estadosPermitidos)
       },
       relations: ["vecino"],
       order: { año: "DESC", mes: "DESC" }
