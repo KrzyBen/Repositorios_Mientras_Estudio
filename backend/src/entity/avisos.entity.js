@@ -1,4 +1,3 @@
-// db/entities/avisos.entity.js
 "use strict"
 
 import { EntitySchema } from "typeorm";

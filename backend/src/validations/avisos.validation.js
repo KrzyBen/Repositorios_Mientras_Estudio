@@ -1,4 +1,3 @@
-// src/validations/aviso.validation.js
 import Joi from "joi";
 
 export const crearAvisoSchema = Joi.object({
