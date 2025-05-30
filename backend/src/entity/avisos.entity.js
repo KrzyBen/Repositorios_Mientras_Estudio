@@ -1,5 +1,5 @@
-'use strict'
-// avisos.entity.js
+// db/entities/avisos.entity.js
+"use strict"
 
 import { EntitySchema } from "typeorm";
 
@@ -40,14 +40,14 @@ const Aviso = new EntitySchema({
     },
     estado: {
       type: "varchar",
-      default: "pendiente", // pendiente, pendiente_aprobacion, publicado, rechazado, desactivado
+      default: "pendiente",
     },
     fechaCreacion: {
-      type: "date",
+      type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
     },
     fechaExpiracion: {
-      type: "date",
+      type: "timestamp",
       nullable: true,
     },
   },

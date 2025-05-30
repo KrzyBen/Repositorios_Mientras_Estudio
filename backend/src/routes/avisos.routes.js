@@ -1,43 +1,51 @@
-'use strict'
-// avisos.routes.js
+import { Router } from "express";
+import * as avisoController from "../controllers/aviso.controller.js";
+import { validar } from "../middlewares/authAvisos.middlewares.js";
+import { actualizarAvisoSchema, crearAvisoSchema } from "../validations/avisos.validation.js";
+import { isAdmin } from "../middlewares/authorization.middleware.js";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 
-import express from "express";
+const router = Router();
 
-import {
-  crearAvisoVecino,
-  editarAvisoVecino,
-  listarAvisosPublicados,
-} from "../controllers/avisos.vecinos.controller.js";
+// Obtener todos los avisos con paginación opcional
+router.get("/get", avisoController.obtenerAvisos);
 
-import {
-  crearAvisoEncargado,
-  //editarAvisoEncargado,
-  ocultarAviso,
-  validarApropiado,
-  //aprobarAviso,
-  obtenerAvisosEncargado
-} from "../controllers/avisos.encargado.controller.js";
+// Obtener aviso por id
+router.get("/:id", avisoController.obtenerAvisoPorId);
 
-import {
-  verificarPropietario,
-  verificarTiempoEdicion,
-  verificarRolEncargadoOAdmin,
-  verificarRolAdmin,
-} from "../middlewares/authAvisos.middlewares.js";
 
-const router = express.Router();
+// Contar avisos
+router.get("/count/all", avisoController.contarAvisos);
 
-// Vecinos
-router.post("/vecino", crearAvisoVecino);
-router.put("/vecino/:id", verificarPropietario, verificarTiempoEdicion, editarAvisoVecino);
-router.get("/vecino", listarAvisosPublicados);
+// Crear un nuevo aviso
+router.post(
+  "/create",
+  authenticateJwt,
+  validar(crearAvisoSchema),
+  avisoController.crearAviso
+);
 
-// Encargado y Administrador
-router.post("/encargado", verificarRolEncargadoOAdmin, crearAvisoEncargado);
-//router.put("/encargado/:id", verificarRolEncargadoOAdmin, editarAvisoEncargado);
-router.patch("/encargado/ocultar/:id", verificarRolEncargadoOAdmin, ocultarAviso);
-router.patch("/encargado/apropiado/:id", verificarRolEncargadoOAdmin, validarApropiado);
-//router.patch("/encargado/aprobar/:id", verificarRolEncargadoOAdmin, aprobarAviso);
-router.get("/encargado", verificarRolEncargadoOAdmin, obtenerAvisosEncargado);
+// Actualizar un aviso existente
+router.put(
+  "/:id",
+  authenticateJwt,
+  validar(actualizarAvisoSchema),
+  avisoController.actualizarAviso
+);
+
+// Cambiar estado de un aviso
+router.patch(
+  "/:id/estado",
+  authenticateJwt,
+  avisoController.cambiarEstadoAviso
+);
+
+// Eliminar un aviso (solo admin)
+router.delete(
+  "/:id",
+  authenticateJwt,
+  isAdmin,
+  avisoController.eliminarAviso
+);
 
 export default router;
