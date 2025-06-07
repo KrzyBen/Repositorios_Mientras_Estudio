@@ -3,7 +3,7 @@ import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
 import { Not } from "typeorm";
 
-// Crear cupón para un vecino
+// Crear cupón para un vecino (individual)
 export async function crearCuponEncargadoService(data) {
   try {
     const { vecinoId, ...cuponData } = data;
@@ -13,6 +13,21 @@ export async function crearCuponEncargadoService(data) {
     const user = await userRepository.findOneBy({ id: vecinoId });
     if (!user || user.rol !== "vecino") {
       return [null, "El usuario no existe o no tiene rol de vecino"];
+    }
+
+    // Verificar si ya existe un cupón del mismo mes, año y tipo para ese vecino
+    const existente = await cuponRepository.findOne({
+      where: {
+        mes: cuponData.mes,
+        año: cuponData.año,
+        tipo: cuponData.tipo || "mensual",
+        vecino: { id: vecinoId }
+      },
+      relations: ["vecino"]
+    });
+
+    if (existente) {
+      return [null, `Ya existe un cupón del mes ${cuponData.mes} del año ${cuponData.año} para este vecino.`];
     }
 
     const nuevoCupon = cuponRepository.create({
@@ -53,16 +68,22 @@ export async function generarAnualesEncargadoService(opciones = {}) {
         });
 
         if (!existente) {
+          const fechaPago = new Date(año, mes - 1, mes === 12 ? 20 : 25);
+          fechaPago.setHours(0, 0, 0, 0);
+          const aplicaDescuento = mes === 3 || mes === 12;
+
           const nuevo = cuponRepository.create({
             mes,
             año,
-            monto,
-            montoDescuento: 0,
+            monto: monto,
+            montoDescuento: aplicaDescuento ? monto : 0,
             descripcionPago: descripcion || `Pago cuota mensual ${mes}/${año}`,
             estado: "pendiente",
             tipo: "mensual",
+            fechaPago,
             vecino
           });
+
           cuponesNuevos.push(nuevo);
         }
       }
@@ -81,12 +102,9 @@ export async function listarCuponesEncargadoService(estado = null) {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
 
     let where;
-
     if (estado) {
-      // Si se especifica un estado, se filtra solo por ese estado
       where = { estado };
     } else {
-      // Si no se especifica estado, se listan todos excepto los ocultos
       where = {
         estado: Not("oculto"),
       };
@@ -104,7 +122,7 @@ export async function listarCuponesEncargadoService(estado = null) {
   }
 }
 
-// Actualizar descripción o monto
+// Actualizar descripción, monto o vecino
 export async function actualizarCuponEncargadoService(id, nuevosDatos) {
   try {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);

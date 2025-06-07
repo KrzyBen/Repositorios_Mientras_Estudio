@@ -4,9 +4,11 @@ import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
 
 // Crear cupón y asociarlo a un vecino
+// Crear cupón mensual individual con verificación de duplicado
 export async function crearCuponService(data) {
   try {
-    const { vecinoId, ...cuponData } = data;
+    const { vecinoId, mes, año, tipo = "mensual", ...cuponData } = data;
+
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const userRepository = AppDataSource.getRepository(UserSchema);
 
@@ -15,71 +17,88 @@ export async function crearCuponService(data) {
       return [null, "El usuario no existe o no tiene rol de vecino"];
     }
 
+    if (tipo === "mensual") {
+      const existente = await cuponRepository.findOne({
+        where: {
+          mes,
+          año,
+          tipo: "mensual",
+          vecino: { id: user.id },
+        },
+        relations: ["vecino"],
+      });
+
+      if (existente) {
+        return [null, `Ya existe un cupón mensual para el mes ${mes}/${año} para este vecino`];
+      }
+    }
+
     const nuevoCupon = cuponRepository.create({
-      ...cuponData,
+      mes,
+      año,
+      tipo,
       vecino: user,
+      estado: "pendiente",
+      ...cuponData,
     });
 
-    const cuponGuardado = await cuponRepository.save(nuevoCupon);
-    return [cuponGuardado, null];
+    const guardado = await cuponRepository.save(nuevoCupon);
+    return [guardado, null];
   } catch (error) {
     return [null, `Error en crearCuponService: ${error.message}`];
   }
 }
 
+// Generar cupones anuales con fechaCompromiso y descuento en marzo/diciembre
 export async function generarCuponesMensualesParaVecinos(opciones = {}) {
   try {
-    const { monto = 1000, fechaPago = null, descripcion = null } = opciones;
+    const { monto = 1000, descripcion = "", año = new Date().getFullYear() } = opciones;
 
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const userRepository = AppDataSource.getRepository(UserSchema);
 
     const vecinos = await userRepository.findBy({ rol: 'vecino' });
-
-    const ahora = new Date();
-    const añoActual = ahora.getFullYear();
-    const mesActual = ahora.getMonth() + 1;
-
     const cuponesNuevos = [];
 
     for (const vecino of vecinos) {
-      for (let mes = mesActual; mes <= 12; mes++) {
-        const existe = await cuponRepository.findOne({
+      for (let mes = 1; mes <= 12; mes++) {
+        // Validar que no exista ya un cupón del mismo mes/año/tipo para este vecino
+        const existente = await cuponRepository.findOne({
           where: {
             mes,
-            año: añoActual,
-            tipo: 'mensual',
-            vecino: { id: vecino.id },
+            año,
+            tipo: "mensual",
+            vecino: { id: vecino.id }
           },
-          relations: ["vecino"],
+          relations: ["vecino"]
         });
 
-        if (!existe) {
-          const nuevoCupon = cuponRepository.create({
+        if (!existente) {
+          const fechaPago = new Date(año, mes - 1, mes === 12 ? 20 : 25);
+          fechaPago.setHours(0, 0, 0, 0);
+          const aplicaDescuento = mes === 3 || mes === 12;
+
+          const nuevo = cuponRepository.create({
             mes,
-            año: añoActual,
-            monto,
-            montoDescuento: 0,
-            descripcionPago: descripcion || `Pago de cuota mensual correspondiente a ${mes}/${añoActual}`,
-            estado: 'pendiente',
-            tipo: 'mensual',
-            fechaPago: fechaPago || null,
-            vecino: vecino,
+            año,
+            monto: monto,
+            montoDescuento: aplicaDescuento ? monto : 0,
+            descripcionPago: descripcion || `Pago cuota mensual ${mes}/${año}`,
+            estado: "pendiente",
+            tipo: "mensual",
+            fechaPago,
+            vecino
           });
 
-          cuponesNuevos.push(nuevoCupon);
+          cuponesNuevos.push(nuevo);
         }
       }
     }
 
-    if (cuponesNuevos.length === 0) {
-      return [[], null];
-    }
-
-    const cuponesCreados = await cuponRepository.save(cuponesNuevos);
-    return [cuponesCreados, null];
+    const guardados = await cuponRepository.save(cuponesNuevos);
+    return [guardados, null];
   } catch (error) {
-    return [null, `Error en generarCuponesMensualesParaVecinos: ${error.message}`];
+    return [null, `Error al generar cupones anuales: ${error.message}`];
   }
 }
 
@@ -154,10 +173,17 @@ export async function listarVecinosService() {
     const userRepository = AppDataSource.getRepository(UserSchema);
     const vecinos = await userRepository.find({
       where: { rol: 'vecino' },
-      select: ['id', 'nombre', 'email', 'rut'],
     });
 
-    return [vecinos, null];
+    // Opcional: filtrar datos sensibles si es necesario
+    const datosVecinos = vecinos.map(v => ({
+      id: v.id,
+      nombre: v.nombreCompleto,
+      email: v.email,
+      rut: v.rut
+    }));
+
+    return [datosVecinos, null];
   } catch (error) {
     return [null, `Error al listar vecinos: ${error.message}`];
   }
