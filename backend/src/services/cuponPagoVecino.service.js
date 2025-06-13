@@ -20,7 +20,7 @@ export async function obtenerCuponesVecino(idVecino) {
         estado: In(estadosPermitidos)
       },
       relations: ["vecino"],
-      order: { año: "DESC", mes: "DESC" }
+      order: { año: "ASC", mes: "ASC" }
     });
 
     return cupones;

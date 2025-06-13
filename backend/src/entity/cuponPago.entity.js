@@ -54,6 +54,11 @@ const CuponPagoSchema = new EntitySchema({
       type: "date",
       nullable: true,
     },
+    archivoPDF: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
   },
   relations: {
     vecino: {

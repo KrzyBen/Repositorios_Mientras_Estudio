@@ -1,6 +1,7 @@
 import CuponPagoSchema from "../entity/cuponPago.entity.js";
-import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
+import Aviso from "../entity/avisos.entity.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Not } from "typeorm";
 
 // Crear cupón para un vecino (individual)
@@ -56,7 +57,6 @@ export async function generarAnualesEncargadoService(opciones = {}) {
 
     for (const vecino of vecinos) {
       for (let mes = 1; mes <= 12; mes++) {
-        // Validar que no exista ya un cupón del mismo mes/año/tipo para este vecino
         const existente = await cuponRepository.findOne({
           where: {
             mes,
@@ -90,6 +90,13 @@ export async function generarAnualesEncargadoService(opciones = {}) {
     }
 
     const guardados = await cuponRepository.save(cuponesNuevos);
+
+    // Crear aviso automático informando la cantidad de cupones generados
+    if (guardados.length > 0) {
+      const mensaje = `Se han generado los cupones anuales para el año ${año}.`;
+      await crearAvisoAutomatico(mensaje);
+    }
+
     return [guardados, null];
   } catch (error) {
     return [null, `Error al generar cupones anuales: ${error.message}`];
@@ -152,3 +159,17 @@ export async function actualizarCuponEncargadoService(id, nuevosDatos) {
     return [null, `Error al actualizar el cupón: ${error.message}`];
   }
 }
+
+const crearAvisoAutomatico = async (mensaje) => {
+  const avisoRepo = AppDataSource.getRepository(Aviso);
+  const aviso = avisoRepo.create({
+    titulo: "Aviso automático: creación de cupones anuales",
+    descripcion: mensaje,
+    tipo: "cupones",
+    creadoPor: "Sistema automático",
+    estado: "activo",
+    visible: true,
+    fechaCreacion: new Date()
+  });
+  return await avisoRepo.save(aviso);
+};

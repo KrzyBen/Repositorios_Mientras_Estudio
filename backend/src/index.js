@@ -10,6 +10,9 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+// Añadido Para manejo de PDF
+import path from "path";
+import fs from "fs";
 
 async function setupServer() {
   try {
@@ -59,6 +62,15 @@ async function setupServer() {
 
     passportJwtSetup();
 
+    // Configuración para servir archivos estáticos (PDFs)
+    // Asegurar que la carpeta "pdfs" exista
+    const pdfsPath = path.join(process.cwd(), "pdfs");
+    if (!fs.existsSync(pdfsPath)) {
+      fs.mkdirSync(pdfsPath);
+    }
+    // Servir la carpeta "pdfs" como ruta pública
+    app.use("/pdfs", express.static(pdfsPath));
+    
     app.use("/api", indexRoutes);
 
     app.listen(PORT, () => {

@@ -15,7 +15,8 @@ import {
 // Controladores por rol
 import {
   listarCuponesVecino,
-  comprometerPago
+  comprometerPago,
+  generarPdf
 } from "../controllers/cuponPagoVecino.controller.js";
 
 import {
@@ -40,7 +41,7 @@ const router = Router();
 // ---------------------------------------------
 router.get("/vecino/lista", authenticateJwt, isVecino, listarCuponesVecino);
 router.patch("/vecino/comprometer/:cuponId", authenticateJwt, isVecino, comprometerPago);
-
+router.post("/vecino/:cuponId/pagar", authenticateJwt, isVecino, generarPdf );
 // ---------------------------------------------
 // RUTAS PARA ROL: ENCARGADO DE PAGOS
 // ---------------------------------------------
