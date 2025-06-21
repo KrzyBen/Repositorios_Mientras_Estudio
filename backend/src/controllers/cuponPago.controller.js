@@ -10,6 +10,8 @@ import {
   listarCuponesVecinoService
 } from '../services/cuponPago.service.js';
 
+import {eliminarPdfCuponService} from '../services/cuponPagoPDF.service.js';
+
 import {
   crearCuponSchema,
   generarMensualesSchema
@@ -102,18 +104,31 @@ export async function actualizarCupon(req, res) {
 }
 
 // Eliminar cupón (solo para administradores)
-export async function eliminarCupon(req, res) {
+export async function eliminarCuponService(id) {
   try {
-    const { cuponId } = req.params;
-    const id = Number(cuponId);
-    if (isNaN(id)) return handleErrorClient(res, 400, "ID inválido");
+    const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
+    const cupon = await cuponRepository.findOneBy({ id });
 
-    const [cuponEliminado, serviceError] = await eliminarCuponService(id);
-    if (serviceError) return handleErrorClient(res, 404, serviceError);
+    if (!cupon) return [null, "Cupón no encontrado"];
 
-    return handleSuccess(res, 200, 'Cupón eliminado correctamente', cuponEliminado);
-  } catch (err) {
-    return handleErrorServer(res, 500, 'Error al eliminar el cupón');
+    const dosAniosAtras = new Date();
+    dosAniosAtras.setFullYear(dosAniosAtras.getFullYear() - 2);
+    const fechaCupon = new Date(cupon.año, cupon.mes - 1);
+
+    if (
+      !["pagado", "oculto"].includes(cupon.estado) ||
+      fechaCupon > dosAniosAtras
+    ) {
+      return [null, "Solo se pueden eliminar cupones pagados u ocultos de al menos 2 años atrás"];
+    }
+
+    // Llamar al servicio que elimina el PDF
+    await eliminarPdfCuponService(id);
+
+    await cuponRepository.remove(cupon);
+    return [cupon, null];
+  } catch (error) {
+    return [null, `Error en eliminarCuponService: ${error.message}`];
   }
 }
 

@@ -1,6 +1,8 @@
 import { handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { obtenerCuponesVecino, actualizarFechaCompromiso } from "../services/cuponPagoVecino.service.js";
-import { generarPdfCupon } from "../services/cuponPagoPDF.service.js";
+import fs from "fs";
+import path from "path";
+import { generarPdfCupon, obtenerDatosPdfCuponService, descargarPdfCuponService } from "../services/cuponPagoPDF.service.js";
 import { compromisoPagoSchema } from "../validations/cuponPago.validation.js";
 
 export async function listarCuponesVecino(req, res) {
@@ -28,17 +30,69 @@ export async function comprometerPago(req, res) {
   }
 }
 
+// Manejo de generación de PDF
+
 export const generarPdf = async (req, res) => {
   try {
     const { cuponId } = req.params;
-    const { path, cupon } = await generarPdfCupon(req.user.id, cuponId);
+    const cuponRepo = AppDataSource.getRepository(CuponPagoSchema);
+
+    const cupon = await cuponRepo.findOne({
+      where: {
+        id: cuponId,
+        vecino: { id: req.user.id }
+      },
+      relations: ["vecino"]
+    });
+
+    if (!cupon) {
+      return res.status(404).json({ error: "Cupón no encontrado" });
+    }
+
+    // Verificar si ya tiene PDF y que el archivo exista físicamente
+    if (cupon.archivoPDF && fs.existsSync(cupon.archivoPDF)) {
+      return res.status(200).json({
+        message: "PDF ya existía",
+        archivo: cupon.archivoPDF,
+        cuponId: cupon.id
+      });
+    }
+
+    // Si no existe, generarlo
+    const { path: pdfPath } = await generarPdfCupon(req.user.id, cuponId);
 
     res.status(200).json({
       message: "PDF generado con éxito",
-      archivo: path,
+      archivo: pdfPath,
       cuponId: cupon.id
     });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const obtenerPdfCupon = async (req, res) => {
+  try {
+    const { cuponId } = req.params;
+    const datos = await obtenerDatosPdfCuponService(cuponId);
+
+    res.status(200).json({
+      mensaje: "PDF encontrado",
+      ...datos,
+    });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+export const descargarPdfCupon = async (req, res) => {
+  try {
+    const { cuponId } = req.params;
+    const pdfPath = await descargarPdfCuponService(cuponId);
+
+    res.download(pdfPath, `cupon_${cuponId}.pdf`);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
 };

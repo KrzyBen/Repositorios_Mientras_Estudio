@@ -160,8 +160,25 @@ export async function eliminarCuponService(id) {
 
     if (!cupon) return [null, "Cupón no encontrado"];
 
+    const estadosPermitidos = ["pagado", "oculto"];
+    const hoy = new Date();
+    const fechaLimite = new Date(hoy.getFullYear() - 2, hoy.getMonth(), hoy.getDate());
+
+    // Comprobamos que el estado sea permitido
+    if (!estadosPermitidos.includes(cupon.estado)) {
+      return [null, "Solo se pueden eliminar cupones pagados u ocultos."];
+    }
+
+    // Comprobamos la antigüedad (usando fechaPago si existe, o una fecha aproximada)
+    const fechaPago = cupon.fechaPago || new Date(cupon.año, cupon.mes - 1, 1);
+
+    if (fechaPago > fechaLimite) {
+      return [null, "Solo se pueden eliminar cupones de al menos 2 años de antigüedad."];
+    }
+
     await cuponRepository.remove(cupon);
     return [cupon, null];
+
   } catch (error) {
     return [null, `Error en eliminarCuponService: ${error.message}`];
   }

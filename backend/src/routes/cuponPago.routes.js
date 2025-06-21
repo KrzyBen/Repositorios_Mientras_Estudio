@@ -16,7 +16,9 @@ import {
 import {
   listarCuponesVecino,
   comprometerPago,
-  generarPdf
+  generarPdf,
+  obtenerPdfCupon,
+  descargarPdfCupon
 } from "../controllers/cuponPagoVecino.controller.js";
 
 import {
@@ -42,6 +44,9 @@ const router = Router();
 router.get("/vecino/lista", authenticateJwt, isVecino, listarCuponesVecino);
 router.patch("/vecino/comprometer/:cuponId", authenticateJwt, isVecino, comprometerPago);
 router.post("/vecino/:cuponId/pagar", authenticateJwt, isVecino, generarPdf );
+router.get("/cupon/:cuponId/pdf",authenticateJwt,isVecino, obtenerPdfCupon); // solo datos
+router.get("/cupon/:cuponId/pdf/download",authenticateJwt,isVecino, descargarPdfCupon); // descarga directa
+
 // ---------------------------------------------
 // RUTAS PARA ROL: ENCARGADO DE PAGOS
 // ---------------------------------------------

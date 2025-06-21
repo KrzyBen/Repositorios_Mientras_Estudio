@@ -41,8 +41,63 @@ export const generarPdfCupon = async (idVecino, cuponId) => {
   const pdfPath = path.join('pdfs', `cupon_${cupon.id}.pdf`);
   fs.writeFileSync(pdfPath, pdfBytes);
 
+  // Cambiar el estado del cupón a "pagado"
   cupon.archivoPDF = pdfPath;
+  cupon.estado = "pagado";
   await cuponRepo.save(cupon);
 
   return { path: pdfPath, cupon };
+};
+
+//Obtener datos del PDF
+export const obtenerDatosPdfCuponService = async (cuponId) => {
+  const cupon = await cuponRepo.findOneBy({ id: cuponId });
+
+  if (!cupon || !cupon.archivoPDF) {
+    throw new Error("El cupón no tiene un PDF asociado.");
+  }
+
+  if (!fs.existsSync(cupon.archivoPDF)) {
+    throw new Error("El archivo PDF no existe.");
+  }
+
+  return {
+    path: cupon.archivoPDF,
+    cuponId: cupon.id,
+    estado: cupon.estado,
+    descripcion: cupon.descripcionPago,
+    monto: cupon.monto,
+    descuento: cupon.montoDescuento,
+    fechaCompromiso: cupon.fechaCompromiso,
+  };
+};
+
+// Descargar el PDF del cupón
+export const descargarPdfCuponService = async (cuponId) => {
+  const cupon = await cuponRepo.findOneBy({ id: cuponId });
+
+  if (!cupon || !cupon.archivoPDF) {
+    throw new Error("El cupón no tiene un PDF asociado.");
+  }
+
+  if (!fs.existsSync(cupon.archivoPDF)) {
+    throw new Error("El archivo PDF no existe.");
+  }
+
+  return cupon.archivoPDF;
+};
+
+export const eliminarPdfCuponService = async (cuponId) => {
+  const cupon = await cuponRepo.findOneBy({ id: cuponId });
+
+  if (!cupon) throw new Error("Cupón no encontrado");
+
+  if (cupon.archivoPDF && fs.existsSync(cupon.archivoPDF)) {
+    fs.unlinkSync(cupon.archivoPDF);
+    cupon.archivoPDF = null;
+    await cuponRepo.save(cupon);
+    return true;
+  }
+
+  return false; // No tenía PDF o no existía en disco
 };
