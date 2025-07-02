@@ -3,7 +3,6 @@ import CuponPagoSchema from "../entity/cuponPago.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
 
-// Crear cupón y asociarlo a un vecino
 // Crear cupón mensual individual con verificación de duplicado
 export async function crearCuponService(data) {
   try {
@@ -49,10 +48,14 @@ export async function crearCuponService(data) {
   }
 }
 
-// Generar cupones anuales con fechaCompromiso y descuento en marzo/diciembre
 export async function generarCuponesMensualesParaVecinos(opciones = {}) {
   try {
-    const { monto = 1000, descripcion = "", año = new Date().getFullYear() } = opciones;
+    const {
+      monto = 1000,
+      descripcion = "",
+      año = new Date().getFullYear(),
+      descuentosPorcentaje = { 3: 20, 12: 30 } // porcentaje de descuento para marzo y diciembre
+    } = opciones;
 
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const userRepository = AppDataSource.getRepository(UserSchema);
@@ -62,7 +65,6 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
 
     for (const vecino of vecinos) {
       for (let mes = 1; mes <= 12; mes++) {
-        // Validar que no exista ya un cupón del mismo mes/año/tipo para este vecino
         const existente = await cuponRepository.findOne({
           where: {
             mes,
@@ -76,13 +78,16 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
         if (!existente) {
           const fechaPago = new Date(año, mes - 1, mes === 12 ? 20 : 25);
           fechaPago.setHours(0, 0, 0, 0);
-          const aplicaDescuento = mes === 3 || mes === 12;
+
+          // Calcular descuento en base al porcentaje o cero si no aplica
+          const porcentaje = descuentosPorcentaje[mes] || 0;
+          const montoDescuento = Math.round((monto * porcentaje) / 100);
 
           const nuevo = cuponRepository.create({
             mes,
             año,
-            monto: monto,
-            montoDescuento: aplicaDescuento ? monto : 0,
+            monto,
+            montoDescuento,
             descripcionPago: descripcion || `Pago cuota mensual ${mes}/${año}`,
             estado: "pendiente",
             tipo: "mensual",
@@ -98,7 +103,7 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
     const guardados = await cuponRepository.save(cuponesNuevos);
     return [guardados, null];
   } catch (error) {
-    return [null, `Error al generar cupones anuales: ${error.message}`];
+    return [null, `Error al generar cupones mensuales: ${error.message}`];
   }
 }
 

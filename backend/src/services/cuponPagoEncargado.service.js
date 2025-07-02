@@ -47,7 +47,12 @@ export async function crearCuponEncargadoService(data) {
 // Generar 12 cupones anuales sin importar pendientes
 export async function generarAnualesEncargadoService(opciones = {}) {
   try {
-    const { monto = 1000, descripcion = "", año = new Date().getFullYear() } = opciones;
+    const {
+      monto = 1000,
+      descripcion = "",
+      año = new Date().getFullYear(),
+      descuentosPorcentaje = { 3: 20, 12: 30 } // porcentaje de descuento para marzo y diciembre
+    } = opciones;
 
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const userRepository = AppDataSource.getRepository(UserSchema);
@@ -70,13 +75,16 @@ export async function generarAnualesEncargadoService(opciones = {}) {
         if (!existente) {
           const fechaPago = new Date(año, mes - 1, mes === 12 ? 20 : 25);
           fechaPago.setHours(0, 0, 0, 0);
-          const aplicaDescuento = mes === 3 || mes === 12;
+
+          // Calcular descuento en base al porcentaje o cero si no aplica
+          const porcentaje = descuentosPorcentaje[mes] || 0;
+          const montoDescuento = Math.round((monto * porcentaje) / 100);
 
           const nuevo = cuponRepository.create({
             mes,
             año,
-            monto: monto,
-            montoDescuento: aplicaDescuento ? monto : 0,
+            monto,
+            montoDescuento,
             descripcionPago: descripcion || `Pago cuota mensual ${mes}/${año}`,
             estado: "pendiente",
             tipo: "mensual",
@@ -90,16 +98,9 @@ export async function generarAnualesEncargadoService(opciones = {}) {
     }
 
     const guardados = await cuponRepository.save(cuponesNuevos);
-
-    // Crear aviso automático informando la cantidad de cupones generados
-    if (guardados.length > 0) {
-      const mensaje = `Se han generado los cupones anuales para el año ${año}.`;
-      await crearAvisoAutomatico(mensaje);
-    }
-
     return [guardados, null];
   } catch (error) {
-    return [null, `Error al generar cupones anuales: ${error.message}`];
+    return [null, `Error al generar cupones mensuales: ${error.message}`];
   }
 }
 

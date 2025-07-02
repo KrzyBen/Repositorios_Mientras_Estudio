@@ -35,7 +35,7 @@ const CuponPagoSchema = new EntitySchema({
     },
     estado: {
       type: "varchar",
-      length: 20,
+      length: 50,
       default: "pendiente",
     },
     tipo: {
@@ -57,6 +57,11 @@ const CuponPagoSchema = new EntitySchema({
     archivoPDF: {
       type: "varchar",
       length: 255,
+      nullable: true,
+    },
+    ordenWebpay: {
+      type: "varchar",
+      length: 50,  
       nullable: true,
     },
   },

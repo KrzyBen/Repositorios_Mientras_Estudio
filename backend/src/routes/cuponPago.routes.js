@@ -16,7 +16,6 @@ import {
 import {
   listarCuponesVecino,
   comprometerPago,
-  generarPdf,
   obtenerPdfCupon,
   descargarPdfCupon
 } from "../controllers/cuponPagoVecino.controller.js";
@@ -36,6 +35,11 @@ import {
 } from "../middlewares/authCuponPago.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 
+// Controladores Webpay
+import { iniciarPagoCupon } from "../controllers/webpay.controller.js";
+import { confirmarPagoWebpay } from "../controllers/webpay.controller.js";
+import { revertirPagoManual } from "../controllers/webpay.controller.js";
+
 const router = Router();
 
 // ---------------------------------------------
@@ -43,9 +47,11 @@ const router = Router();
 // ---------------------------------------------
 router.get("/vecino/lista", authenticateJwt, isVecino, listarCuponesVecino);
 router.patch("/vecino/comprometer/:cuponId", authenticateJwt, isVecino, comprometerPago);
-router.post("/vecino/:cuponId/pagar", authenticateJwt, isVecino, generarPdf );
-router.get("/cupon/:cuponId/pdf",authenticateJwt,isVecino, obtenerPdfCupon); // solo datos
-router.get("/cupon/:cuponId/pdf/download",authenticateJwt,isVecino, descargarPdfCupon); // descarga directa
+router.get("/:cuponId/pdf",authenticateJwt,isVecino, obtenerPdfCupon); // solo datos
+router.get("/:cuponId/pdf/download",authenticateJwt,isVecino, descargarPdfCupon); // descarga directa
+router.post("/vecino/:cuponId/webpay/iniciar", authenticateJwt, isVecino, iniciarPagoCupon);
+router.post("/webpay/confirmar",authenticateJwt, confirmarPagoWebpay);
+router.post("/webpay/revertir/:cuponId", authenticateJwt, revertirPagoManual);
 
 // ---------------------------------------------
 // RUTAS PARA ROL: ENCARGADO DE PAGOS

@@ -104,7 +104,7 @@ export async function actualizarCupon(req, res) {
 }
 
 // Eliminar cupón (solo para administradores)
-export async function eliminarCuponService(id) {
+export async function eliminarCupon(id) {
   try {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const cupon = await cuponRepository.findOneBy({ id });
