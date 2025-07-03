@@ -72,6 +72,20 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+                    {userRole === 'vecino' && (
+                    <li>
+                        <NavLink 
+                        to="/cupones" 
+                        onClick={() => { 
+                            setMenuOpen(false); 
+                            addActiveClass();
+                        }} 
+                        activeClassName="active"
+                        >
+                        Cupones
+                        </NavLink>
+                    </li>
+                    )}
                     <li>
                         <NavLink 
                             to="/auth" 

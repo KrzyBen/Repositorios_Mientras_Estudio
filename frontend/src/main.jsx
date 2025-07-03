@@ -7,6 +7,9 @@ import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
+//importe de cupones
+import Cupones from '@pages/Coupons';
+//------------------
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -26,6 +29,14 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         ),
+    },
+    {
+      path: '/cupones',
+      element: (
+        <ProtectedRoute allowedRoles={['vecino']}>
+          <Cupones />
+        </ProtectedRoute>
+      )
     }
     ]
   },

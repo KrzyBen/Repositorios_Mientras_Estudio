@@ -35,8 +35,6 @@ const webpay = new WebpayPlus.Transaction(
 
     const response = await webpay.create(buyOrder, sessionId, montoTotal, `${returnUrlBase}/api/cupon/webpay/confirmar`);
 
-    // Guardar orden y estado
-    cupon.estado = "pendiente_p_webpay";
     cupon.ordenWebpay = buyOrder;
     await cuponRepo.save(cupon);
 

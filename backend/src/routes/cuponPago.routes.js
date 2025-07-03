@@ -39,6 +39,7 @@ import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { iniciarPagoCupon } from "../controllers/webpay.controller.js";
 import { confirmarPagoWebpay } from "../controllers/webpay.controller.js";
 import { revertirPagoManual } from "../controllers/webpay.controller.js";
+import { validateWebpayToken } from "../middlewares/validateWebpayToken.middleware.js";
 
 const router = Router();
 
@@ -50,7 +51,7 @@ router.patch("/vecino/comprometer/:cuponId", authenticateJwt, isVecino, comprome
 router.get("/:cuponId/pdf",authenticateJwt,isVecino, obtenerPdfCupon); // solo datos
 router.get("/:cuponId/pdf/download",authenticateJwt,isVecino, descargarPdfCupon); // descarga directa
 router.post("/vecino/:cuponId/webpay/iniciar", authenticateJwt, isVecino, iniciarPagoCupon);
-router.post("/webpay/confirmar",authenticateJwt, confirmarPagoWebpay);
+router.all("/webpay/confirmar", validateWebpayToken, confirmarPagoWebpay);
 router.post("/webpay/revertir/:cuponId", authenticateJwt, revertirPagoManual);
 
 // ---------------------------------------------

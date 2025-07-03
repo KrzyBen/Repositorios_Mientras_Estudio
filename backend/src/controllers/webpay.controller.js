@@ -20,34 +20,23 @@ export const iniciarPagoCupon = async (req, res) => {
 
 export const confirmarPagoWebpay = async (req, res) => {
   try {
-    const token = req.body.token_ws || req.query.token_ws;
-
-    // Si no hay token, el usuario canceló o cerró Webpay
-    if (!token) {
-      return res.redirect("/cupones?error=pago-fallido");
-    }
+    const token = req.token_ws;
 
     const resultado = await confirmarTransaccionWebpay(token);
 
     if (resultado.response.response_code === 0) {
-      const cuponId = resultado.cuponId;
-      const vecinoId = resultado.vecinoId;
-
-      await generarPdfCupon(vecinoId, cuponId); // ✅ genera y marca pagado
-
-      return res.redirect("http://localhost:5173/cupones?estado=pagado");
+      await generarPdfCupon(resultado.vecinoId, resultado.cuponId);
+      return res.redirect(`${process.env.FRONTEND_URL}/webpay-cierre.html?estado=pagado`);
     } else {
-      // Si el pago fue rechazado por Webpay
       await revertirCuponPorFallo(resultado.response.buy_order);
-      return res.redirect("/cupones?error=pago-fallido");
+      return res.redirect(`${process.env.FRONTEND_URL}/webpay-cierre.html?error=pago-fallido`);
     }
   } catch (error) {
-    if (req.query.token_ws) {
-      await revertirCuponPorFallo(req.query.token_ws); // En caso de error con token válido
-    }
-    return res.redirect("/cupones?error=error-interno");
+    await revertirCuponPorFallo(req.token_ws);
+    return res.redirect(`${process.env.FRONTEND_URL}/webpay-cierre.html?error=error-interno`);
   }
 };
+
 
 export const revertirPagoManual = async (req, res) => {
   try {
