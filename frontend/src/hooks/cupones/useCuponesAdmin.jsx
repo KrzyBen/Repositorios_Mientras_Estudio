@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { obtenerVecinos, obtenerCuponesPorVecino, generarCuponesAnuales, crearCupon, editarCupon, eliminarCupon } from "@services/CouponsAdmin.service";
+import { obtenerVecinos, obtenerCuponesPorVecino, generarCuponesAnuales, crearCupon, editarCupon, eliminarCupon } from "@services/couponsAdmin.service";
 
 const useCuponesAdmin = () => {
   const [vecinos, setVecinos] = useState([]);

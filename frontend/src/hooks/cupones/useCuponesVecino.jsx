@@ -4,7 +4,7 @@ import {
   iniciarPagoCupon,
   descargarPdf,
   comprometerPagoCupon
-} from "@services/Coupons.service";
+} from "@services/coupons.service";
 import {
   showErrorAlert,
   showSuccessAlert,

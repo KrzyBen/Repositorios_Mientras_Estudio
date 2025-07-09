@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Table from '@components/Table';
 import PopupCupon from '@components/PopupCuponForm';
 import CuponForm from '@components/CuponForm';
-import { obtenerCuponesPorVecino, editarCupon, eliminarCupon, crearCupon } from '@services/CouponsAdmin.service';
+import { obtenerCuponesPorVecino, editarCupon, eliminarCupon, crearCupon } from '@services/couponsAdmin.service';
 import '@styles/styles.css';
 import '@styles/cuponesAdmin.css';
 
