@@ -4,7 +4,7 @@ import { DATABASE, DB_USERNAME, HOST, PASSWORD } from "./configEnv.js";
 import UserSchema from "../entity/user.entity.js";
 import  Aviso from "../entity/avisos.entity.js";
 import ReclamoSchema from "../entity/reclamos.entity.js";
-import CuponPagoSchema from "../entity/cuponesPago.entity.js";
+import CuponPagoSchema from "../entity/cuponPago.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
