@@ -43,6 +43,7 @@ export async function crearCupon(req, res) {
 // Generar automáticamente cupones mensuales para todos los vecinos
 export async function generarCuponesMensuales(req, res) {
   try {
+    console.log("Backend: Generando cupones mensuales con datos:", req.body);
     const { error, value } = generarMensualesSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const mensajes = error.details.map(e => e.message);

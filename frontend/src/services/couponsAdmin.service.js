@@ -20,6 +20,7 @@ export const obtenerCuponesPorVecino = async (vecinoId) => {
 
 export const generarCuponesAnuales = async (data) => {
   try {
+    console.log("Datos para generar cupones anuales:", data);
     const response = await axios.post('/cupon/admin/generar_mensual', data);
     return response.data;
   } catch (error) {

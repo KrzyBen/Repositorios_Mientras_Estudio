@@ -31,9 +31,9 @@ export default function CuponForm({ defaultValues, onSubmit, isEdit = false }) {
   const mes = useWatch({ control, name: 'mes' });
 
   useEffect(() => {
-    if (año && mes) {
-      const inicio = new Date(año, mes - 1, 1);
-      const fin = new Date(año, mes, 0);
+    if (año) {
+      const inicio = new Date(año, 0, 1); // 1 enero
+      const fin = new Date(año, 11, 31); // 31 diciembre
       const hoy = new Date();
       const minDate = new Date(Math.max(inicio, hoy));
       setLimitesFecha({
@@ -41,7 +41,8 @@ export default function CuponForm({ defaultValues, onSubmit, isEdit = false }) {
         max: fin.toISOString().split('T')[0]
       });
     }
-  }, [año, mes]);
+  }, [año]);
+
 
   const handleInternalSubmit = (data) => {
     const cleaned = {
@@ -78,12 +79,15 @@ export default function CuponForm({ defaultValues, onSubmit, isEdit = false }) {
       </div>
 
       <div className="container_inputs">
-        <label>Monto</label>
         <input
           type="number"
           min={0}
           step={10}
-          {...register('monto', { required: 'Requerido' })}
+          {...register('monto', {
+            required: 'Requerido',
+            validate: (value) =>
+              value % 10 === 0 || 'Debe ser múltiplo de 10',
+          })}
         />
         {errors.monto && <span>{errors.monto.message}</span>}
       </div>
@@ -94,8 +98,16 @@ export default function CuponForm({ defaultValues, onSubmit, isEdit = false }) {
           type="number"
           min={0}
           step={10}
-          {...register('montoDescuento')}
+          {...register('montoDescuento', {
+            validate: (value) => {
+              const monto = parseInt(control._formValues.monto || 0);
+              if (value % 10 !== 0) return 'Debe ser múltiplo de 10';
+              if (value > monto) return 'No puede ser mayor que el monto';
+              return true;
+            }
+          })}
         />
+        {errors.montoDescuento && <span>{errors.montoDescuento.message}</span>}
       </div>
 
       <div className="container_inputs">
@@ -126,20 +138,42 @@ export default function CuponForm({ defaultValues, onSubmit, isEdit = false }) {
         <label>Fecha de Pago</label>
         <input
           type="date"
-          {...register('fechaPago')}
+          {...register('fechaPago', {
+            validate: (value) => {
+              if (!value) return true; // es opcional
+              const date = new Date(value);
+              const min = new Date(limitesFecha.min);
+              const max = new Date(limitesFecha.max);
+              if (date < min) return 'Fecha fuera del rango permitido';
+              if (date > max) return 'Fecha fuera del rango permitido';
+              return true;
+            }
+          })}
           min={!isEdit ? limitesFecha.min : undefined}
           max={!isEdit ? limitesFecha.max : undefined}
         />
+        {errors.fechaPago && <span>{errors.fechaPago.message}</span>}
       </div>
 
       <div className="container_inputs">
         <label>Fecha de Compromiso</label>
         <input
           type="date"
-          {...register('fechaCompromiso')}
+          {...register('fechaCompromiso', {
+            validate: (value) => {
+              if (!value) return true;
+              const date = new Date(value);
+              const min = new Date(limitesFecha.min);
+              const max = new Date(limitesFecha.max);
+              if (date < min) return 'Fecha fuera del rango permitido';
+              if (date > max) return 'Fecha fuera del rango permitido';
+              return true;
+            }
+          })}
           min={!isEdit ? limitesFecha.min : undefined}
           max={!isEdit ? limitesFecha.max : undefined}
         />
+        {errors.fechaCompromiso && <span>{errors.fechaCompromiso.message}</span>}
       </div>
 
       <button type="submit">{isEdit ? 'Guardar Cambios' : 'Crear Cupón'}</button>

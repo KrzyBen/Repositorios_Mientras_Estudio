@@ -8,7 +8,7 @@ export const crearCuponSchema = Joi.object({
   mes: Joi.number().integer().min(1).max(12).required(),
   año: Joi.number().integer().min(2020).max(2050).required(),
   monto: Joi.number().integer().min(100).max(1000000).default(1000).multiple(10).required(),
-  montoDescuento: Joi.number().integer().min(0).default(0).multiple(10)
+  montoDescuento: Joi.number().integer().min(0).default(0)
     .custom((value, helpers) => {
       const { monto } = helpers.state.ancestors[0];
       if (monto !== undefined && value > monto) {
@@ -30,10 +30,12 @@ export const crearCuponSchema = Joi.object({
 });
 
 export const generarMensualesSchema = Joi.object({
+  año: Joi.number().integer().min(2020).max(2070).required(),
   monto: Joi.number().integer().min(1000).max(100000).default(1000).multiple(10).required(),
   descripcionPago: Joi.string().max(255).default("Pago de cuota mensual"),
   fechaPago: Joi.date().min(hoy).optional().allow(null)
 });
+
 
 export const compromisoPagoSchema = Joi.object({
   fechaCompromiso: Joi.date().min(hoy).required()

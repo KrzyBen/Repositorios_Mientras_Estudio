@@ -63,7 +63,7 @@ export async function generarCuponesMensualesParaVecinos(opciones = {}) {
       año = new Date().getFullYear(),
       descuentosPorcentaje = { 3: 20, 12: 30 } // porcentaje de descuento para marzo y diciembre
     } = opciones;
-
+    
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
     const userRepository = AppDataSource.getRepository(UserSchema);
 

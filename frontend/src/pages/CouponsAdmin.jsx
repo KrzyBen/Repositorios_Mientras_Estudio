@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Table from '@components/Table';
+import PopupGenerarCupones from '@components/PopupGenerarCupones';
 import useCuponesAdmin from '@hooks/cupones/useCuponesAdmin';
 import '@styles/styles.css';
 import '@styles/cuponesAdmin.css';
@@ -8,6 +9,8 @@ import '@styles/cuponesAdmin.css';
 export default function CuponesAdmin() {
   const { vecinos, cargarVecinos, generarCupones } = useCuponesAdmin();
   const navigate = useNavigate();
+
+  const [mostrarGenerador, setMostrarGenerador] = useState(false);
 
   useEffect(() => {
     cargarVecinos();
@@ -20,16 +23,25 @@ export default function CuponesAdmin() {
     {
       title: "Acciones",
       headerSort: false,
-      formatter: function(cell, formatterParams, onRendered) {
+      formatter: function(cell) {
         return "<button class='pcpa_btn_ver_cupones'>Ver Cupones</button>";
       },
       cellClick: function(e, cell) {
         const rowData = cell.getRow().getData();
-        // Aquí rediriges usando navigate
         navigate(`/cupones-admin/vecino/${rowData.id}`);
       }
     }
   ];
+
+  const handleGenerar = async (formData) => {
+    await generarCupones({
+      ...formData,
+      monto: Number(formData.monto)
+    });
+
+    setMostrarGenerador(false);
+    cargarVecinos(); // opcional, si quieres actualizar la tabla
+  };
 
   return (
     <div className="pcpa_container">
@@ -39,14 +51,18 @@ export default function CuponesAdmin() {
         <h2>Lista de Vecinos</h2>
         <button
           className="pcpa_btn_generar_anual"
-          onClick={() =>
-            generarCupones({ monto: 1000, año: new Date().getFullYear() })
-          }
+          onClick={() => setMostrarGenerador(true)}
         >
           Generar Cupones Anuales
         </button>
         <Table data={vecinos} columns={columnasVecinos} />
       </div>
+
+      <PopupGenerarCupones
+        show={mostrarGenerador}
+        setShow={setMostrarGenerador}
+        onSubmit={handleGenerar}
+      />
     </div>
   );
 }
