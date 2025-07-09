@@ -43,3 +43,14 @@ export const revertirPagoCupon = async (cuponId) => {
     return error.response?.data || { error: "Error al revertir el cupón" };
   }
 };
+
+export const comprometerPagoCupon = async (cuponId, fechaCompromiso) => {
+  try {
+    const response = await axios.patch(`/cupon/vecino/comprometer/${cuponId}`, {
+      fechaCompromiso
+    });
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { error: "Error al comprometer el cupón" };
+  }
+};

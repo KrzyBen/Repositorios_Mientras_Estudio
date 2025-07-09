@@ -3,6 +3,8 @@ import CuponPagoSchema from "../entity/cuponPago.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import UserSchema from "../entity/user.entity.js";
 
+import {eliminarPdfCuponService} from '../services/cuponPagoPDF.service.js';
+
 // Crear cupón mensual individual con verificación de duplicado
 export async function crearCuponService(data) {
   try {
@@ -14,6 +16,11 @@ export async function crearCuponService(data) {
     const user = await userRepository.findOneBy({ id: vecinoId });
     if (!user || user.rol !== "vecino") {
       return [null, "El usuario no existe o no tiene rol de vecino"];
+    }
+
+    const thisYear = new Date().getFullYear();
+    if (año < thisYear) {
+      return [null, `No se pueden crear cupones para años anteriores a ${thisYear}`];
     }
 
     if (tipo === "mensual") {
@@ -138,14 +145,25 @@ export async function actualizarCuponService(id, nuevosDatos) {
     });
 
     if (!cupon) return [null, "Cupón no encontrado"];
+    /*
+    // Fecha base (primer día del mes/año del cupón)
+    const fechaBase = new Date(nuevosDatos.año, nuevosDatos.mes - 1, 1);
 
-    if (nuevosDatos.vecinoId) {
-      const user = await userRepository.findOneBy({ id: nuevosDatos.vecinoId });
-      if (!user || user.rol !== "vecino") {
-        return [null, "El nuevo usuario no existe o no tiene rol de vecino"];
+    // Validar fechaPago
+    if (nuevosDatos.fechaPago) {
+      const fechaPago = new Date(nuevosDatos.fechaPago);
+      if (fechaPago < fechaBase) {
+        return [null, "La fecha de pago no puede ser anterior al mes/año del cupón"];
       }
-      cupon.vecino = user;
     }
+
+    // Validar fechaCompromiso
+    if (nuevosDatos.fechaCompromiso) {
+      const fechaCompromiso = new Date(nuevosDatos.fechaCompromiso);
+      if (fechaCompromiso < fechaBase) {
+        return [null, "La fecha de compromiso no puede ser anterior al mes/año del cupón"];
+      }
+    }*/
 
     delete nuevosDatos.vecinoId;
     Object.assign(cupon, nuevosDatos);
@@ -157,29 +175,29 @@ export async function actualizarCuponService(id, nuevosDatos) {
   }
 }
 
-// Eliminar cupón
-export async function eliminarCuponService(id) {
+export async function eliminarCuponService(cuponId) {
   try {
     const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
-    const cupon = await cuponRepository.findOneBy({ id });
-
+    const cupon = await cuponRepository.findOneBy({ id: cuponId });
     if (!cupon) return [null, "Cupón no encontrado"];
-
+/*
+    // Validación opcional: estado y antigüedad
     const estadosPermitidos = ["pagado", "oculto"];
     const hoy = new Date();
     const fechaLimite = new Date(hoy.getFullYear() - 2, hoy.getMonth(), hoy.getDate());
 
-    // Comprobamos que el estado sea permitido
+    const fechaPago = cupon.fechaPago || new Date(cupon.año, cupon.mes - 1, 1);
+
     if (!estadosPermitidos.includes(cupon.estado)) {
       return [null, "Solo se pueden eliminar cupones pagados u ocultos."];
     }
 
-    // Comprobamos la antigüedad (usando fechaPago si existe, o una fecha aproximada)
-    const fechaPago = cupon.fechaPago || new Date(cupon.año, cupon.mes - 1, 1);
-
     if (fechaPago > fechaLimite) {
       return [null, "Solo se pueden eliminar cupones de al menos 2 años de antigüedad."];
-    }
+    }*/
+
+    // Eliminar PDF asociado si existe
+    await eliminarPdfCuponService(cuponId);
 
     await cuponRepository.remove(cupon);
     return [cupon, null];

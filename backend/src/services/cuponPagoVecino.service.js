@@ -45,8 +45,9 @@ export async function actualizarFechaCompromiso(idVecino, cuponId, fechaCompromi
     if (!cupon) throw new Error("Cupón no encontrado o no pertenece al usuario.");
 
     // Validación de fecha
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0); // ignorar hora
+    const fechaPago = new Date(cupon.fechaPago);
+    fechaPago.setHours(0, 0, 0, 0);
+
 
     const fecha = new Date(fechaCompromiso);
     fecha.setHours(0, 0, 0, 0);
@@ -55,18 +56,21 @@ export async function actualizarFechaCompromiso(idVecino, cuponId, fechaCompromi
       throw new Error("Fecha de compromiso inválida.");
     }
 
-    const dosMesesDespues = new Date(hoy);
-    dosMesesDespues.setMonth(dosMesesDespues.getMonth() + 2);
+    const fechaMin = fechaPago;
+    const fechaMax = new Date(fechaPago);
+    fechaMax.setMonth(fechaMax.getMonth() + 2);
 
-    if (fecha < hoy) {
-      throw new Error("La fecha de compromiso no puede ser anterior a hoy.");
+    if (fecha < fechaMin) {
+      throw new Error("La fecha de compromiso no puede ser anterior a la fecha de pago.");
     }
 
-    if (fecha > dosMesesDespues) {
-      throw new Error("La fecha de compromiso no puede ser superior a dos meses desde hoy.");
+    if (fecha > fechaMax) {
+      throw new Error("La fecha de compromiso no puede ser superior a dos meses desde la fecha de pago.");
     }
 
     cupon.fechaCompromiso = fecha;
+
+    cupon.estado = "comprometido";
 
     const cuponActualizado = await cuponRepo.save(cupon);
     return cuponActualizado;

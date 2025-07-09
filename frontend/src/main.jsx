@@ -9,6 +9,9 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 //importe de cupones
 import Cupones from '@pages/Coupons';
+import CuponesAdmin from '@pages/CouponsAdmin';
+import CuponesVecinoAdmin from '@pages/CuponesPorVecino';
+
 //------------------
 import '@styles/styles.css';
 
@@ -37,7 +40,31 @@ const router = createBrowserRouter([
           <Cupones />
         </ProtectedRoute>
       )
-    }
+    },
+    {
+      path: '/cupones-admin',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <CuponesAdmin />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/cupones-admin/vecino/:vecinoId',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <CuponesVecinoAdmin />
+        </ProtectedRoute>
+      )
+    }/*,
+    {
+      path: '/cupones-encargado',
+      element: (
+        <ProtectedRoute allowedRoles={['encargado_P']}>
+          <CuponesEncargado />
+        </ProtectedRoute>
+      )
+    }*/
     ]
   },
   {

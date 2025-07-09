@@ -10,11 +10,10 @@ import {
   listarCuponesVecinoService
 } from '../services/cuponPago.service.js';
 
-import {eliminarPdfCuponService} from '../services/cuponPagoPDF.service.js';
-
 import {
   crearCuponSchema,
-  generarMensualesSchema
+  generarMensualesSchema,
+  actualizarCuponSchema
 } from '../validations/cuponPago.validation.js';
 import {
   handleSuccess,
@@ -80,55 +79,44 @@ export async function listarCupones(req, res) {
 // Actualizar cupón
 export async function actualizarCupon(req, res) {
   try {
-    const { id } = req.params;
-    const cuponId = Number(id);
+    const { cuponId } = req.params;
+    const id = Number(cuponId);
 
-    if (isNaN(cuponId)) {
+
+    if (isNaN(id)) {
       return handleErrorClient(res, 400, "ID inválido");
     }
 
-    const { error, value } = crearCuponSchema.validate(req.body, { abortEarly: false });
+    const { error, value } = actualizarCuponSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
       const mensajes = error.details.map(e => e.message);
       return handleErrorClient(res, 400, mensajes);
     }
 
-    const [cuponActualizado, serviceError] = await actualizarCuponService(cuponId, value);
+    const [cuponActualizado, serviceError] = await actualizarCuponService(id, value);
     if (serviceError) return handleErrorClient(res, 404, serviceError);
 
     return handleSuccess(res, 200, 'Cupón actualizado correctamente', cuponActualizado);
   } catch (err) {
+    console.error("Error en actualizarCupon:", err);
     return handleErrorServer(res, 500, 'Error al actualizar el cupón');
   }
 }
 
 // Eliminar cupón (solo para administradores)
-export async function eliminarCupon(id) {
+export async function eliminarCupon(req, res) {
   try {
-    const cuponRepository = AppDataSource.getRepository(CuponPagoSchema);
-    const cupon = await cuponRepository.findOneBy({ id });
+    const { cuponId } = req.params;
 
-    if (!cupon) return [null, "Cupón no encontrado"];
+    console.log("Backend: Intentando eliminar cupón ID:", cuponId);
 
-    const dosAniosAtras = new Date();
-    dosAniosAtras.setFullYear(dosAniosAtras.getFullYear() - 2);
-    const fechaCupon = new Date(cupon.año, cupon.mes - 1);
+    const [cuponEliminado, error] = await eliminarCuponService(cuponId);
+    if (error) return res.status(400).json({ error });
 
-    if (
-      !["pagado", "oculto"].includes(cupon.estado) ||
-      fechaCupon > dosAniosAtras
-    ) {
-      return [null, "Solo se pueden eliminar cupones pagados u ocultos de al menos 2 años atrás"];
-    }
-
-    // Llamar al servicio que elimina el PDF
-    await eliminarPdfCuponService(id);
-
-    await cuponRepository.remove(cupon);
-    return [cupon, null];
+    return res.status(200).json({ message: "Cupón eliminado correctamente", cupon: cuponEliminado });
   } catch (error) {
-    return [null, `Error en eliminarCuponService: ${error.message}`];
+    return res.status(500).json({ error: `Error en eliminarCupon: ${error.message}` });
   }
 }
 

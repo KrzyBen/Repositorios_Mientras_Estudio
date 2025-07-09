@@ -72,6 +72,20 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+                    {(userRole === 'administrador' || userRole === 'encargado_P') && (
+                    <li>
+                        <NavLink 
+                        to={userRole === 'administrador' ? '/cupones-admin' : '/cupones-encargado'}
+                        onClick={() => { 
+                            setMenuOpen(false); 
+                            addActiveClass();
+                        }} 
+                        activeClassName="active"
+                        >
+                        Gestión de Cupones
+                        </NavLink>
+                    </li>
+                    )}
                     {userRole === 'vecino' && (
                     <li>
                         <NavLink 

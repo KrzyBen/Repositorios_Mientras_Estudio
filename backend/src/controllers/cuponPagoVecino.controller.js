@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { generarPdfCupon, obtenerDatosPdfCuponService, descargarPdfCuponService } from "../services/cuponPagoPDF.service.js";
 import { compromisoPagoSchema } from "../validations/cuponPago.validation.js";
+import { log } from "console";
 
 export async function listarCuponesVecino(req, res) {
   try {
@@ -21,11 +22,12 @@ export async function comprometerPago(req, res) {
 
     const { cuponId } = req.params;
     const { fechaCompromiso } = req.body;
-
+    console.log("Comprometiendo pago para cupon:", cuponId, "con fecha:", fechaCompromiso);
     const actualizado = await actualizarFechaCompromiso(req.user.id, cuponId, fechaCompromiso);
 
     res.status(200).json({ message: "Fecha de compromiso actualizada", cupon: actualizado });
   } catch (error) {
+    console.error("Error comprometerPago:", error);
     handleErrorServer(res, 500, error.message);
   }
 }
