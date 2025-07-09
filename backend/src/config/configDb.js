@@ -3,7 +3,7 @@ import { DataSource } from "typeorm";
 import { DATABASE, DB_USERNAME, HOST, PASSWORD } from "./configEnv.js";
 import UserSchema from "../entity/user.entity.js";
 import  Aviso from "../entity/avisos.entity.js";
-import ReclamoSchema from "../entity/reclamos.entity.js";
+import ReclamoSchema from "../entity/reclamo.entity.js";
 import CuponPagoSchema from "../entity/cuponPago.entity.js";
 
 export const AppDataSource = new DataSource({
