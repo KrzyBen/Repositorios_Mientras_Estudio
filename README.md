@@ -10,10 +10,10 @@ Este monorepo centraliza los proyectos que voy realizando mientras estudio. La i
 
 Cada proyecto tiene su propia carpeta:
 
-/Proyecto_Condominios
-/Proyecto_2024_Cocina_ISW
-/Proyecto-Salas
-/Tarea1_Simulador_Carrera_de_Autos
+- `Proyecto_Condominios`
+- `Proyecto_2024_Cocina_ISW`
+- `Proyecto-Salas`
+- `Tarea1_Simulador_Carrera_de_Autos`
 
 
 - Cada carpeta contiene el código y el historial original del proyecto.
