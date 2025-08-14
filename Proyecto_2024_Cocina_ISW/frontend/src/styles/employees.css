@@ -1,0 +1,482 @@
+/* Main container setup */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    color: #FFEBEE; /* Lavender blush */
+}
+
+
+
+/* Estilo para la tabla de empleados */
+.employee-table {
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #FFEBEE;
+}
+
+.employee-table th,
+.employee-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #FFC107;
+    color: #212121; /* Eerie black */
+    font-weight: bold;
+}
+
+.employee-table th {
+    background-color: #FF5722; /* Giants orange */
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.employee-table td {
+    background-color: rgba(255, 235, 238, 0.8);
+}
+
+/* Button styling */
+button {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.add-button {
+    background-color: #FF5722;
+    color: #FFFFFF;
+}
+
+.edit-button {
+    background-color: #FFC107; /* Amber */
+    color: #212121;
+}
+
+.delete-button {
+    background-color: #d32f2f; /* Red */
+    color: #FFFFFF;
+}
+
+/* Style for RUT filter input */
+.rut-filter-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    position: relative; /* Necesario para posicionar el icono */
+}
+
+.rut-filter-input {
+    padding: 10px;
+    width: 200px; /* Adjusted width for balance */
+    border: 1px solid #FF5722; /* Orange border for RUT input */
+    border-radius: 25px; /* Rounded corners for a smoother look */
+    color: #212121;
+    background-color: #FFEBEE; /* Lighter pink background */
+    font-size: 1em;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rut-filter-button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    background-color: #FF5722; /* Button color */
+    color: white;
+    border: none;
+    border-radius: 25px; /* Rounded button edges */
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.rut-filter-button:hover {
+    background-color: #e64a19;
+}
+
+/* Icon styles for RUT filter */
+.rut-filter-icon {
+    position: absolute;
+    left: 10px; /* Colocamos la lupa al inicio del campo */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    color: #FF5722; /* Color de la lupa */
+    pointer-events: none; /* Para que no interfiera con la interacción del input */
+}
+
+/* Icon styles for Edit and Delete buttons */
+.edit-button, .delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    margin: 0 5px;
+    font-weight: bold;
+}
+
+.edit-button {
+    color: #FFC107; /* Amber color for edit */
+}
+
+.delete-button {
+    color: #d32f2f; /* Red color for delete */
+}
+
+.edit-button:hover, .delete-button:hover {
+    transform: scale(1.1);
+}
+
+/* Orange outline for EmployeeForm */
+.employee-form {
+    border: 2px solid #FF5722;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    font-weight: bold;
+}
+
+/* Asistencia: Alineación horizontal para los botones */
+.attendance-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.attendance-button {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFEBEE; /* Color de fondo inicial */
+    border: 2px solid #FF5722; /* Color del borde */
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 1.5em;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.attendance-button:hover {
+    transform: scale(1.1);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    background-color: #07ff5a; /* Color verde cuando pasa el mouse */
+}
+
+
+.attendance-button.absent {
+    color: #D32F2F;
+}
+
+.attendance-button.absent:hover {
+    background-color: #dd0f0f52; /* Fondo rojo cuando pasa el mouse sobre el botón ausente */
+    color: #FFFFFF; /* Texto blanco cuando se pasa el mouse */
+}
+/* Responsiveness adjustments */
+@media (max-width: 767px) {
+    .employee-table {
+        width: 352px;
+        font-size: 0.9em;
+    }
+
+    .add-button, .edit-button, .delete-button {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+
+    .rut-filter-input {
+        width: 150px;
+        font-weight: bold;
+    }
+
+    .rut-filter-button {
+        padding: 6px 12px;
+    }
+
+    .attendance-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+    }
+}
+
+/* Estilo para el icono de mostrar/ocultar la contraseña */
+.password-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #FF5722;
+    transition: color 0.3s ease;
+}
+
+.password-toggle-icon:hover {
+    color: #FFC107;
+}
+
+/* Estilo para el input de búsqueda en la tabla */
+.search-input-table {
+    padding: 8px 16px;
+    border-radius: 4px;
+    padding-left: 40px; /* Espacio para el ícono */
+    background-image: url('../assets/SearchIcon.svg'); /* Ruta de la imagen */
+    background-repeat: no-repeat;
+    background-position: 10px center; /* Ajuste de la posición del ícono */
+    border: 1px solid #FF5722; /* Giants orange */
+    font-size: 16px;
+    width: 200px;
+    background-color: rgba(255, 235, 238, 0.87); /* Lavender blush con opacidad */
+    color: #795548; /* Coffee */
+    font-family: "Montserrat", sans-serif;
+    position: relative; /* Asegura que el ícono se posicione correctamente */
+}
+
+.search-input-table::placeholder {
+    color: #795548; /* Coffee */
+}
+
+/* Estilo para la lupa que aparece en el campo de búsqueda */
+.search-input-table-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    color: #FF5722; /* Giants orange */
+    pointer-events: none; /* No interferir con la interacción del input */
+    z-index: 1; /* Asegura que el ícono esté por encima del campo de entrada */
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff3c00; /* COLOR BOTON AGREGAR EMPLEADO , OJOS EDITAR BITACORA,ETC*/
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Añadimos transición para suavizar los cambios */
+}
+
+button:hover {
+    background-color: #ffef12; /*color ANIMACION BOTON*/
+    transform: scale(1.1); /* Aumentamos el tamaño del botón al pasar el mouse */
+}
+
+button:focus {
+    outline: none;
+}
+
+/* Estilo para el modal */
+.attendance-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.attendance-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    color: #FF5722;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #d32f2f;
+}
+
+.attendance-modal-content h3 {
+    margin-top: 0;
+}
+
+.attendance-modal table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.attendance-modal th,
+.attendance-modal td {
+    padding: 10px;
+    border: 1px solid #FF5722;
+    text-align: center;
+}
+
+.attendance-modal th {
+    background-color: #FF5722;
+    color: white;
+}
+
+.attendance-modal td {
+    background-color: #FFEBEE;
+}
+
+/* Estilo para el botón del icono del ojo */
+.eye-button {
+    background-color: #FFEBEE; /* Fondo rosado claro */
+    color: #ff3c00; /* Color del ícono (similar al borde) */
+    border: 2px solid #ff3c00; /* Borde del botón */
+    border-radius: 10px; /* Bordes redondeados */
+    
+    cursor: pointer;
+    font-size: 1.2em;
+    display: flex; /* Alineación */
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efecto hover */
+.eye-button:hover {
+    background-color: #ff3c00; /* Fondo naranja */
+    color: #FFEBEE; /* Cambia el color del icono a rosado claro */
+    border-color: #FFD700; /* Cambia el borde a amarillo */
+    transform: scale(1.1); /* Efecto de agrandamiento */
+}
+
+.eye-button:focus {
+    outline: none;
+}
+
+/* Estilo para el botón del icono del calendario */
+.calendar-button {
+    background-color: #FFEBEE; /* Fondo rosado claro */
+    color: #ff3c00; /* Color del ícono (similar al borde) */
+    border: 2px solid #ff3c00; /* Borde del botón */
+    border-radius: 10px; /* Bordes redondeados */
+    
+    cursor: pointer;
+    font-size: 1.2em;
+    display: flex; /* Alineación */
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efecto hover */
+.calendar-button:hover {
+    background-color: #ff3c00; /* Fondo naranja */
+    color: #FFEBEE; /* Cambia el color del icono a rosado claro */
+    border-color: #FFD700; /* Cambia el borde a amarillo */
+    transform: scale(1.1); /* Efecto de agrandamiento */
+}
+
+.calendar-button:focus {
+    outline: none;
+}
+
+
+
+
+
+
+
+/* Modal para el reporte */
+.report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Contenido del modal */
+.report-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    position: relative; /* Asegura que el botón de cierre se posicione respecto al contenido */
+}
+
+/* Botón de cierre de la ventana de reporte */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Cambiar color de la X al pasar el mouse */
+.close-modal:hover {
+    color: #f44336;
+}
+
+/* Estilos para el botón de reporte (por ejemplo, el botón en la tabla) */
+.report-button {
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+}
+
+
+/* Estilos para el botón de reporte */
+.report-button {
+    cursor: pointer;
+    width: 65px; /* Ajustar el tamaño del botón */
+    height: 50px;
+    background-color: #ffe6e6; /* Fondo rosado claro */
+    border: 2px solid red; /* Contorno rojo */
+    border-radius: 10px; /* Bordes redondeados */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px; /* Ajuste del tamaño del contenido */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+    padding: 0;
+}
+
+
+/* Efecto hover */
+.report-button:hover {
+    background-color: #fe5900; /* Fondo ligeramente más oscuro al pasar el mouse */
+    transform: scale(1.1); /* Efecto de zoom */
+    transition: all 0.2s ease-in-out; /* Transiciones suaves */
+}
