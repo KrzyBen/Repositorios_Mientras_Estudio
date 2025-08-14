@@ -1,0 +1,33 @@
+.coupons-container {
+  padding: 5vh;
+  background: #eef7ff;
+  min-height: 100vh;
+}
+
+.coupon-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.coupon-card {
+  border: 2px solid #003366;
+  border-radius: 12px;
+  background: white;
+  padding: 20px;
+  color: #003366;
+}
+
+.coupon-card button {
+  background: #003366;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.coupon-card button:hover {
+  background: #001a33;
+}

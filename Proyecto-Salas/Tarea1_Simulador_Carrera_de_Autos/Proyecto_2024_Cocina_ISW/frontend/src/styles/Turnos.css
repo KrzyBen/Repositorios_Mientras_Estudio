@@ -1,0 +1,107 @@
+/* src/styles/Turnos.css */
+.turnos-page {
+    padding: 20px;
+    margin-top: 0; /* Eliminar cualquier margen superior innecesario */
+    text-align: center;
+    background-image: url('/imag2.jpg'); /* Ruta de la imagen */
+    background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
+    background-position: center; /* Centra la imagen en el fondo */
+    background-attachment: fixed; /* Fija la imagen para que no se desplace al hacer scroll */
+    height: 100%; /* Asegura que ocupe toda la altura de la página */
+    min-height: 100vh; /* Asegura que ocupe al menos toda la ventana del navegador */
+    width: 100%; /* Asegura que ocupe todo el ancho de la página */
+    color: rgb(29, 24, 24); /* Cambia el color del texto para mejor visibilidad sobre la imagen */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Alinea el contenido hacia la parte superior */
+    overflow: hidden; /* Evita que se vea el fondo café al hacer scroll */
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 48px; /* Título más grande */
+    color: #f3ecec;
+    margin-top: 250px; /* Baja el título desde la parte superior */
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
+}
+
+
+
+.employee-list-container,
+.shift-form-container,
+.shift-list-container {
+    margin-bottom: 30px; /* Espaciado entre las secciones */
+}
+
+/* Ajustes de la tabla */
+table {
+    width: 80%;  /* Reducir el ancho de la tabla */
+    margin: 20px auto;  /* Centrar la tabla y añadir espaciado superior e inferior */
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para la tabla */
+}
+
+table td {
+    padding: 8px;  /* Reducir el espaciado de las celdas */
+    text-align: left;
+    font-size: 14px;  /* Reducir el tamaño de la fuente */
+    background-color: white; /* Color para las celdas */
+    font-weight: bold; /* Letra en negrita */
+}
+
+button {
+    margin-top: 10px;
+}
+
+
+
+
+
+.turnos-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.employee-list-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.no-access-message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff4d4d; /* Rojo para llamar la atención */
+    background-color: #ffe6e6; /* Fondo suave para resaltar el mensaje */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.shift-form-container, .shift-list-container {
+    margin-top: 30px;
+}
+
+h3 {
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.employee-list-container h3 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 40px;
+}
+
+.employee-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

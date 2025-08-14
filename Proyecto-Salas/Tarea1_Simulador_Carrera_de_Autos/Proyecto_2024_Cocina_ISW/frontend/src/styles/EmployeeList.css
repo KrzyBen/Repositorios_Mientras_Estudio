@@ -1,0 +1,112 @@
+/* Estilos específicos para los botones */
+.btn-turno-entrada {
+    background-color: #4CAF50; /* Verde para entrada */
+    color: white;
+    border: 2px solid #FFC107; /* Borde amarillo */
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-turno-salida {
+    background-color: #ff6358; /* Rojo para salida */
+    color: white;
+    border: 2px solid #FFC107; /* Borde amarillo */
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-turno-entrada:hover,
+.btn-turno-salida:hover {
+    opacity: 0.8;
+}
+
+
+
+textarea {
+    width: 100%;
+    resize: none;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+}
+
+.attendance-history-container {
+    position: fixed; /* Fijamos el contenedor en la pantalla */
+    top: 50%; /* Centrado vertical */
+    left: 50%; /* Centrado horizontal */
+    transform: translate(-50%, -50%); /* Ajuste para centrar completamente */
+    background-color: white;
+    border: 2px solid #FFC107; /* Borde amarillo */
+    padding: 15px;
+    border-radius: 8px;
+    width: 80%; /* Tamaño del cuadro flotante */
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Asegurarse de que esté encima de otros elementos */
+}
+
+.attendance-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-history {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #FF6347;
+}
+
+.attendance-history-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.attendance-history-table th, .attendance-history-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.attendance-history-table th {
+    background-color: #FF6347;
+    color: white;
+}
+
+.attendance-history-table td {
+    background-color: #f2f2f2;
+}
+
+/* Estilo para el botón del icono del historial de asistencia */
+.btn-history {
+    background-color: #FFEBEE; /* Fondo rosado claro */
+    color: #ff3c00; /* Color del ícono (similar al borde) */
+    border: 2px solid #ff3c00; /* Borde del botón */
+    border-radius: 10px; /* Bordes redondeados */
+    
+    cursor: pointer;
+    font-size: 1.5em; /* Tamaño del icono ajustado */
+    display: flex; /* Alineación */
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efecto hover */
+.btn-history:hover {
+    background-color: #ff3c00; /* Fondo naranja */
+    color: #FFEBEE; /* Cambia el color del icono a rosado claro */
+    border-color: #FFD700; /* Cambia el borde a amarillo */
+    transform: scale(1.1); /* Efecto de agrandamiento */
+}
+
+.btn-history:focus {
+    outline: none;
+}
+
