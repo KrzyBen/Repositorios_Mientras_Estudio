@@ -16,8 +16,8 @@ Cada proyecto tiene su propia carpeta:
 - `Tarea1_Simulador_Carrera_de_Autos`
 
 
-- Cada carpeta contiene el código y el historial original del proyecto.
-- Puedes explorar los commits de cada proyecto de forma independiente.
+Cada carpeta contiene el código y el historial original del proyecto.
+Puedes explorar los commits de cada proyecto de forma independiente.
 
 ---
 
