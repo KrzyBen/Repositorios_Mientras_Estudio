@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pago finalizado</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Tu pago ha sido procesado</h2>
+  <p id="mensaje"></p>
+  <p>Ya puedes cerrar esta página.</p>
+  <button onclick="cerrarVentana()">Cerrar esta ventana</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const estado = params.get("estado");
+    const error = params.get("error");
+    const mensaje = document.getElementById("mensaje");
+
+    if (estado === "pagado") {
+      mensaje.textContent = "✅ El pago fue exitoso.";
+    } else if (error === "pago-fallido") {
+      mensaje.textContent = "⚠️ El pago falló. Puedes intentar nuevamente.";
+    } else {
+      mensaje.textContent = "❌ Ocurrió un error al procesar el pago.";
+    }
+
+    function cerrarVentana() {
+      if (window.opener && !window.opener.closed) {
+        const url = new URL(window.opener.location.href);
+        if (estado) {
+          url.searchParams.set("estado", estado);
+        } else if (error) {
+          url.searchParams.set("error", error);
+        }
+        window.opener.location.href = url.toString();
+      }
+      window.close();
+    }
+  </script>
+</body>
+</html>
