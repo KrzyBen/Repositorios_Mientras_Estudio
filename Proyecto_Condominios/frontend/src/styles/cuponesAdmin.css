@@ -1,0 +1,161 @@
+/* Animación para hover en botones o elementos */
+@keyframes pcpa_heartbeat {
+  0%, 50%, 100% {
+    transform: scaleX(1);
+  }
+  25%, 75% {
+    transform: scaleX(1.2);
+  }
+}
+
+/* Contenedor general */
+.pcpa_container {
+  padding: 5vh 4vw;
+  background: #eef7ff;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: #003366;
+}
+
+/* Títulos principales y secciones */
+.pcpa_title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #003366;
+  text-align: center;
+}
+
+.pcpa_vecinos_section,
+.pcpa_cupones_section {
+  margin-top: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.1);
+}
+
+.pcpa_vecinos_section h2,
+.pcpa_cupones_section h2 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #003366;
+}
+
+/* Botones */
+.pcpa_btn_generar_anual,
+.pcpa_btn_crear_cupon,
+.pcpa_btn_ver_cupones,
+.pcpa_btn_editar,
+.pcpa_btn_eliminar {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.pcpa_btn_generar_anual:hover,
+.pcpa_btn_crear_cupon:hover,
+.pcpa_btn_ver_cupones:hover,
+.pcpa_btn_editar:hover,
+.pcpa_btn_eliminar:hover {
+  background-color: #001a33;
+  animation: pcpa_heartbeat 1.5s ease-in-out;
+}
+
+/* Layout botones acciones en tabla */
+.pcpa_btn_editar, .pcpa_btn_eliminar {
+  margin: 0 4px;
+}
+
+/* Tablas: puedes ajustar si usas un componente externo, sino: */
+.pcpa_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #003366;
+}
+
+.pcpa_table th,
+.pcpa_table td {
+  border: 1px solid #a3c0e8;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.pcpa_table th {
+  background-color: #c9daf8;
+  font-weight: 600;
+}
+
+/* Popup: suponiendo que usas un componente modal, por si quieres estilos globales */
+.pcpa_popup_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pcpa_popup_content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  color: #003366;
+}
+
+/* Formularios */
+.pcpa_form_group {
+  margin-bottom: 1rem;
+}
+
+.pcpa_form_label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.pcpa_form_input,
+.pcpa_form_select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #a3c0e8;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #003366;
+  box-sizing: border-box;
+}
+
+.pcpa_form_input:focus,
+.pcpa_form_select:focus {
+  outline: none;
+  border-color: #003366;
+  box-shadow: 0 0 5px #003366aa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pcpa_vecinos_section, .pcpa_cupones_section {
+    padding: 1rem;
+  }
+  .pcpa_btn_generar_anual,
+  .pcpa_btn_crear_cupon {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+}
